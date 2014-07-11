@@ -1,6 +1,7 @@
 #ifndef NOKIALCD_H_
 #define NOKIALCD_H_
 #include "../Delay/delay.h"
+#include "stdio.h"
 #include "english_6x8_pixel.h"
 #include "bmp_pixel.h"
 //Folder: Nokia_5110_Display_Lib_for_STM32_GCC\LCD5110_Lib_Ifalt32-2.0

@@ -5,6 +5,7 @@
 
 #include "../NokiaLCD/nokiaLCD.h"
 #include "../Delay/delay.h"
+#include "I2C.h"
 
 #define ITG3200_ADDRESS_AD0_LOW     (0x68<<1) // address pin low (GND), default for SparkFun IMU Digital Combo board
 #define ITG3200_ADDRESS_AD0_HIGH    0x69 // address pin high (VCC), default for SparkFun ITG-3200 Breakout board
@@ -121,16 +122,20 @@
 
 class ITG3200 {
     public:
-        ITG3200();
-        ITG3200(uint8_t address);
+		/** Default constructor, uses default I2C address.
+		 * @see ITG3200_DEFAULT_ADDRESS
+		 */
+		ITG3200(I2C * _pi2c = (I2C *) NULL, uint8_t address = ITG3200_DEFAULT_ADDRESS) {
+			devAddr = address;
+			pi2c = _pi2c;
+		}
 
-    	typedef struct {
-    		int16_t x;
-    		int16_t y;
-    		int16_t z;
-    	} LIS3DSH_OutXYZTypeDef;
-
-    	LIS3DSH_OutXYZTypeDef axis;
+		struct OutXYZTypeDef {
+			int16_t x;
+			int16_t y;
+			int16_t z;
+		};
+		OutXYZTypeDef axis;
 
         void initialize();
         uint8_t testConnection();
@@ -193,6 +198,7 @@ class ITG3200 {
     private:
         uint8_t devAddr;
         uint8_t buffer[6];
+    	I2C *pi2c;
 };
 
 #endif /* ITG3200_H_ */

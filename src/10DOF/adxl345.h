@@ -5,74 +5,8 @@
 
 #include "../NokiaLCD/nokiaLCD.h"
 #include "../Delay/delay.h"
-
-uint8_t adxl345_test(void);
-
-void  adxl345_ReadTapThresh(uint8_t *tap);
-void adxl345_WriteTapThresh(uint8_t tap);
-
-void adxl345_ReadXOffSet(int8_t *xoff);
-void adxl345_ReadYOffSet(int8_t *yoff);
-void adxl345_ReadZOffSet(int8_t *zoff);
-void adxl345_ReadXYZOffSet(int8_t *xoff, int8_t *yoff, int8_t *zoff);
-void adxl345_WriteXOffSet(int8_t xoff);
-void adxl345_WriteYOffSet(int8_t yoff);
-void adxl345_WriteZOffSet(int8_t zoff);
-void adxl_WriteXYZOffSet(int8_t *xoff, int8_t *yoff, int8_t *zoff);
-
-void adxl345_ReadDur(uint8_t *dur);
-void adxl345_WriteDur(uint8_t dur);
-
-void adxl345_ReadLat(uint8_t *lat);
-void adxl345_WriteLat(uint8_t lat);
-
-void adxl345_ReadWindow(uint8_t *win);
-void adxl345_WriteWindow(uint8_t win);
-
-void adxl345_ReadAct(uint8_t *act);
-void adxl345_WriteAct(uint8_t act);
-
-void adxl345_ReadThreshInact(int8_t *inact);
-void adxl345_WriteThreshInact(int8_t inact);
-
-void adxl345_ReadTimeInact(uint8_t *timinact);
-void adxl345_WriteTimeInact(uint8_t timinact);
-
-void adxl345_WriteACDC(uint8_t ActEN, uint8_t ActX, uint8_t ActY, uint8_t ActZ, uint8_t InActEN, uint8_t InActX, uint8_t InActY, uint8_t InActZ);
-void adxl345_ReadACDC(uint8_t *acdc);
-
-void adxl345_ReadThreshFF(uint8_t *threshff);
-void adxl345_WriteThreshFF(uint8_t threshff);
-
-void adxl345_ReadTimeFF(uint8_t *timeff);
-void adxl345_WriteTimeFF(uint8_t timeff);
-
-void adxl345_ReadTapAxes(uint8_t *tap_axes);
-void adxl345_WriteTapAxes(uint8_t sup, uint8_t tapx, uint8_t tapy, uint8_t tapz);
-
-void adxl345_ReadActTapStatus(uint8_t *status);
-void adxl345_ReadBWRate(uint8_t *bw);
-
-void adxl345_WriteBWRate(uint8_t pwr, uint8_t bw);
-void adxl345_ReadPWRCtl(uint8_t *pwrctl);
-
-void adxl345_WritePWRCtl(uint8_t link, uint8_t autosleep, uint8_t measure, uint8_t sleep, uint8_t wake);
-
-void adxl345_WriteINTEnable(uint8_t DataRDY, uint8_t singletap, uint8_t doubletap, uint8_t act, uint8_t inact, uint8_t ff, uint8_t watermrk, uint8_t overrun);
-void adxl345_ReadINTEnable(uint8_t *inten);
-
-void adxl345_ReadINTSource(uint8_t *intsource);
-
-void adxl345_ReadDataFormat(uint8_t *data);
-void adxl345_WriteDataFormat(uint8_t selftest, uint8_t spi, uint8_t intinv, uint8_t fullres, uint8_t justify, uint8_t range);
-
-void adxl345_ReadXYZ(int16_t *xdata, int16_t *ydata, int16_t *zdata);
-
-void adxl345_ReadFIFOCtl(uint8_t *fifo);
-void adxl345_WriteFIFOCtl(uint8_t fifo, uint8_t trigger, uint8_t sample);
-
-void adxl345_ReadFIFOStatus(uint8_t *fifost);
-
+#include "I2C.h"
+//#include "IMU.h"
 
 #define I2C_ID_ADXL345								 0xA6	//(0x53<<1)
 #define ADXL345_ADDRESS_ALT_LOW 					 0xA6 // alt address pin low (GND)
@@ -367,5 +301,98 @@ void adxl345_ReadFIFOStatus(uint8_t *fifost);
 *	Read register
 */
 #define ADXL345_RA_FIFO_STATUS 						 0x39
+
+class ADXL345 {
+    public:
+		ADXL345(I2C * _pi2c = (I2C*) NULL, uint8_t address = ADXL345_DEFAULT_ADDRESS) {
+			devAddr = address;
+			pi2c = _pi2c;
+		}
+
+		struct OutXYZTypeDef {
+			int16_t x;
+			int16_t y;
+			int16_t z;
+		};
+		OutXYZTypeDef axis;
+
+        void initialize();
+        uint8_t testConnection();
+        void test(NokiaLCD & nokia);
+
+        // WHO_AM_I register
+        uint8_t getDeviceID();
+        void setDeviceID(uint8_t id);
+
+        void  ReadTapThresh(uint8_t *tap);
+        void WriteTapThresh(uint8_t tap);
+
+        void ReadXOffSet(int8_t *xoff);
+        void ReadYOffSet(int8_t *yoff);
+        void ReadZOffSet(int8_t *zoff);
+        void ReadXYZOffSet(int8_t *xoff, int8_t *yoff, int8_t *zoff);
+        void WriteXOffSet(int8_t xoff);
+        void WriteYOffSet(int8_t yoff);
+        void WriteZOffSet(int8_t zoff);
+        void WriteXYZOffSet(int8_t *xoff, int8_t *yoff, int8_t *zoff);
+
+        void ReadDur(uint8_t *dur);
+        void WriteDur(uint8_t dur);
+
+        void ReadLat(uint8_t *lat);
+        void WriteLat(uint8_t lat);
+
+        void ReadWindow(uint8_t *win);
+        void WriteWindow(uint8_t win);
+
+        void ReadAct(uint8_t *act);
+        void WriteAct(uint8_t act);
+
+        void ReadThreshInact(int8_t *inact);
+        void WriteThreshInact(int8_t inact);
+
+        void ReadTimeInact(uint8_t *timinact);
+        void WriteTimeInact(uint8_t timinact);
+
+        void WriteACDC(uint8_t ActEN, uint8_t ActX, uint8_t ActY, uint8_t ActZ, uint8_t InActEN, uint8_t InActX, uint8_t InActY, uint8_t InActZ);
+        void ReadACDC(uint8_t *acdc);
+
+        void ReadThreshFF(uint8_t *threshff);
+        void WriteThreshFF(uint8_t threshff);
+
+        void ReadTimeFF(uint8_t *timeff);
+        void WriteTimeFF(uint8_t timeff);
+
+        void ReadTapAxes(uint8_t *tap_axes);
+        void WriteTapAxes(uint8_t sup, uint8_t tapx, uint8_t tapy, uint8_t tapz);
+
+        void ReadActTapStatus(uint8_t *status);
+        void ReadBWRate(uint8_t *bw);
+
+        void WriteBWRate(uint8_t pwr, uint8_t bw);
+        void ReadPWRCtl(uint8_t *pwrctl);
+
+        void WritePWRCtl(uint8_t link, uint8_t autosleep, uint8_t measure, uint8_t sleep, uint8_t wake);
+
+        void WriteINTEnable(uint8_t DataRDY, uint8_t singletap, uint8_t doubletap, uint8_t act, uint8_t inact, uint8_t ff, uint8_t watermrk, uint8_t overrun);
+        void ReadINTEnable(uint8_t *inten);
+
+        void ReadINTSource(uint8_t *intsource);
+
+        void ReadDataFormat(uint8_t *data);
+        void WriteDataFormat(uint8_t selftest, uint8_t spi, uint8_t intinv, uint8_t fullres, uint8_t justify, uint8_t range);
+
+        void ReadXYZ(int16_t *xdata, int16_t *ydata, int16_t *zdata);
+
+        void ReadFIFOCtl(uint8_t *fifo);
+        void WriteFIFOCtl(uint8_t fifo, uint8_t trigger, uint8_t sample);
+
+        void ReadFIFOStatus(uint8_t *fifost);
+
+    private:
+        uint8_t devAddr;
+        uint8_t buffer[6];
+    	I2C *pi2c;
+};
 
 #endif /* ADXL345_H_ */

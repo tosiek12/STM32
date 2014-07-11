@@ -37,7 +37,6 @@
 // but can be rerouted to any device or completely suppressed, by
 // changing the definitions required in system/src/diag/trace_impl.c
 // (currently OS_USE_TRACE_ITM, OS_USE_TRACE_SEMIHOSTING_DEBUG/_STDOUT).
-//
 
 // Definitions visible only within this translation unit.
 namespace {
@@ -75,9 +74,9 @@ int main(int argc, char* argv[]) {
 	//InitAccelerometer();
 	//acc_initialized = 1;
 
-	IMU imu10DOF;
-	ITG3200 gyro;
-	gyro.initialize();
+	IMU imu10DOF;	//
+	imu10DOF.gyro.initialize();
+	imu10DOF.accelerometer.initialize();
 //	if (gyro.testConnection() == 0) {
 //		while (1) {
 //		}	//Error handler.
@@ -93,8 +92,8 @@ int main(int argc, char* argv[]) {
 		buttons.mainBegginingUpdate();
 		if (++c == 1000) {
 			//Main_AccelerometerAction(&nokiaLCD);
-			imu10DOF.test(nokiaLCD);
-			gyro.test(nokiaLCD);
+			imu10DOF.accelerometer.test(nokiaLCD);
+			imu10DOF.gyro.test(nokiaLCD);
 			c = 0;
 		}
 		if (buttons.getButtonState(0) == GPIO::longPush) {
