@@ -65,7 +65,7 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../src/NokiaLCD/english_6x8_pixel.h ../src/NokiaLCD/bmp_pixel.h \
  ../src/GPIO/gpio.h ../src/10DOF/IMU.h \
  ../src/10DOF/../NokiaLCD/nokiaLCD.h ../src/10DOF/../Delay/delay.h \
- ../src/10DOF/itg3200.h ../src/10DOF/I2C.h ../src/10DOF/adxl345.h \
+ ../src/10DOF/I2C.h ../src/10DOF/itg3200.h ../src/10DOF/adxl345.h \
  ../src/Accelerometer/accelerometer.h \
  ../src/Accelerometer/../NokiaLCD/nokiaLCD.h
 
@@ -217,9 +217,9 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../src/10DOF/../Delay/delay.h:
 
-../src/10DOF/itg3200.h:
-
 ../src/10DOF/I2C.h:
+
+../src/10DOF/itg3200.h:
 
 ../src/10DOF/adxl345.h:
 

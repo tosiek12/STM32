@@ -13,6 +13,8 @@ RM := rm -rf
 -include system/src/diag/subdir.mk
 -include system/src/cortexm/subdir.mk
 -include system/src/cmsis/subdir.mk
+-include src/STM32_USB_Device_Library/Core/Src/subdir.mk
+-include src/STM32_USB_Device_Library/Class/CDC/Src/subdir.mk
 -include src/NokiaLCD/subdir.mk
 -include src/GPIO/subdir.mk
 -include src/Delay/subdir.mk

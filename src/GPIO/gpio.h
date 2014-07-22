@@ -148,6 +148,8 @@ public:
 	 * Initialize PB5,PB6,PB7 as PuPd NOPULL input.
 	 */
 	inline void __attribute__((always_inline)) InitButtons() {
+		__SYSCFG_CLK_ENABLE();
+
 		InitTimer();
 
 		GPIO_InitTypeDef GPIO_InitStructure;

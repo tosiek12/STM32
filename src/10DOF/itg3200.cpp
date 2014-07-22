@@ -37,7 +37,7 @@ void ITG3200::test(NokiaLCD & nokia) {
 		int16_t Out_x = 0, Out_y = 0, Out_z = 0;
 		int32_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
 
-		for (uint16_t i = 0; i < 1000; i++) {
+		for (uint16_t i = 0; i < 500; i++) {
 //			I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6,
 //					(uint8_t *) &axis);
 			getRotation(&axis.x,&axis.y,&axis.z);
@@ -45,9 +45,9 @@ void ITG3200::test(NokiaLCD & nokia) {
 			Sum_y += axis.y;
 			Sum_z += axis.z;
 		}
-		Out_x = Sum_x / 1000;
-		Out_y = Sum_y / 1000;
-		Out_z = Sum_z / 1000;
+		Out_x = Sum_x / 500;
+		Out_y = Sum_y / 500;
+		Out_z = Sum_z / 500;
 
 		uint8_t buf[10];
 

@@ -20,7 +20,8 @@ C_SRCS += \
 ../system/src/stm32f4-hal/stm32f4xx_hal_rcc_ex.c \
 ../system/src/stm32f4-hal/stm32f4xx_hal_spi.c \
 ../system/src/stm32f4-hal/stm32f4xx_hal_tim.c \
-../system/src/stm32f4-hal/stm32f4xx_hal_tim_ex.c 
+../system/src/stm32f4-hal/stm32f4xx_hal_tim_ex.c \
+../system/src/stm32f4-hal/stm32f4xx_ll_usb.c 
 
 OBJS += \
 ./system/src/stm32f4-hal/stm32f4xx_hal.o \
@@ -39,7 +40,8 @@ OBJS += \
 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc_ex.o \
 ./system/src/stm32f4-hal/stm32f4xx_hal_spi.o \
 ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o \
-./system/src/stm32f4-hal/stm32f4xx_hal_tim_ex.o 
+./system/src/stm32f4-hal/stm32f4xx_hal_tim_ex.o \
+./system/src/stm32f4-hal/stm32f4xx_ll_usb.o 
 
 C_DEPS += \
 ./system/src/stm32f4-hal/stm32f4xx_hal.d \
@@ -58,14 +60,15 @@ C_DEPS += \
 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc_ex.d \
 ./system/src/stm32f4-hal/stm32f4xx_hal_spi.d \
 ./system/src/stm32f4-hal/stm32f4xx_hal_tim.d \
-./system/src/stm32f4-hal/stm32f4xx_hal_tim_ex.d 
+./system/src/stm32f4-hal/stm32f4xx_hal_tim_ex.d \
+./system/src/stm32f4-hal/stm32f4xx_ll_usb.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 system/src/stm32f4-hal/%.o: ../system/src/stm32f4-hal/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross ARM C Compiler'
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Og -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wpadded -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal  -g3 -DDEBUG -DARM_MATH_CM4 -DUSE_FULL_ASSERT -DTRACE -DOS_USE_TRACE_ITM -DSTM32F407xx -DUSE_HAL_DRIVER -DHSE_VALUE=8000000 -I"../include" -I"../system/include" -I"../system/include/cmsis" -I"../system/include/stm32f4-hal" -std=gnu11 -Wmissing-prototypes -Wstrict-prototypes -Wbad-function-cast -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Og -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wpadded -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal  -g3 -DDEBUG -DUSE_USB_FS -DARM_MATH_CM4 -DUSE_FULL_ASSERT -DTRACE -DOS_USE_TRACE_ITM -DSTM32F407xx -DUSE_HAL_DRIVER -DHSE_VALUE=8000000 -I"../include" -I"../include/STM32_USB_Device_Library/Class/CDC/Inc/" -I"../include/STM32_USB_Device_Library/Core/Inc/" -I"../system/include" -I"../system/include/cmsis" -I"../system/include/stm32f4-hal" -std=gnu11 -Wmissing-prototypes -Wstrict-prototypes -Wbad-function-cast -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -c -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

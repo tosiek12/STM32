@@ -57,7 +57,6 @@ constexpr uint32_t BLINK_OFF_TICKS = 500;
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
 int main(int argc, char* argv[]) {
-	__SYSCFG_CLK_ENABLE();
 
 	Delay::initialize();	//Create, and initialize
 	NokiaLCD nokiaLCD;	//Create, and initialize
@@ -90,7 +89,7 @@ int main(int argc, char* argv[]) {
 	while (1) {
 
 		buttons.mainBegginingUpdate();
-		if (++c == 1000) {
+		if (++c == 100) {
 			//Main_AccelerometerAction(&nokiaLCD);
 			imu10DOF.accelerometer.test(nokiaLCD);
 			imu10DOF.gyro.test(nokiaLCD);
