@@ -12,13 +12,15 @@
  * flow in either case, but the first reports may have higher error offsets.
  */
 void ITG3200::initialize() {
-	if (testConnection()) {
-		while (1) {
-		}	//Fail_Handler();
-	}
 	setFullScaleRange(ITG3200_FULLSCALE_2000);
     setClockSource(ITG3200_CLOCK_PLL_XGYRO);
 
+//	if (testConnection()) {
+//
+//	} else {
+//		while (1) {
+//		}	//Fail_Handler();
+//	}
 }
 
 /** Verify the I2C connection.
@@ -26,7 +28,9 @@ void ITG3200::initialize() {
  * @return True if connection is valid, false otherwise
  */
 uint8_t ITG3200::testConnection() {
-    return getDeviceID() == ITG3200_I_AM;
+	uint8_t temp;
+	I2C::i2c_ReadByte(devAddr, ITG3200_RA_WHO_AM_I, &temp);
+	return temp == ITG3200_I_AM ? 1 : 0;
 }
 
 void ITG3200::test(NokiaLCD & nokia) {
@@ -34,9 +38,9 @@ void ITG3200::test(NokiaLCD & nokia) {
 		int32_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
 
 		for (uint16_t i = 0; i < 1000; i++) {
-//			pi2c->i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6,
+//			I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6,
 //					(uint8_t *) &axis);
-//			getRotation(&axis.x,&axis.y,&axis.z);
+			getRotation(&axis.x,&axis.y,&axis.z);
 			Sum_x += axis.x;
 			Sum_y += axis.y;
 			Sum_z += axis.z;
@@ -70,7 +74,7 @@ void ITG3200::test(NokiaLCD & nokia) {
  * @see ITG3200_RA_DEVID_LENGTH
  */
 uint8_t ITG3200::getDeviceID() {
-	pi2c->i2c_ReadByte(devAddr, ITG3200_RA_WHO_AM_I, buffer);
+	I2C::i2c_ReadByte(devAddr, ITG3200_RA_WHO_AM_I, buffer);
     return buffer[0];
 }
 /** Set Device ID.
@@ -83,7 +87,7 @@ uint8_t ITG3200::getDeviceID() {
  * @see ITG3200_RA_DEVID_LENGTH
  */
 void ITG3200::setDeviceID(uint8_t id) {
-	pi2c->i2c_WriteBits(devAddr, ITG3200_RA_WHO_AM_I, ITG3200_DEVID_BIT, ITG3200_DEVID_LENGTH, id);
+	I2C::i2c_WriteBits(devAddr, ITG3200_RA_WHO_AM_I, ITG3200_DEVID_BIT, ITG3200_DEVID_LENGTH, id);
 }
 
 // SMPLRT_DIV register
@@ -107,7 +111,7 @@ void ITG3200::setDeviceID(uint8_t id) {
  * @see ITG3200_RA_SMPLRT_DIV
  */
 uint8_t ITG3200::getRate() {
-    pi2c->i2c_ReadByte(devAddr, ITG3200_RA_SMPLRT_DIV, buffer);
+    I2C::i2c_ReadByte(devAddr, ITG3200_RA_SMPLRT_DIV, buffer);
     return buffer[0];
 }
 /** Set sample rate.
@@ -117,7 +121,7 @@ uint8_t ITG3200::getRate() {
  * @see ITG3200_RA_SMPLRT_DIV
  */
 void ITG3200::setRate(uint8_t rate) {
-    pi2c->i2c_WriteByte(devAddr, ITG3200_RA_SMPLRT_DIV, rate);
+    I2C::i2c_WriteByte(devAddr, ITG3200_RA_SMPLRT_DIV, rate);
 }
 
 // DLPF_FS register
@@ -139,7 +143,7 @@ void ITG3200::setRate(uint8_t rate) {
  * @see ITG3200_DF_FS_SEL_LENGTH
  */
 uint8_t ITG3200::getFullScaleRange() {
-	pi2c->i2c_ReadBits(devAddr, ITG3200_RA_DLPF_FS, ITG3200_DF_FS_SEL_BIT, ITG3200_DF_FS_SEL_LENGTH, buffer);
+	I2C::i2c_ReadBits(devAddr, ITG3200_RA_DLPF_FS, ITG3200_DF_FS_SEL_BIT, ITG3200_DF_FS_SEL_LENGTH, buffer);
     return buffer[0];
 }
 /** Set full-scale range setting.
@@ -151,7 +155,7 @@ uint8_t ITG3200::getFullScaleRange() {
  * @see ITG3200_DF_FS_SEL_LENGTH
  */
 void ITG3200::setFullScaleRange(uint8_t range) {
-    pi2c->i2c_WriteBits(devAddr, ITG3200_RA_DLPF_FS, ITG3200_DF_FS_SEL_BIT, ITG3200_DF_FS_SEL_LENGTH, range);
+    I2C::i2c_WriteBits(devAddr, ITG3200_RA_DLPF_FS, ITG3200_DF_FS_SEL_BIT, ITG3200_DF_FS_SEL_LENGTH, range);
 }
 /** Get digital low-pass filter bandwidth.
  * The DLPF_CFG parameter sets the digital low pass filter configuration. It
@@ -175,7 +179,7 @@ void ITG3200::setFullScaleRange(uint8_t range) {
  * @see ITG3200_DF_DLPF_CFG_LENGTH
  */
 uint8_t ITG3200::getDLPFBandwidth() {
-    pi2c->i2c_ReadBits(devAddr, ITG3200_RA_DLPF_FS, ITG3200_DF_DLPF_CFG_BIT, ITG3200_DF_DLPF_CFG_LENGTH, buffer);
+    I2C::i2c_ReadBits(devAddr, ITG3200_RA_DLPF_FS, ITG3200_DF_DLPF_CFG_BIT, ITG3200_DF_DLPF_CFG_LENGTH, buffer);
     return buffer[0];
 }
 /** Set digital low-pass filter bandwidth.
@@ -187,7 +191,7 @@ uint8_t ITG3200::getDLPFBandwidth() {
  * @see ITG3200_DF_DLPF_CFG_LENGTH
  */
 void ITG3200::setDLPFBandwidth(uint8_t bandwidth) {
-    pi2c->i2c_WriteBits(devAddr, ITG3200_RA_DLPF_FS, ITG3200_DF_DLPF_CFG_BIT, ITG3200_DF_DLPF_CFG_LENGTH, bandwidth);
+    I2C::i2c_WriteBits(devAddr, ITG3200_RA_DLPF_FS, ITG3200_DF_DLPF_CFG_BIT, ITG3200_DF_DLPF_CFG_LENGTH, bandwidth);
 }
 
 // INT_CFG register
@@ -199,7 +203,7 @@ void ITG3200::setDLPFBandwidth(uint8_t bandwidth) {
  * @see ITG3200_INTCFG_ACTL_BIT
  */
 uint8_t ITG3200::getInterruptMode() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_ACTL_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_ACTL_BIT, buffer);
     return buffer[0];
 }
 /** Set interrupt logic level mode.
@@ -209,7 +213,7 @@ uint8_t ITG3200::getInterruptMode() {
  * @see ITG3200_INTCFG_ACTL_BIT
  */
 void ITG3200::setInterruptMode(uint8_t mode) {
-    pi2c->i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_ACTL_BIT, mode);
+    I2C::i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_ACTL_BIT, mode);
 }
 /** Get interrupt drive mode.
  * Will be set 0 for push-pull, 1 for open-drain.
@@ -218,7 +222,7 @@ void ITG3200::setInterruptMode(uint8_t mode) {
  * @see ITG3200_INTCFG_OPEN_BIT
  */
 uint8_t ITG3200::getInterruptDrive() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_OPEN_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_OPEN_BIT, buffer);
     return buffer[0];
 }
 /** Set interrupt drive mode.
@@ -228,7 +232,7 @@ uint8_t ITG3200::getInterruptDrive() {
  * @see ITG3200_INTCFG_OPEN_BIT
  */
 void ITG3200::setInterruptDrive(uint8_t drive) {
-    pi2c->i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_OPEN_BIT, drive);
+    I2C::i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_OPEN_BIT, drive);
 }
 /** Get interrupt latch mode.
  * Will be set 0 for 50us-pulse, 1 for latch-until-int-cleared.
@@ -237,7 +241,7 @@ void ITG3200::setInterruptDrive(uint8_t drive) {
  * @see ITG3200_INTCFG_LATCH_INT_EN_BIT
  */
 uint8_t ITG3200::getInterruptLatch() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_LATCH_INT_EN_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_LATCH_INT_EN_BIT, buffer);
     return buffer[0];
 }
 /** Set interrupt latch mode.
@@ -247,7 +251,7 @@ uint8_t ITG3200::getInterruptLatch() {
  * @see ITG3200_INTCFG_LATCH_INT_EN_BIT
  */
 void ITG3200::setInterruptLatch(uint8_t latch) {
-    pi2c->i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_LATCH_INT_EN_BIT, latch);
+    I2C::i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_LATCH_INT_EN_BIT, latch);
 }
 /** Get interrupt latch clear mode.
  * Will be set 0 for status-read-only, 1 for any-register-read.
@@ -256,7 +260,7 @@ void ITG3200::setInterruptLatch(uint8_t latch) {
  * @see ITG3200_INTCFG_INT_ANYRD_2CLEAR_BIT
  */
 uint8_t ITG3200::getInterruptLatchClear() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_INT_ANYRD_2CLEAR_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_INT_ANYRD_2CLEAR_BIT, buffer);
     return buffer[0];
 }
 /** Set interrupt latch clear mode.
@@ -266,7 +270,7 @@ uint8_t ITG3200::getInterruptLatchClear() {
  * @see ITG3200_INTCFG_INT_ANYRD_2CLEAR_BIT
  */
 void ITG3200::setInterruptLatchClear(uint8_t clear) {
-    pi2c->i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_INT_ANYRD_2CLEAR_BIT, clear);
+    I2C::i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_INT_ANYRD_2CLEAR_BIT, clear);
 }
 /** Get "device ready" interrupt enabled setting.
  * Will be set 0 for disabled, 1 for enabled.
@@ -275,7 +279,7 @@ void ITG3200::setInterruptLatchClear(uint8_t clear) {
  * @see ITG3200_INTCFG_ITG_RDY_EN_BIT
  */
 uint8_t ITG3200::getIntDeviceReadyEnabled() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_ITG_RDY_EN_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_ITG_RDY_EN_BIT, buffer);
     return buffer[0];
 }
 /** Set "device ready" interrupt enabled setting.
@@ -285,7 +289,7 @@ uint8_t ITG3200::getIntDeviceReadyEnabled() {
  * @see ITG3200_INTCFG_ITG_RDY_EN_BIT
  */
 void ITG3200::setIntDeviceReadyEnabled(uint8_t enabled) {
-    pi2c->i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_ITG_RDY_EN_BIT, enabled);
+    I2C::i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_ITG_RDY_EN_BIT, enabled);
 }
 /** Get "data ready" interrupt enabled setting.
  * Will be set 0 for disabled, 1 for enabled.
@@ -294,7 +298,7 @@ void ITG3200::setIntDeviceReadyEnabled(uint8_t enabled) {
  * @see ITG3200_INTCFG_RAW_RDY_EN_BIT
  */
 uint8_t ITG3200::getIntDataReadyEnabled() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_RAW_RDY_EN_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_RAW_RDY_EN_BIT, buffer);
     return buffer[0];
 }
 /** Set "data ready" interrupt enabled setting.
@@ -304,7 +308,7 @@ uint8_t ITG3200::getIntDataReadyEnabled() {
  * @see ITG3200_INTCFG_RAW_RDY_EN_BIT
  */
 void ITG3200::setIntDataReadyEnabled(uint8_t enabled) {
-    pi2c->i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_RAW_RDY_EN_BIT, enabled);
+    I2C::i2c_WriteBit(devAddr, ITG3200_RA_INT_CFG, ITG3200_INTCFG_RAW_RDY_EN_BIT, enabled);
 }
 
 // INT_STATUS register
@@ -317,7 +321,7 @@ void ITG3200::setIntDataReadyEnabled(uint8_t enabled) {
  * @see ITG3200_INTSTAT_RAW_DATA_READY_BIT
  */
 uint8_t ITG3200::getIntDeviceReadyStatus() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_INT_STATUS, ITG3200_INTSTAT_ITG_RDY_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_INT_STATUS, ITG3200_INTSTAT_ITG_RDY_BIT, buffer);
     return buffer[0];
 }
 /** Get Data Ready interrupt status.
@@ -328,7 +332,7 @@ uint8_t ITG3200::getIntDeviceReadyStatus() {
  * @see ITG3200_INTSTAT_RAW_DATA_READY_BIT
  */
 uint8_t ITG3200::getIntDataReadyStatus() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_INT_STATUS, ITG3200_INTSTAT_RAW_DATA_READY_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_INT_STATUS, ITG3200_INTSTAT_RAW_DATA_READY_BIT, buffer);
     return buffer[0];
 }
 
@@ -339,7 +343,7 @@ uint8_t ITG3200::getIntDataReadyStatus() {
  * @see ITG3200_RA_TEMP_OUT_H
  */
 int16_t ITG3200::getTemperature() {
-    pi2c->i2c_ReadBuf(devAddr, ITG3200_RA_TEMP_OUT_H, 2, buffer);
+    I2C::i2c_ReadBuf(devAddr, ITG3200_RA_TEMP_OUT_H, 2, buffer);
     return (((int16_t)buffer[0]) << 8) | buffer[1];
 }
 
@@ -352,7 +356,7 @@ int16_t ITG3200::getTemperature() {
  * @see ITG3200_RA_GYRO_XOUT_H
  */
 void ITG3200::getRotation(int16_t* x, int16_t* y, int16_t* z) {
-    pi2c->i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer);
+    I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer);
     *x = (((int16_t)buffer[0]) << 8) | buffer[1];
     *y = (((int16_t)buffer[2]) << 8) | buffer[3];
     *z = (((int16_t)buffer[4]) << 8) | buffer[5];
@@ -362,7 +366,7 @@ void ITG3200::getRotation(int16_t* x, int16_t* y, int16_t* z) {
  * @see ITG3200_RA_GYRO_XOUT_H
  */
 int16_t ITG3200::getRotationX() {
-    pi2c->i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 2, buffer);
+    I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 2, buffer);
     return (((int16_t)buffer[0]) << 8) | buffer[1];
 }
 /** Get Y-axis gyroscope reading.
@@ -370,7 +374,7 @@ int16_t ITG3200::getRotationX() {
  * @see ITG3200_RA_GYRO_YOUT_H
  */
 int16_t ITG3200::getRotationY() {
-    pi2c->i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_YOUT_H, 2, buffer);
+    I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_YOUT_H, 2, buffer);
     return (((int16_t)buffer[0]) << 8) | buffer[1];
 }
 /** Get Z-axis gyroscope reading.
@@ -378,7 +382,7 @@ int16_t ITG3200::getRotationY() {
  * @see ITG3200_RA_GYRO_ZOUT_H
  */
 int16_t ITG3200::getRotationZ() {
-    pi2c->i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_ZOUT_H, 2, buffer);
+    I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_ZOUT_H, 2, buffer);
     return (((int16_t)buffer[0]) << 8) | buffer[1];
 }
 
@@ -390,7 +394,7 @@ int16_t ITG3200::getRotationZ() {
  * @see ITG3200_PWR_H_RESET_BIT
  */
 void ITG3200::reset() {
-    pi2c->i2c_WriteBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_H_RESET_BIT, true);
+    I2C::i2c_WriteBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_H_RESET_BIT, true);
 }
 /** Get sleep mode status.
  * Setting the SLEEP bit in the register puts the device into very low power
@@ -404,7 +408,7 @@ void ITG3200::reset() {
  * @see ITG3200_PWR_SLEEP_BIT
  */
 uint8_t ITG3200::getSleepEnabled() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_SLEEP_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_SLEEP_BIT, buffer);
     return buffer[0];
 }
 /** Set sleep mode status.
@@ -414,7 +418,7 @@ uint8_t ITG3200::getSleepEnabled() {
  * @see ITG3200_PWR_SLEEP_BIT
  */
 void ITG3200::setSleepEnabled(uint8_t enabled) {
-    pi2c->i2c_WriteBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_SLEEP_BIT, enabled);
+    I2C::i2c_WriteBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_SLEEP_BIT, enabled);
 }
 /** Get X-axis standby enabled status.
  * If enabled, the X-axis will not gather or report data (or use power).
@@ -423,7 +427,7 @@ void ITG3200::setSleepEnabled(uint8_t enabled) {
  * @see ITG3200_PWR_STBY_XG_BIT
  */
 uint8_t ITG3200::getStandbyXEnabled() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_XG_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_XG_BIT, buffer);
     return buffer[0];
 }
 /** Set X-axis standby enabled status.
@@ -433,7 +437,7 @@ uint8_t ITG3200::getStandbyXEnabled() {
  * @see ITG3200_PWR_STBY_XG_BIT
  */
 void ITG3200::setStandbyXEnabled(uint8_t enabled) {
-    pi2c->i2c_WriteBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_XG_BIT, enabled);
+    I2C::i2c_WriteBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_XG_BIT, enabled);
 }
 /** Get Y-axis standby enabled status.
  * If enabled, the Y-axis will not gather or report data (or use power).
@@ -442,7 +446,7 @@ void ITG3200::setStandbyXEnabled(uint8_t enabled) {
  * @see ITG3200_PWR_STBY_YG_BIT
  */
 uint8_t ITG3200::getStandbyYEnabled() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_YG_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_YG_BIT, buffer);
     return buffer[0];
 }
 /** Set Y-axis standby enabled status.
@@ -452,7 +456,7 @@ uint8_t ITG3200::getStandbyYEnabled() {
  * @see ITG3200_PWR_STBY_YG_BIT
  */
 void ITG3200::setStandbyYEnabled(uint8_t enabled) {
-    pi2c->i2c_WriteBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_YG_BIT, enabled);
+    I2C::i2c_WriteBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_YG_BIT, enabled);
 }
 /** Get Z-axis standby enabled status.
  * If enabled, the Z-axis will not gather or report data (or use power).
@@ -461,7 +465,7 @@ void ITG3200::setStandbyYEnabled(uint8_t enabled) {
  * @see ITG3200_PWR_STBY_ZG_BIT
  */
 uint8_t ITG3200::getStandbyZEnabled() {
-    pi2c->i2c_ReadBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_ZG_BIT, buffer);
+    I2C::i2c_ReadBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_ZG_BIT, buffer);
     return buffer[0];
 }
 /** Set Z-axis standby enabled status.
@@ -471,7 +475,7 @@ uint8_t ITG3200::getStandbyZEnabled() {
  * @see ITG3200_PWR_STBY_ZG_BIT
  */
 void ITG3200::setStandbyZEnabled(uint8_t enabled) {
-    pi2c->i2c_WriteBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_ZG_BIT, enabled);
+    I2C::i2c_WriteBit(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_STBY_ZG_BIT, enabled);
 }
 /** Get clock source setting.
  * @return Current clock source setting
@@ -480,7 +484,7 @@ void ITG3200::setStandbyZEnabled(uint8_t enabled) {
  * @see ITG3200_PWR_CLK_SEL_LENGTH
  */
 uint8_t ITG3200::getClockSource() {
-    pi2c->i2c_ReadBits(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_CLK_SEL_BIT, ITG3200_PWR_CLK_SEL_LENGTH, buffer);
+    I2C::i2c_ReadBits(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_CLK_SEL_BIT, ITG3200_PWR_CLK_SEL_LENGTH, buffer);
     return buffer[0];
 }
 /** Set clock source setting.
@@ -506,5 +510,5 @@ uint8_t ITG3200::getClockSource() {
  * @see ITG3200_PWR_CLK_SEL_LENGTH
  */
 void ITG3200::setClockSource(uint8_t source) {
-    pi2c->i2c_WriteBits(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_CLK_SEL_BIT, ITG3200_PWR_CLK_SEL_LENGTH, source);
+    I2C::i2c_WriteBits(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_CLK_SEL_BIT, ITG3200_PWR_CLK_SEL_LENGTH, source);
 }

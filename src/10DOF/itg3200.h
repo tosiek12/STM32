@@ -125,9 +125,8 @@ class ITG3200 {
 		/** Default constructor, uses default I2C address.
 		 * @see ITG3200_DEFAULT_ADDRESS
 		 */
-		ITG3200(I2C * _pi2c = (I2C *) NULL, uint8_t address = ITG3200_DEFAULT_ADDRESS) {
+		ITG3200(uint8_t address = ITG3200_DEFAULT_ADDRESS) {
 			devAddr = address;
-			pi2c = _pi2c;
 		}
 
 		struct OutXYZTypeDef {
@@ -198,7 +197,6 @@ class ITG3200 {
     private:
         uint8_t devAddr;
         uint8_t buffer[6];
-    	I2C *pi2c;
 };
 
 #endif /* ITG3200_H_ */

@@ -7,6 +7,7 @@
 
 #include "I2C.h"
 
-I2C::I2C() {
-}
+// Create static fields	//
+uint8_t I2C::initialized = 0;
+I2C_HandleTypeDef I2C::hi2c;
 

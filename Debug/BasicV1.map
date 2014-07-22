@@ -983,10 +983,6 @@ Discarded input sections
  .bss           0x00000000        0x0 ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
  .text.HAL_GPIO_DeInit
                 0x00000000       0xc0 ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
- .text.HAL_GPIO_ReadPin
-                0x00000000       0x74 ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
- .text.HAL_GPIO_TogglePin
-                0x00000000       0x6c ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
  .text.HAL_GPIO_EXTI_Callback
                 0x00000000        0x4 ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
  .text.HAL_GPIO_EXTI_IRQHandler
@@ -1122,12 +1118,16 @@ Discarded input sections
                 0x00000000       0x24 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
  .text.I2C_MasterRequestWrite
                 0x00000000       0x90 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+ .text.I2C_MasterRequestRead
+                0x00000000       0xe4 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
  .text.HAL_I2C_MspDeInit
                 0x00000000        0x4 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
  .text.HAL_I2C_DeInit
                 0x00000000       0x5c ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
  .text.HAL_I2C_Master_Transmit
                 0x00000000      0x10c ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Receive
+                0x00000000      0x21c ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
  .text.HAL_I2C_Slave_Transmit
                 0x00000000      0x13c ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
  .text.HAL_I2C_Slave_Receive
@@ -4554,95 +4554,95 @@ Discarded input sections
  .data          0x00000000        0x0 ./src/10DOF/adxl345.o
  .bss           0x00000000        0x0 ./src/10DOF/adxl345.o
  .text._ZN7ADXL34514testConnectionEv
-                0x00000000       0x38 ./src/10DOF/adxl345.o
+                0x00000000       0x44 ./src/10DOF/adxl345.o
  .text._ZN7ADXL34513ReadTapThreshEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
+                0x00000000       0x34 ./src/10DOF/adxl345.o
  .text._ZN7ADXL34514WriteTapThreshEh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34511ReadXOffSetEPa
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34511ReadYOffSetEPa
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34511ReadZOffSetEPa
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34513ReadXYZOffSetEPaS0_S0_
-                0x00000000       0x60 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34512WriteXOffSetEa
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34512WriteYOffSetEa
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34512WriteZOffSetEa
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34514WriteXYZOffSetEPaS0_S0_
-                0x00000000       0x68 ./src/10DOF/adxl345.o
- .text._ZN7ADXL3457ReadDurEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL3458WriteDurEh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL3457ReadLatEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL3458WriteLatEh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34510ReadWindowEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34511WriteWindowEh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL3457ReadActEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL3458WriteActEh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34515ReadThreshInactEPa
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34516WriteThreshInactEa
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34513ReadTimeInactEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34514WriteTimeInactEh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL3459WriteACDCEhhhhhhhh
-                0x00000000       0x48 ./src/10DOF/adxl345.o
- .text._ZN7ADXL3458ReadACDCEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34512ReadThreshFFEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34513WriteThreshFFEh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34510ReadTimeFFEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34511WriteTimeFFEh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34511ReadTapAxesEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34512WriteTapAxesEhhhh
-                0x00000000       0x30 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34516ReadActTapStatusEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34510ReadBWRateEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34511WriteBWRateEhh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34510ReadPWRCtlEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34511WritePWRCtlEhhhhh
                 0x00000000       0x38 ./src/10DOF/adxl345.o
- .text._ZN7ADXL34514WriteINTEnableEhhhhhhhh
+ .text._ZN7ADXL34511ReadXOffSetEPa
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34511ReadYOffSetEPa
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34511ReadZOffSetEPa
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34513ReadXYZOffSetEPaS0_S0_
+                0x00000000       0x74 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34512WriteXOffSetEa
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34512WriteYOffSetEa
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34512WriteZOffSetEa
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34514WriteXYZOffSetEPaS0_S0_
+                0x00000000       0x88 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL3457ReadDurEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL3458WriteDurEh
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL3457ReadLatEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL3458WriteLatEh
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34510ReadWindowEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34511WriteWindowEh
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL3457ReadActEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL3458WriteActEh
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34515ReadThreshInactEPa
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34516WriteThreshInactEa
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34513ReadTimeInactEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34514WriteTimeInactEh
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL3459WriteACDCEhhhhhhhh
+                0x00000000       0x58 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL3458ReadACDCEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34512ReadThreshFFEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34513WriteThreshFFEh
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34510ReadTimeFFEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34511WriteTimeFFEh
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34511ReadTapAxesEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34512WriteTapAxesEhhhh
+                0x00000000       0x40 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34516ReadActTapStatusEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34510ReadBWRateEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34511WriteBWRateEhh
+                0x00000000       0x38 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34510ReadPWRCtlEPh
+                0x00000000       0x34 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34511WritePWRCtlEhhhhh
                 0x00000000       0x48 ./src/10DOF/adxl345.o
+ .text._ZN7ADXL34514WriteINTEnableEhhhhhhhh
+                0x00000000       0x58 ./src/10DOF/adxl345.o
  .text._ZN7ADXL34513ReadINTEnableEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
+                0x00000000       0x34 ./src/10DOF/adxl345.o
  .text._ZN7ADXL34513ReadINTSourceEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
+                0x00000000       0x34 ./src/10DOF/adxl345.o
  .text._ZN7ADXL34514ReadDataFormatEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
+                0x00000000       0x34 ./src/10DOF/adxl345.o
  .text._ZN7ADXL34515WriteDataFormatEhhhhhh
-                0x00000000       0x3c ./src/10DOF/adxl345.o
+                0x00000000       0x4c ./src/10DOF/adxl345.o
  .text._ZN7ADXL3457ReadXYZEPsS0_S0_
-                0x00000000       0x54 ./src/10DOF/adxl345.o
+                0x00000000       0x60 ./src/10DOF/adxl345.o
  .text._ZN7ADXL34511ReadFIFOCtlEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
+                0x00000000       0x34 ./src/10DOF/adxl345.o
  .text._ZN7ADXL34512WriteFIFOCtlEhhh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
+                0x00000000       0x3c ./src/10DOF/adxl345.o
  .text._ZN7ADXL34514ReadFIFOStatusEPh
-                0x00000000       0x28 ./src/10DOF/adxl345.o
+                0x00000000       0x34 ./src/10DOF/adxl345.o
  .debug_macro   0x00000000      0x898 ./src/10DOF/adxl345.o
  .debug_macro   0x00000000       0x28 ./src/10DOF/adxl345.o
  .debug_macro   0x00000000       0x28 ./src/10DOF/adxl345.o
@@ -4816,7 +4816,7 @@ Discarded input sections
  .debug_aranges
                 0x00000000       0x50 ./src/10DOF/hmc5883l.o
  .debug_ranges  0x00000000       0x40 ./src/10DOF/hmc5883l.o
- .debug_macro   0x00000000      0x40d ./src/10DOF/hmc5883l.o
+ .debug_macro   0x00000000      0x407 ./src/10DOF/hmc5883l.o
  .debug_macro   0x00000000      0x898 ./src/10DOF/hmc5883l.o
  .debug_macro   0x00000000       0x28 ./src/10DOF/hmc5883l.o
  .debug_macro   0x00000000       0x28 ./src/10DOF/hmc5883l.o
@@ -4891,7 +4891,7 @@ Discarded input sections
  .debug_macro   0x00000000      0x16c ./src/10DOF/hmc5883l.o
  .debug_macro   0x00000000       0x64 ./src/10DOF/hmc5883l.o
  .debug_macro   0x00000000       0x10 ./src/10DOF/hmc5883l.o
- .debug_macro   0x00000000      0x178 ./src/10DOF/hmc5883l.o
+ .debug_macro   0x00000000      0x17e ./src/10DOF/hmc5883l.o
  .debug_macro   0x00000000      0x378 ./src/10DOF/hmc5883l.o
  .debug_line    0x00000000      0x9ab ./src/10DOF/hmc5883l.o
  .debug_str     0x00000000    0x7e585 ./src/10DOF/hmc5883l.o
@@ -4977,76 +4977,78 @@ Discarded input sections
  .text          0x00000000        0x0 ./src/10DOF/itg3200.o
  .data          0x00000000        0x0 ./src/10DOF/itg3200.o
  .bss           0x00000000        0x0 ./src/10DOF/itg3200.o
+ .text._ZN7ITG320014testConnectionEv
+                0x00000000       0x44 ./src/10DOF/itg3200.o
+ .text._ZN7ITG320011getDeviceIDEv
+                0x00000000       0x38 ./src/10DOF/itg3200.o
  .text._ZN7ITG320011setDeviceIDEh
-                0x00000000       0x60 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG32007getRateEv
-                0x00000000       0x2c ./src/10DOF/itg3200.o
+                0x00000000       0x38 ./src/10DOF/itg3200.o
  .text._ZN7ITG32007setRateEh
-                0x00000000       0x2c ./src/10DOF/itg3200.o
+                0x00000000       0x38 ./src/10DOF/itg3200.o
  .text._ZN7ITG320017getFullScaleRangeEv
-                0x00000000       0x38 ./src/10DOF/itg3200.o
+                0x00000000       0x4c ./src/10DOF/itg3200.o
  .text._ZN7ITG320016getDLPFBandwidthEv
-                0x00000000       0x38 ./src/10DOF/itg3200.o
+                0x00000000       0x4c ./src/10DOF/itg3200.o
  .text._ZN7ITG320016setDLPFBandwidthEh
-                0x00000000       0x60 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG320016getInterruptModeEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320016setInterruptModeEh
-                0x00000000       0x64 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG320017getInterruptDriveEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320017setInterruptDriveEh
-                0x00000000       0x64 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG320017getInterruptLatchEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320017setInterruptLatchEh
-                0x00000000       0x64 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG320022getInterruptLatchClearEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320022setInterruptLatchClearEh
-                0x00000000       0x64 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG320024getIntDeviceReadyEnabledEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320024setIntDeviceReadyEnabledEh
-                0x00000000       0x64 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG320022getIntDataReadyEnabledEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320022setIntDataReadyEnabledEh
-                0x00000000       0x64 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG320023getIntDeviceReadyStatusEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320021getIntDataReadyStatusEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320014getTemperatureEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
- .text._ZN7ITG320011getRotationEPsS0_S0_
-                0x00000000       0x48 ./src/10DOF/itg3200.o
+                0x00000000       0x3c ./src/10DOF/itg3200.o
  .text._ZN7ITG320012getRotationXEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x3c ./src/10DOF/itg3200.o
  .text._ZN7ITG320012getRotationYEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x3c ./src/10DOF/itg3200.o
  .text._ZN7ITG320012getRotationZEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x3c ./src/10DOF/itg3200.o
  .text._ZN7ITG32005resetEv
-                0x00000000       0x54 ./src/10DOF/itg3200.o
+                0x00000000       0x68 ./src/10DOF/itg3200.o
  .text._ZN7ITG320015getSleepEnabledEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320015setSleepEnabledEh
-                0x00000000       0x64 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG320018getStandbyXEnabledEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320018setStandbyXEnabledEh
-                0x00000000       0x64 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG320018getStandbyYEnabledEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320018setStandbyYEnabledEh
-                0x00000000       0x64 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG320018getStandbyZEnabledEv
-                0x00000000       0x30 ./src/10DOF/itg3200.o
+                0x00000000       0x40 ./src/10DOF/itg3200.o
  .text._ZN7ITG320018setStandbyZEnabledEh
-                0x00000000       0x64 ./src/10DOF/itg3200.o
+                0x00000000       0x78 ./src/10DOF/itg3200.o
  .text._ZN7ITG320014getClockSourceEv
-                0x00000000       0x38 ./src/10DOF/itg3200.o
+                0x00000000       0x4c ./src/10DOF/itg3200.o
  .debug_macro   0x00000000      0x898 ./src/10DOF/itg3200.o
  .debug_macro   0x00000000       0x28 ./src/10DOF/itg3200.o
  .debug_macro   0x00000000       0x28 ./src/10DOF/itg3200.o
@@ -5121,7 +5123,6 @@ Discarded input sections
  .debug_macro   0x00000000      0x16c ./src/10DOF/itg3200.o
  .debug_macro   0x00000000       0x64 ./src/10DOF/itg3200.o
  .debug_macro   0x00000000       0x10 ./src/10DOF/itg3200.o
- .debug_macro   0x00000000      0x178 ./src/10DOF/itg3200.o
  .group         0x00000000        0x8 ./src/BlinkLed.o
  .group         0x00000000        0x8 ./src/BlinkLed.o
  .group         0x00000000        0x8 ./src/BlinkLed.o
@@ -5538,7 +5539,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x28 ./src/main.o
  .debug_macro   0x00000000       0x64 ./src/main.o
  .debug_macro   0x00000000       0x10 ./src/main.o
- .debug_macro   0x00000000      0x178 ./src/main.o
+ .debug_macro   0x00000000      0x17e ./src/main.o
  .debug_macro   0x00000000      0x378 ./src/main.o
  .debug_macro   0x00000000       0x10 ./src/main.o
  .text          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libstdc++_s.a(del_op.o)
@@ -5791,7 +5792,7 @@ END GROUP
                 0x2001fc00                __Main_Stack_Limit = (__stack - __Main_Stack_Size)
                 0x2001fc00                PROVIDE (_Main_Stack_Limit, __Main_Stack_Limit)
                 0x00000100                _Minimum_Stack_Size = 0x100
-                0x2000021c                PROVIDE (_Heap_Begin, _end_noinit)
+                0x20000220                PROVIDE (_Heap_Begin, _end_noinit)
                 0x2001fc00                PROVIDE (_Heap_Limit, (__stack - __Main_Stack_Size))
 
 .isr_vector     0x08000000      0x2cc
@@ -5901,7 +5902,7 @@ END GROUP
                 0x080002c8                DMA1_Stream3_IRQHandler
                 0x080002cc                . = ALIGN (0x4)
 
-.inits          0x080002cc        0x4
+.inits          0x080002cc        0x0
                 0x080002cc                . = ALIGN (0x4)
  *(.init)
  *(.fini)
@@ -5915,21 +5916,20 @@ END GROUP
                 0x080002cc                PROVIDE (__init_array_start, .)
  *(SORT(.init_array.*))
  *(.init_array)
- .init_array    0x080002cc        0x4 ./src/10DOF/IMU.o
-                0x080002d0                PROVIDE (__init_array_end, .)
-                0x080002d0                . = ALIGN (0x4)
-                0x080002d0                PROVIDE (__fini_array_start, .)
+                0x080002cc                PROVIDE (__init_array_end, .)
+                0x080002cc                . = ALIGN (0x4)
+                0x080002cc                PROVIDE (__fini_array_start, .)
  *(SORT(.fini_array.*))
  *(.fini_array)
-                0x080002d0                PROVIDE (__fini_array_end, .)
-                0x080002d0                . = ALIGN (0x4)
+                0x080002cc                PROVIDE (__fini_array_end, .)
+                0x080002cc                . = ALIGN (0x4)
 
-.flashtext      0x080002d0        0x0
-                0x080002d0                . = ALIGN (0x4)
+.flashtext      0x080002cc        0x0
+                0x080002cc                . = ALIGN (0x4)
  *(.flashtext .flashtext.*)
-                0x080002d0                . = ALIGN (0x4)
+                0x080002cc                . = ALIGN (0x4)
 
-.text           0x080002d0     0x4225
+.text           0x080002d0     0x40d5
                 0x080002d0                . = ALIGN (0x4)
  *(.text .text.*)
  .text.HAL_MspInit
@@ -5959,310 +5959,301 @@ END GROUP
  .text.HAL_GPIO_Init
                 0x0800042c      0x310 ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
                 0x0800042c                HAL_GPIO_Init
+ .text.HAL_GPIO_ReadPin
+                0x0800073c       0x74 ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
+                0x0800073c                HAL_GPIO_ReadPin
  .text.HAL_GPIO_WritePin
-                0x0800073c       0x80 ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
-                0x0800073c                HAL_GPIO_WritePin
+                0x080007b0       0x80 ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
+                0x080007b0                HAL_GPIO_WritePin
+ .text.HAL_GPIO_TogglePin
+                0x08000830       0x6c ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
+                0x08000830                HAL_GPIO_TogglePin
  .text.I2C_WaitOnMasterAddressFlagUntilTimeout
-                0x080007bc       0x8c ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+                0x0800089c       0x8c ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
  .text.I2C_WaitOnFlagUntilTimeout
-                0x08000848       0xa8 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
- .text.I2C_MasterRequestRead
-                0x080008f0       0xe4 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+                0x08000928       0xa8 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
  .text.I2C_RequestMemoryWrite
-                0x080009d4       0xac ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+                0x080009d0       0xac ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
  .text.I2C_RequestMemoryRead
-                0x08000a80      0x110 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+                0x08000a7c      0x110 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
  .text.HAL_I2C_MspInit
-                0x08000b90        0x4 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
-                0x08000b90                HAL_I2C_MspInit
+                0x08000b8c        0x4 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+                0x08000b8c                HAL_I2C_MspInit
  .text.HAL_I2C_Init
-                0x08000b94      0x1e4 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
-                0x08000b94                HAL_I2C_Init
- .text.HAL_I2C_Master_Receive
-                0x08000d78      0x21c ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
-                0x08000d78                HAL_I2C_Master_Receive
+                0x08000b90      0x1e4 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+                0x08000b90                HAL_I2C_Init
  .text.HAL_I2C_Mem_Write
-                0x08000f94      0x130 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
-                0x08000f94                HAL_I2C_Mem_Write
+                0x08000d74      0x130 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+                0x08000d74                HAL_I2C_Mem_Write
  .text.HAL_I2C_Mem_Read
-                0x080010c4      0x250 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
-                0x080010c4                HAL_I2C_Mem_Read
+                0x08000ea4      0x250 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+                0x08000ea4                HAL_I2C_Mem_Read
  .text.HAL_I2C_IsDeviceReady
-                0x08001314      0x148 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
-                0x08001314                HAL_I2C_IsDeviceReady
+                0x080010f4      0x148 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+                0x080010f4                HAL_I2C_IsDeviceReady
  .text.HAL_RCC_OscConfig
-                0x0800145c      0x48c ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
-                0x0800145c                HAL_RCC_OscConfig
+                0x0800123c      0x48c ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
+                0x0800123c                HAL_RCC_OscConfig
  .text.HAL_RCC_GetSysClockFreq
-                0x080018e8       0x90 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
-                0x080018e8                HAL_RCC_GetSysClockFreq
+                0x080016c8       0x90 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
+                0x080016c8                HAL_RCC_GetSysClockFreq
  .text.HAL_RCC_GetHCLKFreq
-                0x08001978       0x38 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
-                0x08001978                HAL_RCC_GetHCLKFreq
+                0x08001758       0x38 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
+                0x08001758                HAL_RCC_GetHCLKFreq
  .text.HAL_RCC_ClockConfig
-                0x080019b0      0x2f4 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
-                0x080019b0                HAL_RCC_ClockConfig
+                0x08001790      0x2f4 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
+                0x08001790                HAL_RCC_ClockConfig
  .text.HAL_RCC_GetPCLK1Freq
-                0x08001ca4       0x30 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
-                0x08001ca4                HAL_RCC_GetPCLK1Freq
+                0x08001a84       0x30 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
+                0x08001a84                HAL_RCC_GetPCLK1Freq
  .text.SPI_WaitOnFlagUntilTimeout
-                0x08001cd4       0xdc ./system/src/stm32f4-hal/stm32f4xx_hal_spi.o
+                0x08001ab4       0xdc ./system/src/stm32f4-hal/stm32f4xx_hal_spi.o
  .text.HAL_SPI_TransmitReceive
-                0x08001db0      0x358 ./system/src/stm32f4-hal/stm32f4xx_hal_spi.o
-                0x08001db0                HAL_SPI_TransmitReceive
+                0x08001b90      0x358 ./system/src/stm32f4-hal/stm32f4xx_hal_spi.o
+                0x08001b90                HAL_SPI_TransmitReceive
  .text.HAL_TIM_Base_MspInit
-                0x08002108        0x4 ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
-                0x08002108                HAL_TIM_Base_MspInit
+                0x08001ee8        0x4 ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
+                0x08001ee8                HAL_TIM_Base_MspInit
  .text.HAL_TIM_Base_Start_IT
-                0x0800210c       0x9c ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
-                0x0800210c                HAL_TIM_Base_Start_IT
+                0x08001eec       0x9c ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
+                0x08001eec                HAL_TIM_Base_Start_IT
  .text.TIM_Base_SetConfig
-                0x080021a8      0x118 ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
-                0x080021a8                TIM_Base_SetConfig
+                0x08001f88      0x118 ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
+                0x08001f88                TIM_Base_SetConfig
  .text.HAL_TIM_Base_Init
-                0x080022c0       0xe8 ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
-                0x080022c0                HAL_TIM_Base_Init
- .text._exit    0x080023a8        0x4 ./system/src/newlib/_exit.o
-                0x080023a8                _exit
- .text.abort    0x080023ac       0x14 ./system/src/newlib/_exit.o
-                0x080023ac                abort
- .text._sbrk    0x080023c0       0x44 ./system/src/newlib/_sbrk.o
-                0x080023c0                _sbrk
+                0x080020a0       0xe8 ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
+                0x080020a0                HAL_TIM_Base_Init
+ .text._exit    0x08002188        0x4 ./system/src/newlib/_exit.o
+                0x08002188                _exit
+ .text.abort    0x0800218c       0x14 ./system/src/newlib/_exit.o
+                0x0800218c                abort
+ .text._sbrk    0x080021a0       0x44 ./system/src/newlib/_sbrk.o
+                0x080021a0                _sbrk
  .text.__initialize_args
-                0x08002404       0x10 ./system/src/newlib/_syscalls.o
-                0x08002404                __initialize_args
+                0x080021e4       0x10 ./system/src/newlib/_syscalls.o
+                0x080021e4                __initialize_args
  .text.assert_failed
-                0x08002414       0x18 ./system/src/newlib/assert.o
-                0x08002414                assert_failed
+                0x080021f4       0x18 ./system/src/newlib/assert.o
+                0x080021f4                assert_failed
  .text.trace_printf
-                0x0800242c       0x34 ./system/src/diag/Trace.o
-                0x0800242c                trace_printf
+                0x0800220c       0x34 ./system/src/diag/Trace.o
+                0x0800220c                trace_printf
  .text.trace_puts
-                0x08002460       0x20 ./system/src/diag/Trace.o
-                0x08002460                trace_puts
+                0x08002240       0x20 ./system/src/diag/Trace.o
+                0x08002240                trace_puts
  .text._trace_write_itm
-                0x08002480       0x3c ./system/src/diag/trace_impl.o
+                0x08002260       0x3c ./system/src/diag/trace_impl.o
  .text.trace_write
-                0x080024bc        0x8 ./system/src/diag/trace_impl.o
-                0x080024bc                trace_write
+                0x0800229c        0x8 ./system/src/diag/trace_impl.o
+                0x0800229c                trace_write
  .text.SystemInit
-                0x080024c4       0x4c ./system/src/cmsis/system_stm32f4xx.o
-                0x080024c4                SystemInit
+                0x080022a4       0x4c ./system/src/cmsis/system_stm32f4xx.o
+                0x080022a4                SystemInit
  .text._ZN8NokiaLCD14LCD_write_byteEhh
-                0x08002510       0xa8 ./src/NokiaLCD/nokiaLCD.o
-                0x08002510                NokiaLCD::LCD_write_byte(unsigned char, unsigned char)
+                0x080022f0       0xa8 ./src/NokiaLCD/nokiaLCD.o
+                0x080022f0                NokiaLCD::LCD_write_byte(unsigned char, unsigned char)
  .text._ZN8NokiaLCD9WriteDataEh
-                0x080025b8       0x30 ./src/NokiaLCD/nokiaLCD.o
-                0x080025b8                NokiaLCD::WriteData(unsigned char)
+                0x08002398       0x30 ./src/NokiaLCD/nokiaLCD.o
+                0x08002398                NokiaLCD::WriteData(unsigned char)
  .text._ZN8NokiaLCD5ClearEv
-                0x080025e8       0x24 ./src/NokiaLCD/nokiaLCD.o
-                0x080025e8                NokiaLCD::Clear()
+                0x080023c8       0x24 ./src/NokiaLCD/nokiaLCD.o
+                0x080023c8                NokiaLCD::Clear()
  .text._ZN8NokiaLCD9ClearLineEh
-                0x0800260c       0x34 ./src/NokiaLCD/nokiaLCD.o
-                0x0800260c                NokiaLCD::ClearLine(unsigned char)
+                0x080023ec       0x34 ./src/NokiaLCD/nokiaLCD.o
+                0x080023ec                NokiaLCD::ClearLine(unsigned char)
  .text._ZN8NokiaLCD11WriteTextXYEPchh
-                0x08002640       0x38 ./src/NokiaLCD/nokiaLCD.o
-                0x08002640                NokiaLCD::WriteTextXY(char*, unsigned char, unsigned char)
+                0x08002420       0x38 ./src/NokiaLCD/nokiaLCD.o
+                0x08002420                NokiaLCD::WriteTextXY(char*, unsigned char, unsigned char)
  .text._ZN8NokiaLCD14draw_bmp_pixelEhhPKhhh
-                0x08002678       0x8c ./src/NokiaLCD/nokiaLCD.o
-                0x08002678                NokiaLCD::draw_bmp_pixel(unsigned char, unsigned char, unsigned char const*, unsigned char, unsigned char)
+                0x08002458       0x8c ./src/NokiaLCD/nokiaLCD.o
+                0x08002458                NokiaLCD::draw_bmp_pixel(unsigned char, unsigned char, unsigned char const*, unsigned char, unsigned char)
  .text.EXTI9_5_IRQHandler
-                0x08002704       0xb4 ./src/GPIO/gpio.o
-                0x08002704                EXTI9_5_IRQHandler
+                0x080024e4       0xb4 ./src/GPIO/gpio.o
+                0x080024e4                EXTI9_5_IRQHandler
  .text.TIM2_IRQHandler
-                0x080027b8       0xb8 ./src/GPIO/gpio.o
-                0x080027b8                TIM2_IRQHandler
+                0x08002598       0xb8 ./src/GPIO/gpio.o
+                0x08002598                TIM2_IRQHandler
  .text.SysTick_Handler
-                0x08002870       0x1c ./src/Delay/delay.o
-                0x08002870                SysTick_Handler
+                0x08002650       0x1c ./src/Delay/delay.o
+                0x08002650                SysTick_Handler
  .text._Z27SysTick_UpdateAccelerometerv
-                0x0800288c      0x148 ./src/Accelerometer/accelerometer.o
-                0x0800288c                SysTick_UpdateAccelerometer()
+                0x0800266c      0x148 ./src/Accelerometer/accelerometer.o
+                0x0800266c                SysTick_UpdateAccelerometer()
  .text._Z28LIS3DSH_Timeout_UserCallbackv
-                0x080029d4        0x4 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
-                0x080029d4                LIS3DSH_Timeout_UserCallback()
+                0x080027b4        0x4 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
+                0x080027b4                LIS3DSH_Timeout_UserCallback()
  .text._ZL17_LIS3DSH_SendByteh
-                0x080029d8       0x58 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
+                0x080027b8       0x58 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
  .text._Z16LIS3DSH_ReadByteh
-                0x08002a30       0x34 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
-                0x08002a30                LIS3DSH_ReadByte(unsigned char)
+                0x08002810       0x34 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
+                0x08002810                LIS3DSH_ReadByte(unsigned char)
  .text._ZL24LIS3DSH_CalcAccelerationP21LIS3DSH_OutXYZTypeDef
-                0x08002a64      0x1f4 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
+                0x08002844      0x1f4 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
  .text._Z12LIS3DSH_ReadPhht
-                0x08002c58       0x24 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
-                0x08002c58                LIS3DSH_Read(unsigned char*, unsigned char, unsigned short)
+                0x08002a38       0x24 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
+                0x08002a38                LIS3DSH_Read(unsigned char*, unsigned char, unsigned short)
  .text._Z16LIS3DSH_ReadAxesP21LIS3DSH_OutXYZTypeDef
-                0x08002c7c       0x40 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
-                0x08002c7c                LIS3DSH_ReadAxes(LIS3DSH_OutXYZTypeDef*)
- .text._ZN3I2CC2Ev
-                0x08002cbc        0x4 ./src/10DOF/I2C.o
-                0x08002cbc                I2C::I2C()
-                0x08002cbc                I2C::I2C()
+                0x08002a5c       0x40 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
+                0x08002a5c                LIS3DSH_ReadAxes(LIS3DSH_OutXYZTypeDef*)
  .text._ZN3IMUD2Ev
-                0x08002cc0        0xc ./src/10DOF/IMU.o
-                0x08002cc0                IMU::~IMU()
-                0x08002cc0                IMU::~IMU()
+                0x08002a9c        0xc ./src/10DOF/IMU.o
+                0x08002a9c                IMU::~IMU()
+                0x08002a9c                IMU::~IMU()
  .text._ZN3IMUD0Ev
-                0x08002ccc       0x14 ./src/10DOF/IMU.o
-                0x08002ccc                IMU::~IMU()
- .text._Z41__static_initialization_and_destruction_0ii
-                0x08002ce0       0x1c ./src/10DOF/IMU.o
- .text._GLOBAL__sub_I_i2c
-                0x08002cfc       0x10 ./src/10DOF/IMU.o
+                0x08002aa8       0x14 ./src/10DOF/IMU.o
+                0x08002aa8                IMU::~IMU()
  .text._ZN7ADXL34510initializeEv
-                0x08002d0c       0x90 ./src/10DOF/adxl345.o
-                0x08002d0c                ADXL345::initialize()
+                0x08002abc       0x84 ./src/10DOF/adxl345.o
+                0x08002abc                ADXL345::initialize()
  .text._ZN7ADXL3454testER8NokiaLCD
-                0x08002d9c      0x140 ./src/10DOF/adxl345.o
-                0x08002d9c                ADXL345::test(NokiaLCD&)
- .text._ZN7ITG32004testER8NokiaLCD
-                0x08002edc      0x118 ./src/10DOF/itg3200.o
-                0x08002edc                ITG3200::test(NokiaLCD&)
- .text._ZN7ITG320011getDeviceIDEv
-                0x08002ff4       0x2c ./src/10DOF/itg3200.o
-                0x08002ff4                ITG3200::getDeviceID()
- .text._ZN7ITG320014testConnectionEv
-                0x08003020       0x10 ./src/10DOF/itg3200.o
-                0x08003020                ITG3200::testConnection()
+                0x08002b40      0x150 ./src/10DOF/adxl345.o
+                0x08002b40                ADXL345::test(NokiaLCD&)
  .text._ZN7ITG320017setFullScaleRangeEh
-                0x08003030       0x60 ./src/10DOF/itg3200.o
-                0x08003030                ITG3200::setFullScaleRange(unsigned char)
+                0x08002c90       0x78 ./src/10DOF/itg3200.o
+                0x08002c90                ITG3200::setFullScaleRange(unsigned char)
+ .text._ZN7ITG320011getRotationEPsS0_S0_
+                0x08002d08       0x58 ./src/10DOF/itg3200.o
+                0x08002d08                ITG3200::getRotation(short*, short*, short*)
+ .text._ZN7ITG32004testER8NokiaLCD
+                0x08002d60      0x134 ./src/10DOF/itg3200.o
+                0x08002d60                ITG3200::test(NokiaLCD&)
  .text._ZN7ITG320014setClockSourceEh
-                0x08003090       0x60 ./src/10DOF/itg3200.o
-                0x08003090                ITG3200::setClockSource(unsigned char)
+                0x08002e94       0x78 ./src/10DOF/itg3200.o
+                0x08002e94                ITG3200::setClockSource(unsigned char)
  .text._ZN7ITG320010initializeEv
-                0x080030f0       0x20 ./src/10DOF/itg3200.o
-                0x080030f0                ITG3200::initialize()
+                0x08002f0c       0x14 ./src/10DOF/itg3200.o
+                0x08002f0c                ITG3200::initialize()
  .text._ZN8BlinkLed7powerUpEv
-                0x08003110       0x40 ./src/BlinkLed.o
-                0x08003110                BlinkLed::powerUp()
+                0x08002f20       0x40 ./src/BlinkLed.o
+                0x08002f20                BlinkLed::powerUp()
  .text.configure_system_clock
-                0x08003150       0x68 ./src/_initialize_hardware.o
-                0x08003150                configure_system_clock
+                0x08002f60       0x68 ./src/_initialize_hardware.o
+                0x08002f60                configure_system_clock
  .text.__initialize_hardware
-                0x080031b8       0x24 ./src/_initialize_hardware.o
-                0x080031b8                __initialize_hardware
+                0x08002fc8       0x24 ./src/_initialize_hardware.o
+                0x08002fc8                __initialize_hardware
  .text._ZN8NokiaLCDC2Ev
-                0x080031dc      0x150 ./src/main.o
-                0x080031dc                NokiaLCD::NokiaLCD()
-                0x080031dc                NokiaLCD::NokiaLCD()
+                0x08002fec      0x150 ./src/main.o
+                0x08002fec                NokiaLCD::NokiaLCD()
+                0x08002fec                NokiaLCD::NokiaLCD()
  .text._ZN3IMUC2Ev
-                0x0800332c      0x118 ./src/main.o
-                0x0800332c                IMU::IMU()
-                0x0800332c                IMU::IMU()
- .text.main     0x08003444      0x224 ./src/main.o
-                0x08003444                main
- .text._ZdlPv   0x08003668        0x8 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libstdc++_s.a(del_op.o)
-                0x08003668                operator delete(void*)
- .text.__errno  0x08003670        0xc c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-errno.o)
-                0x08003670                __errno
- .text.free     0x0800367c       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-malloc.o)
-                0x0800367c                free
- .text._free_r  0x0800368c       0x88 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-freer.o)
-                0x0800368c                _free_r
+                0x0800313c      0x1b0 ./src/main.o
+                0x0800313c                IMU::IMU()
+                0x0800313c                IMU::IMU()
+ .text.main     0x080032ec      0x228 ./src/main.o
+                0x080032ec                main
+ .text._ZdlPv   0x08003514        0x8 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libstdc++_s.a(del_op.o)
+                0x08003514                operator delete(void*)
+ .text.__errno  0x0800351c        0xc c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-errno.o)
+                0x0800351c                __errno
+ .text.free     0x08003528       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-malloc.o)
+                0x08003528                free
+ .text._free_r  0x08003538       0x88 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-freer.o)
+                0x08003538                _free_r
  .text._malloc_r
-                0x08003714       0xa8 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
-                0x08003714                _malloc_r
- .text._sbrk_r  0x080037bc       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sbrkr.o)
-                0x080037bc                _sbrk_r
- .text.sprintf  0x080037dc       0x48 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sprintf.o)
-                0x080037dc                siprintf
-                0x080037dc                sprintf
- .text.strlen   0x08003824       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strlen.o)
-                0x08003824                strlen
+                0x080035c0       0xa8 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
+                0x080035c0                _malloc_r
+ .text._sbrk_r  0x08003668       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sbrkr.o)
+                0x08003668                _sbrk_r
+ .text.sprintf  0x08003688       0x48 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sprintf.o)
+                0x08003688                siprintf
+                0x08003688                sprintf
+ .text.strlen   0x080036d0       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strlen.o)
+                0x080036d0                strlen
  .text.__ssputs_r
-                0x08003834       0xb8 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
-                0x08003834                __ssputs_r
+                0x080036e0       0xb8 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
+                0x080036e0                __ssputs_r
  .text._svfprintf_r
-                0x080038ec      0x1dc c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
-                0x080038ec                _svfiprintf_r
-                0x080038ec                _svfprintf_r
+                0x08003798      0x1dc c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
+                0x08003798                _svfiprintf_r
+                0x08003798                _svfprintf_r
  .text._printf_common
-                0x08003ac8       0xe4 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
-                0x08003ac8                _printf_common
+                0x08003974       0xe4 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
+                0x08003974                _printf_common
  .text._printf_i
-                0x08003bac      0x228 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
-                0x08003bac                _printf_i
+                0x08003a58      0x228 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
+                0x08003a58                _printf_i
  .text._vsnprintf_r
-                0x08003dd4       0x52 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vsnprintf.o)
-                0x08003dd4                _vsniprintf_r
-                0x08003dd4                _vsnprintf_r
- *fill*         0x08003e26        0x2 
+                0x08003c80       0x52 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vsnprintf.o)
+                0x08003c80                _vsniprintf_r
+                0x08003c80                _vsnprintf_r
+ *fill*         0x08003cd2        0x2 
  .text.vsnprintf
-                0x08003e28       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vsnprintf.o)
-                0x08003e28                vsniprintf
-                0x08003e28                vsnprintf
- .text.memchr   0x08003e48       0x1e c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memchr-stub.o)
-                0x08003e48                memchr
- .text.memcpy   0x08003e66       0x12 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memcpy-stub.o)
-                0x08003e66                memcpy
- .text.memmove  0x08003e78       0x36 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memmove.o)
-                0x08003e78                memmove
+                0x08003cd4       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vsnprintf.o)
+                0x08003cd4                vsniprintf
+                0x08003cd4                vsnprintf
+ .text.memchr   0x08003cf4       0x1e c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memchr-stub.o)
+                0x08003cf4                memchr
+ .text.memcpy   0x08003d12       0x12 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memcpy-stub.o)
+                0x08003d12                memcpy
+ .text.memmove  0x08003d24       0x36 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memmove.o)
+                0x08003d24                memmove
  .text._realloc_r
-                0x08003eae       0x4c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-reallocr.o)
-                0x08003eae                _realloc_r
+                0x08003d5a       0x4c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-reallocr.o)
+                0x08003d5a                _realloc_r
  .text._malloc_usable_size_r
-                0x08003efa       0x12 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-msizer.o)
-                0x08003efa                _malloc_usable_size_r
+                0x08003da6       0x12 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-msizer.o)
+                0x08003da6                _malloc_usable_size_r
  *(.rodata .rodata.*)
  .rodata.str1.4
-                0x08003f0c       0x31 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
+                0x08003db8       0x31 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
                                  0x34 (size before relaxing)
- *fill*         0x08003f3d        0x3 
+ *fill*         0x08003de9        0x3 
  .rodata.str1.4
-                0x08003f40       0x2f ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
+                0x08003dec       0x2f ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
                                  0x30 (size before relaxing)
- *fill*         0x08003f6f        0x1 
+ *fill*         0x08003e1b        0x1 
  .rodata.str1.4
-                0x08003f70       0x2e ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+                0x08003e1c       0x2e ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
                                  0x30 (size before relaxing)
- *fill*         0x08003f9e        0x2 
+ *fill*         0x08003e4a        0x2 
  .rodata.APBAHBPrescTable
-                0x08003fa0       0x10 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
-                0x08003fa0                APBAHBPrescTable
+                0x08003e4c       0x10 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
+                0x08003e4c                APBAHBPrescTable
  .rodata.str1.4
-                0x08003fb0       0x2e ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
+                0x08003e5c       0x2e ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
                                  0x30 (size before relaxing)
- *fill*         0x08003fde        0x2 
+ *fill*         0x08003e8a        0x2 
  .rodata.str1.4
-                0x08003fe0       0x2e ./system/src/stm32f4-hal/stm32f4xx_hal_spi.o
+                0x08003e8c       0x2e ./system/src/stm32f4-hal/stm32f4xx_hal_spi.o
                                  0x30 (size before relaxing)
- *fill*         0x0800400e        0x2 
+ *fill*         0x08003eba        0x2 
  .rodata.str1.4
-                0x08004010       0x2e ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
+                0x08003ebc       0x2e ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
                                  0x30 (size before relaxing)
- *fill*         0x0800403e        0x2 
+ *fill*         0x08003eea        0x2 
  .rodata.str1.4
-                0x08004040       0x14 ./system/src/newlib/_exit.o
+                0x08003eec       0x14 ./system/src/newlib/_exit.o
  .rodata.str1.4
-                0x08004054       0x6b ./system/src/newlib/assert.o
+                0x08003f00       0x6b ./system/src/newlib/assert.o
                                  0x70 (size before relaxing)
- *fill*         0x080040bf        0x1 
+ *fill*         0x08003f6b        0x1 
  .rodata.str1.4
-                0x080040c0       0x2d ./system/src/diag/Trace.o
+                0x08003f6c       0x2d ./system/src/diag/Trace.o
                                  0x30 (size before relaxing)
- *fill*         0x080040ed        0x3 
+ *fill*         0x08003f99        0x3 
  .rodata._ZL7font6x8
-                0x080040f0      0x228 ./src/NokiaLCD/nokiaLCD.o
+                0x08003f9c      0x228 ./src/NokiaLCD/nokiaLCD.o
+ *fill*         0x080041c4        0x4 
  .rodata._ZTV3IMU
-                0x08004318       0x10 ./src/10DOF/IMU.o
-                0x08004318                vtable for IMU
+                0x080041c8       0x10 ./src/10DOF/IMU.o
+                0x080041c8                vtable for IMU
  .rodata.str1.4
-                0x08004328       0x15 ./src/10DOF/adxl345.o
+                0x080041d8       0x15 ./src/10DOF/adxl345.o
                                  0x18 (size before relaxing)
  .rodata.str1.4
                 0x00000000       0x18 ./src/10DOF/itg3200.o
- *fill*         0x0800433d        0x3 
+ *fill*         0x080041ed        0x3 
  .rodata._ZL7AVR_bmp
-                0x08004340      0x160 ./src/main.o
+                0x080041f0      0x160 ./src/main.o
  .rodata.str1.4
-                0x080044a0       0x20 ./src/main.o
+                0x08004350       0x20 ./src/main.o
  .rodata.str1.1
-                0x080044c0        0x2 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-impure.o)
+                0x08004370        0x2 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-impure.o)
  .rodata.str1.1
-                0x080044c2       0x11 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
+                0x08004372       0x11 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
  .rodata.str1.1
-                0x080044d3       0x22 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
+                0x08004383       0x22 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
  *(vtable)
  *(.eh_frame*)
  *(.glue_7)
@@ -6270,31 +6261,31 @@ END GROUP
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
 
-.vfp11_veneer   0x080044f8        0x0
+.vfp11_veneer   0x080043a8        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x080044f8        0x0
+.v4_bx          0x080043a8        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
-.iplt           0x080044f8        0x0
+.iplt           0x080043a8        0x0
  .iplt          0x00000000        0x0 ./system/src/stm32f4-hal/stm32f4xx_hal.o
 
-.rel.dyn        0x080044f8        0x0
+.rel.dyn        0x080043a8        0x0
  .rel.iplt      0x00000000        0x0 ./system/src/stm32f4-hal/stm32f4xx_hal.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x080044f8                __exidx_start = .
+                0x080043a8                __exidx_start = .
 
 .ARM.exidx
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x080044f8                __exidx_end = .
-                0x080044f8                . = ALIGN (0x4)
-                0x080044f8                _etext = .
-                0x080044f8                __etext = .
-                0x080044f8                _sidata = _etext
+                0x080043a8                __exidx_end = .
+                0x080043a8                . = ALIGN (0x4)
+                0x080043a8                _etext = .
+                0x080043a8                __etext = .
+                0x080043a8                _sidata = _etext
 
-.data           0x20000000       0x7c load address 0x080044f8
+.data           0x20000000       0x7c load address 0x080043a8
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                __data_start__ = .
@@ -6320,10 +6311,10 @@ END GROUP
                 0x2000007c                _edata = .
                 0x2000007c                __data_end__ = .
 
-.igot.plt       0x2000007c        0x0 load address 0x08004574
+.igot.plt       0x2000007c        0x0 load address 0x08004424
  .igot.plt      0x00000000        0x0 ./system/src/stm32f4-hal/stm32f4xx_hal.o
 
-.bss            0x2000007c      0x1a0 load address 0x08004574
+.bss            0x2000007c      0x1a4 load address 0x08004424
                 0x2000007c                . = ALIGN (0x4)
                 0x2000007c                __bss_start__ = .
                 0x2000007c                _sbss = .
@@ -6384,39 +6375,44 @@ END GROUP
                 0x2000017e                yActual
  .bss._ZL26SPI_HandleTypeDefStructure
                 0x20000180       0x54 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
- .bss.i2c       0x200001d4       0x38 ./src/10DOF/IMU.o
-                0x200001d4                i2c
+ .bss._ZN3I2C4hi2cE
+                0x200001d4       0x38 ./src/10DOF/I2C.o
+                0x200001d4                I2C::hi2c
+ .bss._ZN3I2C11initializedE
+                0x2000020c        0x1 ./src/10DOF/I2C.o
+                0x2000020c                I2C::initialized
+ *fill*         0x2000020d        0x3 
  .bss.__malloc_sbrk_start
-                0x2000020c        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
-                0x2000020c                __malloc_sbrk_start
- .bss.__malloc_free_list
                 0x20000210        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
-                0x20000210                __malloc_free_list
+                0x20000210                __malloc_sbrk_start
+ .bss.__malloc_free_list
+                0x20000214        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
+                0x20000214                __malloc_free_list
  *(COMMON)
- COMMON         0x20000214        0x4 ./system/src/newlib/_syscalls.o
-                0x20000214                errno
+ COMMON         0x20000218        0x4 ./system/src/newlib/_syscalls.o
+                0x20000218                errno
  *(.bss_end .bss_end.*)
- .bss_end       0x20000218        0x4 ./system/src/newlib/_startup.o
-                0x2000021c                . = ALIGN (0x4)
-                0x2000021c                __bss_end__ = .
-                0x2000021c                _ebss = .
+ .bss_end       0x2000021c        0x4 ./system/src/newlib/_startup.o
+                0x20000220                . = ALIGN (0x4)
+                0x20000220                __bss_end__ = .
+                0x20000220                _ebss = .
 
-.noinit         0x2000021c        0x0
-                0x2000021c                . = ALIGN (0x4)
-                0x2000021c                _noinit = .
+.noinit         0x20000220        0x0
+                0x20000220                . = ALIGN (0x4)
+                0x20000220                _noinit = .
  *(.noinit .noinit.*)
-                0x2000021c                . = ALIGN (0x4)
-                0x2000021c                _end_noinit = .
-                0x2000021c                PROVIDE (end, _end_noinit)
-                0x2000021c                PROVIDE (_end, _end_noinit)
-                0x2000021c                PROVIDE (__end, _end_noinit)
-                0x2000021c                PROVIDE (__end__, _end_noinit)
+                0x20000220                . = ALIGN (0x4)
+                0x20000220                _end_noinit = .
+                0x20000220                PROVIDE (end, _end_noinit)
+                0x20000220                PROVIDE (_end, _end_noinit)
+                0x20000220                PROVIDE (__end, _end_noinit)
+                0x20000220                PROVIDE (__end__, _end_noinit)
 
-._check_stack   0x2000021c      0x100 load address 0x08004714
-                0x2000021c                . = ALIGN (0x4)
-                0x2000031c                . = (. + _Minimum_Stack_Size)
- *fill*         0x2000021c      0x100 
-                0x2000031c                . = ALIGN (0x4)
+._check_stack   0x20000220      0x100 load address 0x080045c8
+                0x20000220                . = ALIGN (0x4)
+                0x20000320                . = (. + _Minimum_Stack_Size)
+ *fill*         0x20000220      0x100 
+                0x20000320                . = ALIGN (0x4)
 
 .bss_CCMRAM
  *(.bss.CCMRAM .bss.CCMRAM.*)
@@ -6604,7 +6600,7 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000     0x1038
+.debug_aranges  0x00000000     0x1020
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0xa8 ./system/src/stm32f4-hal/stm32f4xx_hal.o
@@ -6651,24 +6647,24 @@ END GROUP
  .debug_aranges
                 0x00000be8       0x90 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
  .debug_aranges
-                0x00000c78       0x20 ./src/10DOF/I2C.o
+                0x00000c78       0x18 ./src/10DOF/I2C.o
  .debug_aranges
-                0x00000c98       0x38 ./src/10DOF/IMU.o
+                0x00000c90       0x28 ./src/10DOF/IMU.o
  .debug_aranges
-                0x00000cd0      0x190 ./src/10DOF/adxl345.o
+                0x00000cb8      0x190 ./src/10DOF/adxl345.o
  .debug_aranges
-                0x00000e60      0x160 ./src/10DOF/itg3200.o
+                0x00000e48      0x160 ./src/10DOF/itg3200.o
  .debug_aranges
-                0x00000fc0       0x20 ./src/BlinkLed.o
+                0x00000fa8       0x20 ./src/BlinkLed.o
  .debug_aranges
-                0x00000fe0       0x28 ./src/_initialize_hardware.o
+                0x00000fc8       0x28 ./src/_initialize_hardware.o
  .debug_aranges
-                0x00001008       0x30 ./src/main.o
+                0x00000ff0       0x30 ./src/main.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000    0x1d875
+.debug_info     0x00000000    0x1cece
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x556 ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_info    0x00000556      0xd74 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
@@ -6692,15 +6688,15 @@ END GROUP
  .debug_info    0x0000e59b      0x166 ./src/Delay/delay.o
  .debug_info    0x0000e701      0xd3c ./src/Accelerometer/accelerometer.o
  .debug_info    0x0000f43d     0x1115 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
- .debug_info    0x00010552      0x793 ./src/10DOF/I2C.o
- .debug_info    0x00010ce5     0x1c13 ./src/10DOF/IMU.o
- .debug_info    0x000128f8     0x3677 ./src/10DOF/adxl345.o
- .debug_info    0x00015f6f     0x3aea ./src/10DOF/itg3200.o
- .debug_info    0x00019a59      0x4dc ./src/BlinkLed.o
- .debug_info    0x00019f35      0x624 ./src/_initialize_hardware.o
- .debug_info    0x0001a559     0x331c ./src/main.o
+ .debug_info    0x00010552      0x75e ./src/10DOF/I2C.o
+ .debug_info    0x00010cb0     0x1582 ./src/10DOF/IMU.o
+ .debug_info    0x00012232     0x3442 ./src/10DOF/adxl345.o
+ .debug_info    0x00015674     0x3867 ./src/10DOF/itg3200.o
+ .debug_info    0x00018edb      0x4dc ./src/BlinkLed.o
+ .debug_info    0x000193b7      0x624 ./src/_initialize_hardware.o
+ .debug_info    0x000199db     0x34f3 ./src/main.o
 
-.debug_abbrev   0x00000000     0x3f50
+.debug_abbrev   0x00000000     0x3f0a
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x1b0 ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_abbrev  0x000001b0      0x2a9 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
@@ -6724,15 +6720,15 @@ END GROUP
  .debug_abbrev  0x00002060      0x138 ./src/Delay/delay.o
  .debug_abbrev  0x00002198      0x3ac ./src/Accelerometer/accelerometer.o
  .debug_abbrev  0x00002544      0x260 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
- .debug_abbrev  0x000027a4      0x1a1 ./src/10DOF/I2C.o
- .debug_abbrev  0x00002945      0x3fc ./src/10DOF/IMU.o
- .debug_abbrev  0x00002d41      0x47e ./src/10DOF/adxl345.o
- .debug_abbrev  0x000031bf      0x410 ./src/10DOF/itg3200.o
- .debug_abbrev  0x000035cf      0x1ec ./src/BlinkLed.o
- .debug_abbrev  0x000037bb      0x185 ./src/_initialize_hardware.o
- .debug_abbrev  0x00003940      0x610 ./src/main.o
+ .debug_abbrev  0x000027a4      0x19d ./src/10DOF/I2C.o
+ .debug_abbrev  0x00002941      0x34b ./src/10DOF/IMU.o
+ .debug_abbrev  0x00002c8c      0x48a ./src/10DOF/adxl345.o
+ .debug_abbrev  0x00003116      0x442 ./src/10DOF/itg3200.o
+ .debug_abbrev  0x00003558      0x1ec ./src/BlinkLed.o
+ .debug_abbrev  0x00003744      0x185 ./src/_initialize_hardware.o
+ .debug_abbrev  0x000038c9      0x641 ./src/main.o
 
-.debug_line     0x00000000    0x1094e
+.debug_line     0x00000000    0x109f3
  *(.debug_line)
  .debug_line    0x00000000      0x915 ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_line    0x00000915      0x981 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
@@ -6756,15 +6752,15 @@ END GROUP
  .debug_line    0x0000a37a      0x81e ./src/Delay/delay.o
  .debug_line    0x0000ab98      0xaae ./src/Accelerometer/accelerometer.o
  .debug_line    0x0000b646      0x96f ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
- .debug_line    0x0000bfb5      0x7cd ./src/10DOF/I2C.o
- .debug_line    0x0000c782      0x95b ./src/10DOF/IMU.o
- .debug_line    0x0000d0dd      0xeb1 ./src/10DOF/adxl345.o
- .debug_line    0x0000df8e      0xe51 ./src/10DOF/itg3200.o
- .debug_line    0x0000eddf      0x7f2 ./src/BlinkLed.o
- .debug_line    0x0000f5d1      0x7f2 ./src/_initialize_hardware.o
- .debug_line    0x0000fdc3      0xb8b ./src/main.o
+ .debug_line    0x0000bfb5      0x7f0 ./src/10DOF/I2C.o
+ .debug_line    0x0000c7a5      0x92f ./src/10DOF/IMU.o
+ .debug_line    0x0000d0d4      0xe89 ./src/10DOF/adxl345.o
+ .debug_line    0x0000df5d      0xef1 ./src/10DOF/itg3200.o
+ .debug_line    0x0000ee4e      0x7f2 ./src/BlinkLed.o
+ .debug_line    0x0000f640      0x7f2 ./src/_initialize_hardware.o
+ .debug_line    0x0000fe32      0xbc1 ./src/main.o
 
-.debug_frame    0x00000000     0x2e9c
+.debug_frame    0x00000000     0x2dfc
  *(.debug_frame)
  .debug_frame   0x00000000      0x14c ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_frame   0x0000014c      0x134 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
@@ -6788,92 +6784,91 @@ END GROUP
  .debug_frame   0x00001e08       0x28 ./src/Delay/delay.o
  .debug_frame   0x00001e30       0x74 ./src/Accelerometer/accelerometer.o
  .debug_frame   0x00001ea4      0x198 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
- .debug_frame   0x0000203c       0x20 ./src/10DOF/I2C.o
- .debug_frame   0x0000205c       0x68 ./src/10DOF/IMU.o
- .debug_frame   0x000020c4      0x4bc ./src/10DOF/adxl345.o
- .debug_frame   0x00002580      0x4cc ./src/10DOF/itg3200.o
- .debug_frame   0x00002a4c       0x2c ./src/BlinkLed.o
- .debug_frame   0x00002a78       0x44 ./src/_initialize_hardware.o
- .debug_frame   0x00002abc       0x74 ./src/main.o
- .debug_frame   0x00002b30       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libstdc++_s.a(del_op.o)
- .debug_frame   0x00002b50       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-errno.o)
- .debug_frame   0x00002b70       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-malloc.o)
- .debug_frame   0x00002ba0       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-freer.o)
- .debug_frame   0x00002bcc       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
- .debug_frame   0x00002bf8       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sbrkr.o)
- .debug_frame   0x00002c24       0x58 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sprintf.o)
- .debug_frame   0x00002c7c       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strlen.o)
- .debug_frame   0x00002c9c       0x88 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
- .debug_frame   0x00002d24       0x60 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
- .debug_frame   0x00002d84       0x4c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vsnprintf.o)
- .debug_frame   0x00002dd0       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memchr-stub.o)
- .debug_frame   0x00002df8       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memcpy-stub.o)
- .debug_frame   0x00002e20       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memmove.o)
- .debug_frame   0x00002e4c       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-reallocr.o)
- .debug_frame   0x00002e7c       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-msizer.o)
+ .debug_frame   0x0000203c       0x38 ./src/10DOF/IMU.o
+ .debug_frame   0x00002074      0x4a0 ./src/10DOF/adxl345.o
+ .debug_frame   0x00002514      0x498 ./src/10DOF/itg3200.o
+ .debug_frame   0x000029ac       0x2c ./src/BlinkLed.o
+ .debug_frame   0x000029d8       0x44 ./src/_initialize_hardware.o
+ .debug_frame   0x00002a1c       0x74 ./src/main.o
+ .debug_frame   0x00002a90       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libstdc++_s.a(del_op.o)
+ .debug_frame   0x00002ab0       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-errno.o)
+ .debug_frame   0x00002ad0       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-malloc.o)
+ .debug_frame   0x00002b00       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-freer.o)
+ .debug_frame   0x00002b2c       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
+ .debug_frame   0x00002b58       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sbrkr.o)
+ .debug_frame   0x00002b84       0x58 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sprintf.o)
+ .debug_frame   0x00002bdc       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strlen.o)
+ .debug_frame   0x00002bfc       0x88 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
+ .debug_frame   0x00002c84       0x60 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
+ .debug_frame   0x00002ce4       0x4c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vsnprintf.o)
+ .debug_frame   0x00002d30       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memchr-stub.o)
+ .debug_frame   0x00002d58       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memcpy-stub.o)
+ .debug_frame   0x00002d80       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memmove.o)
+ .debug_frame   0x00002dac       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-reallocr.o)
+ .debug_frame   0x00002ddc       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2013q4/bin/../lib/gcc/arm-none-eabi/4.8.3/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-msizer.o)
 
-.debug_str      0x00000000    0x89d17
+.debug_str      0x00000000    0x89d0d
  *(.debug_str)
  .debug_str     0x00000000    0x7add0 ./system/src/stm32f4-hal/stm32f4xx_hal.o
                               0x7af80 (size before relaxing)
- .debug_str     0x0007add0      0x789 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
+ .debug_str     0x0007add0      0x792 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
                               0x7b2c6 (size before relaxing)
- .debug_str     0x0007b559      0x5bb ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
+ .debug_str     0x0007b562      0x5bb ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
                               0x7b0bb (size before relaxing)
- .debug_str     0x0007bb14      0xa1b ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
+ .debug_str     0x0007bb1d      0xa16 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o
                               0x7b518 (size before relaxing)
- .debug_str     0x0007c52f      0x42f ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
+ .debug_str     0x0007c533      0x42f ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o
                               0x7b5cb (size before relaxing)
- .debug_str     0x0007c95e      0x496 ./system/src/stm32f4-hal/stm32f4xx_hal_spi.o
+ .debug_str     0x0007c962      0x496 ./system/src/stm32f4-hal/stm32f4xx_hal_spi.o
                               0x7b1e7 (size before relaxing)
- .debug_str     0x0007cdf4      0xe56 ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
+ .debug_str     0x0007cdf8      0xe56 ./system/src/stm32f4-hal/stm32f4xx_hal_tim.o
                               0x7bb92 (size before relaxing)
- .debug_str     0x0007dc4a     0x2498 ./system/src/newlib/_exit.o
+ .debug_str     0x0007dc4e     0x2498 ./system/src/newlib/_exit.o
                                0x4ee4 (size before relaxing)
- .debug_str     0x000800e2      0x4de ./system/src/newlib/_sbrk.o
+ .debug_str     0x000800e6      0x4de ./system/src/newlib/_sbrk.o
                                0x449a (size before relaxing)
- .debug_str     0x000805c0      0x24c ./system/src/newlib/_startup.o
+ .debug_str     0x000805c4      0x24c ./system/src/newlib/_startup.o
                                0x3e13 (size before relaxing)
- .debug_str     0x0008080c      0xe3b ./system/src/newlib/_syscalls.o
+ .debug_str     0x00080810      0xe3b ./system/src/newlib/_syscalls.o
                                0x5359 (size before relaxing)
- .debug_str     0x00081647       0xd0 ./system/src/newlib/assert.o
+ .debug_str     0x0008164b       0xd0 ./system/src/newlib/assert.o
                                0x57a6 (size before relaxing)
- .debug_str     0x00081717     0x1757 ./system/src/diag/Trace.o
+ .debug_str     0x0008171b     0x1757 ./system/src/diag/Trace.o
                                0x6db5 (size before relaxing)
- .debug_str     0x00082e6e       0xd2 ./system/src/diag/trace_impl.o
+ .debug_str     0x00082e72       0xd2 ./system/src/diag/trace_impl.o
                               0x3e0cb (size before relaxing)
- .debug_str     0x00082f40      0x10b ./system/src/cortexm/exception_handlers.o
+ .debug_str     0x00082f44      0x10b ./system/src/cortexm/exception_handlers.o
                                0x25a1 (size before relaxing)
- .debug_str     0x0008304b       0x67 ./system/src/cmsis/system_stm32f4xx.o
+ .debug_str     0x0008304f       0x67 ./system/src/cmsis/system_stm32f4xx.o
                               0x7ab76 (size before relaxing)
- .debug_str     0x000830b2       0x57 ./system/src/cmsis/vectors_stm32f4xx.o
+ .debug_str     0x000830b6       0x57 ./system/src/cmsis/vectors_stm32f4xx.o
                                0x251b (size before relaxing)
- .debug_str     0x00083109      0x991 ./src/NokiaLCD/nokiaLCD.o
+ .debug_str     0x0008310d      0x991 ./src/NokiaLCD/nokiaLCD.o
                               0x7cf38 (size before relaxing)
- .debug_str     0x00083a9a      0x541 ./src/GPIO/gpio.o
+ .debug_str     0x00083a9e      0x541 ./src/GPIO/gpio.o
                               0x7d4fb (size before relaxing)
- .debug_str     0x00083fdb       0x2e ./src/Delay/delay.o
+ .debug_str     0x00083fdf       0x2e ./src/Delay/delay.o
                               0x7abd2 (size before relaxing)
- .debug_str     0x00084009     0x2dc5 ./src/Accelerometer/accelerometer.o
+ .debug_str     0x0008400d     0x2dc5 ./src/Accelerometer/accelerometer.o
                               0x80b87 (size before relaxing)
- .debug_str     0x00086dce      0x2ac ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
+ .debug_str     0x00086dd2      0x2ac ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
                               0x7d15e (size before relaxing)
- .debug_str     0x0008707a      0x1dd ./src/10DOF/I2C.o
-                              0x7b1f9 (size before relaxing)
- .debug_str     0x00087257     0x2675 ./src/10DOF/IMU.o
-                              0x7fcf0 (size before relaxing)
- .debug_str     0x000898cc      0x161 ./src/10DOF/adxl345.o
-                              0x7ee3c (size before relaxing)
- .debug_str     0x00089a2d       0x5e ./src/10DOF/itg3200.o
-                              0x7e4f6 (size before relaxing)
- .debug_str     0x00089a8b      0x165 ./src/BlinkLed.o
+ .debug_str     0x0008707e      0x226 ./src/10DOF/I2C.o
+                              0x7b29b (size before relaxing)
+ .debug_str     0x000872a4     0x261e ./src/10DOF/IMU.o
+                              0x7f5a2 (size before relaxing)
+ .debug_str     0x000898c2      0x161 ./src/10DOF/adxl345.o
+                              0x7ee5b (size before relaxing)
+ .debug_str     0x00089a23       0x5e ./src/10DOF/itg3200.o
+                              0x7e547 (size before relaxing)
+ .debug_str     0x00089a81      0x165 ./src/BlinkLed.o
                               0x7ae0d (size before relaxing)
- .debug_str     0x00089bf0       0x35 ./src/_initialize_hardware.o
+ .debug_str     0x00089be6       0x35 ./src/_initialize_hardware.o
                               0x7acb7 (size before relaxing)
- .debug_str     0x00089c25       0xf2 ./src/main.o
-                              0x819ad (size before relaxing)
+ .debug_str     0x00089c1b       0xf2 ./src/main.o
+                              0x81a5a (size before relaxing)
 
-.debug_loc      0x00000000     0xb282
+.debug_loc      0x00000000     0xcec2
  *(.debug_loc)
  .debug_loc     0x00000000       0x1f ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_loc     0x0000001f      0x5cb ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
@@ -6892,11 +6887,11 @@ END GROUP
  .debug_loc     0x000078cb      0x6a5 ./src/NokiaLCD/nokiaLCD.o
  .debug_loc     0x00007f70      0x133 ./src/Accelerometer/accelerometer.o
  .debug_loc     0x000080a3      0x446 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
- .debug_loc     0x000084e9       0x60 ./src/10DOF/IMU.o
- .debug_loc     0x00008549     0x1540 ./src/10DOF/adxl345.o
- .debug_loc     0x00009a89     0x13fe ./src/10DOF/itg3200.o
- .debug_loc     0x0000ae87       0x21 ./src/BlinkLed.o
- .debug_loc     0x0000aea8      0x3da ./src/main.o
+ .debug_loc     0x000084e9       0x1e ./src/10DOF/IMU.o
+ .debug_loc     0x00008507     0x1be4 ./src/10DOF/adxl345.o
+ .debug_loc     0x0000a0eb     0x29ca ./src/10DOF/itg3200.o
+ .debug_loc     0x0000cab5       0x21 ./src/BlinkLed.o
+ .debug_loc     0x0000cad6      0x3ec ./src/main.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -6914,7 +6909,7 @@ END GROUP
  *(.debug_varnames)
 OUTPUT(BasicV1.elf elf32-littlearm)
 
-.debug_ranges   0x00000000      0xf40
+.debug_ranges   0x00000000      0xf50
  .debug_ranges  0x00000000       0x98 ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_ranges  0x00000098       0x80 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
  .debug_ranges  0x00000118       0x40 ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
@@ -6937,15 +6932,14 @@ OUTPUT(BasicV1.elf elf32-littlearm)
  .debug_ranges  0x00000ac0       0x10 ./src/Delay/delay.o
  .debug_ranges  0x00000ad0       0x28 ./src/Accelerometer/accelerometer.o
  .debug_ranges  0x00000af8       0x80 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
- .debug_ranges  0x00000b78       0x10 ./src/10DOF/I2C.o
- .debug_ranges  0x00000b88       0x28 ./src/10DOF/IMU.o
- .debug_ranges  0x00000bb0      0x1b0 ./src/10DOF/adxl345.o
- .debug_ranges  0x00000d60      0x168 ./src/10DOF/itg3200.o
- .debug_ranges  0x00000ec8       0x10 ./src/BlinkLed.o
- .debug_ranges  0x00000ed8       0x18 ./src/_initialize_hardware.o
- .debug_ranges  0x00000ef0       0x50 ./src/main.o
+ .debug_ranges  0x00000b78       0x18 ./src/10DOF/IMU.o
+ .debug_ranges  0x00000b90      0x1b0 ./src/10DOF/adxl345.o
+ .debug_ranges  0x00000d40      0x168 ./src/10DOF/itg3200.o
+ .debug_ranges  0x00000ea8       0x10 ./src/BlinkLed.o
+ .debug_ranges  0x00000eb8       0x18 ./src/_initialize_hardware.o
+ .debug_ranges  0x00000ed0       0x80 ./src/main.o
 
-.debug_macro    0x00000000    0x19e45
+.debug_macro    0x00000000    0x19fcf
  .debug_macro   0x00000000      0x34e ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_macro   0x0000034e      0x886 ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_macro   0x00000bd4      0x23b ./system/src/stm32f4-hal/stm32f4xx_hal.o
@@ -7071,17 +7065,18 @@ OUTPUT(BasicV1.elf elf32-littlearm)
  .debug_macro   0x00016f6c       0xc1 ./src/Accelerometer/accelerometer.o
  .debug_macro   0x0001702d      0x320 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
  .debug_macro   0x0001734d      0x873 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
- .debug_macro   0x00017bc0      0x30f ./src/10DOF/I2C.o
- .debug_macro   0x00017ecf      0x3fd ./src/10DOF/IMU.o
- .debug_macro   0x000182cc       0x10 ./src/10DOF/IMU.o
- .debug_macro   0x000182dc      0x178 ./src/10DOF/IMU.o
- .debug_macro   0x00018454      0x378 ./src/10DOF/IMU.o
- .debug_macro   0x000187cc      0x3ea ./src/10DOF/adxl345.o
- .debug_macro   0x00018bb6      0x372 ./src/10DOF/adxl345.o
- .debug_macro   0x00018f28      0x3ea ./src/10DOF/itg3200.o
- .debug_macro   0x00019312      0x322 ./src/BlinkLed.o
- .debug_macro   0x00019634       0x28 ./src/BlinkLed.o
- .debug_macro   0x0001965c      0x2fa ./src/_initialize_hardware.o
- .debug_macro   0x00019956      0x45b ./src/main.o
- .debug_macro   0x00019db1       0x40 ./src/main.o
- .debug_macro   0x00019df1       0x54 ./src/main.o
+ .debug_macro   0x00017bc0      0x327 ./src/10DOF/I2C.o
+ .debug_macro   0x00017ee7      0x3f7 ./src/10DOF/IMU.o
+ .debug_macro   0x000182de       0x10 ./src/10DOF/IMU.o
+ .debug_macro   0x000182ee      0x17e ./src/10DOF/IMU.o
+ .debug_macro   0x0001846c      0x378 ./src/10DOF/IMU.o
+ .debug_macro   0x000187e4      0x3ea ./src/10DOF/adxl345.o
+ .debug_macro   0x00018bce      0x372 ./src/10DOF/adxl345.o
+ .debug_macro   0x00018f40      0x3ea ./src/10DOF/itg3200.o
+ .debug_macro   0x0001932a      0x178 ./src/10DOF/itg3200.o
+ .debug_macro   0x000194a2      0x322 ./src/BlinkLed.o
+ .debug_macro   0x000197c4       0x28 ./src/BlinkLed.o
+ .debug_macro   0x000197ec      0x2fa ./src/_initialize_hardware.o
+ .debug_macro   0x00019ae6      0x455 ./src/main.o
+ .debug_macro   0x00019f3b       0x40 ./src/main.o
+ .debug_macro   0x00019f7b       0x54 ./src/main.o

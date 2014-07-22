@@ -304,9 +304,8 @@
 
 class ADXL345 {
     public:
-		ADXL345(I2C * _pi2c = (I2C*) NULL, uint8_t address = ADXL345_DEFAULT_ADDRESS) {
+		ADXL345(uint8_t address = ADXL345_DEFAULT_ADDRESS) {
 			devAddr = address;
-			pi2c = _pi2c;
 		}
 
 		struct OutXYZTypeDef {
@@ -392,7 +391,6 @@ class ADXL345 {
     private:
         uint8_t devAddr;
         uint8_t buffer[6];
-    	I2C *pi2c;
 };
 
 #endif /* ADXL345_H_ */

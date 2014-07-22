@@ -6,8 +6,6 @@
  */
 #include "IMU.h"
 
-I2C i2c;
-
 IMU::~IMU() {
 	// TODO Auto-generated destructor stub
 }

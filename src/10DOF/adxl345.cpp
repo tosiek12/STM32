@@ -4,41 +4,24 @@
  * Accelerometer check, and initialization.
  */
 void ADXL345::initialize() {
-	volatile HAL_StatusTypeDef a = HAL_ERROR;
+	//Need to set power control bit to wake up the adxl345
+	I2C::i2c_WriteByte(I2C_ID_ADXL345,ADXL345_RA_DATA_FORMAT,ADXL345_DATA_RANGE_2G);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345,ADXL345_RA_POWER_CTL, ADXL345_MEASURE_ENABLE);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345,ADXL345_RA_BW_RATE, ADXL345_BW_1600_HZ);
 
-	if ((a = HAL_I2C_IsDeviceReady(&(pi2c->hi2c), I2C_ID_ADXL345, 10, 400))
-			!= HAL_OK) {
-		while (1) {
-		}	//Fail_Handler();
-	}
-
-	a = HAL_I2C_Master_Receive(&(pi2c->hi2c), I2C_ID_ADXL345, (uint8_t*) buffer, 1,
-			400);
-	if (buffer[0] != ADXL345_DEVID) {
-		while (1) {
-		}	//Fail_Handler();
-	} else {
-
-		//Need to set power control bit to wake up the adxl345
-		buffer[0] = ADXL345_DATA_RANGE_2G;
-		HAL_I2C_Mem_Write(&(pi2c->hi2c), I2C_ID_ADXL345, ADXL345_RA_DATA_FORMAT,
-		I2C_MEMADD_SIZE_8BIT, buffer, 1, 400);
-
-		buffer[0] = ADXL345_MEASURE_ENABLE;
-		HAL_I2C_Mem_Write(&(pi2c->hi2c), I2C_ID_ADXL345, ADXL345_RA_POWER_CTL,
-		I2C_MEMADD_SIZE_8BIT, buffer, 1, 400);	//Start Measurment
-
-		buffer[0] = ADXL345_BW_1600_HZ;
-		HAL_I2C_Mem_Write(&(pi2c->hi2c), I2C_ID_ADXL345, ADXL345_RA_BW_RATE,
-		I2C_MEMADD_SIZE_8BIT, buffer, 1, 400);	//Start Measurment
-	}
+//	if (testConnection()) {
+//
+//	} else {
+//		while (1) {
+//		}	//Fail_Handler();
+//	}
 }
 
 void ADXL345::test(NokiaLCD & nokia) {
 	int16_t Out_x = 0, Out_y = 0, Out_z = 0;
 	int32_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
 	for (uint16_t i = 0; i < 1000; i++) {
-		pi2c->i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6,
+		I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6,
 				(uint8_t *) &axis);
 		Sum_x += axis.x;
 		Sum_y += axis.y;
@@ -70,7 +53,7 @@ void ADXL345::test(NokiaLCD & nokia) {
  */
 uint8_t ADXL345::testConnection(void) {
 	uint8_t temp;
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_DEVID, &temp);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_DEVID, &temp);
 	return temp == ADXL345_DEVID ? 1 : 0;
 }
 
@@ -80,7 +63,7 @@ uint8_t ADXL345::testConnection(void) {
  * @ param[out]: none
  */
 void ADXL345::ReadTapThresh(uint8_t *tap) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_TAP, tap);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_TAP, tap);
 }
 /*
  * @ brief: Write threshold value for tap interrupts
@@ -88,7 +71,7 @@ void ADXL345::ReadTapThresh(uint8_t *tap) {
  * @ param[out]: none
  */
 void ADXL345::WriteTapThresh(uint8_t tap) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_TAP, tap);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_TAP, tap);
 }
 
 /*
@@ -97,7 +80,7 @@ void ADXL345::WriteTapThresh(uint8_t tap) {
  * @param[out]: none
  */
 void ADXL345::ReadXOffSet(int8_t *xoff) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSX, (uint8_t *) xoff);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSX, (uint8_t *) xoff);
 }
 
 /*
@@ -106,7 +89,7 @@ void ADXL345::ReadXOffSet(int8_t *xoff) {
  * @param[out]: none
  */
 void ADXL345::ReadYOffSet(int8_t *yoff) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSY, (uint8_t *) yoff);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSY, (uint8_t *) yoff);
 }
 
 /*
@@ -115,7 +98,7 @@ void ADXL345::ReadYOffSet(int8_t *yoff) {
  * @param[out]: none
  */
 void ADXL345::ReadZOffSet(int8_t *zoff) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSZ, (uint8_t *) zoff);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSZ, (uint8_t *) zoff);
 }
 
 /*
@@ -124,9 +107,9 @@ void ADXL345::ReadZOffSet(int8_t *zoff) {
  * @param[out]: none
  */
 void ADXL345::ReadXYZOffSet(int8_t *xoff, int8_t *yoff, int8_t *zoff) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSX, (uint8_t *) xoff);
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSY, (uint8_t *) yoff);
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSZ, (uint8_t *) zoff);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSX, (uint8_t *) xoff);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSY, (uint8_t *) yoff);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_OFSZ, (uint8_t *) zoff);
 }
 
 /*
@@ -135,7 +118,7 @@ void ADXL345::ReadXYZOffSet(int8_t *xoff, int8_t *yoff, int8_t *zoff) {
  * @param[out]: none
  */
 void ADXL345::WriteXOffSet(int8_t xoff) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSX, xoff);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSX, xoff);
 }
 
 /*
@@ -144,7 +127,7 @@ void ADXL345::WriteXOffSet(int8_t xoff) {
  * @param[out]: none
  */
 void ADXL345::WriteYOffSet(int8_t yoff) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSY, yoff);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSY, yoff);
 }
 
 /*
@@ -153,7 +136,7 @@ void ADXL345::WriteYOffSet(int8_t yoff) {
  * @param[out]: none
  */
 void ADXL345::WriteZOffSet(int8_t zoff) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSZ, zoff);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSZ, zoff);
 }
 
 /*
@@ -162,9 +145,9 @@ void ADXL345::WriteZOffSet(int8_t zoff) {
  * @param[out]: none
  */
 void ADXL345::WriteXYZOffSet(int8_t *xoff, int8_t *yoff, int8_t *zoff) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSX, *xoff);
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSY, *yoff);
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSZ, *zoff);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSX, *xoff);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSY, *yoff);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_OFSZ, *zoff);
 }
 
 /*
@@ -173,7 +156,7 @@ void ADXL345::WriteXYZOffSet(int8_t *xoff, int8_t *yoff, int8_t *zoff) {
  * @param[out]: none
  */
 void ADXL345::ReadDur(uint8_t *dur) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_DUR, dur);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_DUR, dur);
 }
 
 /*
@@ -182,7 +165,7 @@ void ADXL345::ReadDur(uint8_t *dur) {
  * @param[out]: none
  */
 void ADXL345::WriteDur(uint8_t dur) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_DUR, dur);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_DUR, dur);
 }
 
 /*
@@ -191,7 +174,7 @@ void ADXL345::WriteDur(uint8_t dur) {
  * @param[out]: none
  */
 void ADXL345::ReadLat(uint8_t *lat) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_LATENT, lat);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_LATENT, lat);
 }
 
 /*
@@ -200,7 +183,7 @@ void ADXL345::ReadLat(uint8_t *lat) {
  * @param[out]: none
  */
 void ADXL345::WriteLat(uint8_t lat) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_LATENT, lat);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_LATENT, lat);
 }
 
 /*
@@ -209,7 +192,7 @@ void ADXL345::WriteLat(uint8_t lat) {
  * @param[out]: none
  */
 void ADXL345::ReadWindow(uint8_t *win) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_WINDOW, win);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_WINDOW, win);
 }
 
 /*
@@ -218,7 +201,7 @@ void ADXL345::ReadWindow(uint8_t *win) {
  * @param[out]: none
  */
 void ADXL345::WriteWindow(uint8_t win) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_WINDOW, win);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_WINDOW, win);
 }
 
 /*
@@ -227,7 +210,7 @@ void ADXL345::WriteWindow(uint8_t win) {
  * @param[out]: none
  */
 void ADXL345::ReadAct(uint8_t *act) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_ACT, act);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_ACT, act);
 }
 
 /*
@@ -236,7 +219,7 @@ void ADXL345::ReadAct(uint8_t *act) {
  * @param[out]: none
  */
 void ADXL345::WriteAct(uint8_t act) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_ACT, act);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_ACT, act);
 }
 
 /*
@@ -245,7 +228,7 @@ void ADXL345::WriteAct(uint8_t act) {
  * @param[out]: none
  */
 void ADXL345::ReadThreshInact(int8_t *inact) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_INACT,
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_INACT,
 			(uint8_t *) inact);
 }
 
@@ -255,7 +238,7 @@ void ADXL345::ReadThreshInact(int8_t *inact) {
  * @param[out]: none
  */
 void ADXL345::WriteThreshInact(int8_t inact) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_INACT, inact);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_INACT, inact);
 }
 
 /*
@@ -264,7 +247,7 @@ void ADXL345::WriteThreshInact(int8_t inact) {
  * @param[out]: none
  */
 void ADXL345::ReadTimeInact(uint8_t *timinact) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_TIME_INACT, timinact);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_TIME_INACT, timinact);
 }
 
 /*
@@ -273,7 +256,7 @@ void ADXL345::ReadTimeInact(uint8_t *timinact) {
  * @param[out]: none
  */
 void ADXL345::WriteTimeInact(uint8_t timinact) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_TIME_INACT, timinact);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_TIME_INACT, timinact);
 }
 
 /*
@@ -298,7 +281,7 @@ void ADXL345::WriteTimeInact(uint8_t timinact) {
  */
 void ADXL345::WriteACDC(uint8_t ActEN, uint8_t ActX, uint8_t ActY, uint8_t ActZ,
 		uint8_t InActEN, uint8_t InActX, uint8_t InActY, uint8_t InActZ) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_ACT_INACT_CTL,
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_ACT_INACT_CTL,
 			ActEN | ActX | ActY | ActZ | InActEN | InActX | InActY | InActZ);
 }
 
@@ -308,7 +291,7 @@ void ADXL345::WriteACDC(uint8_t ActEN, uint8_t ActX, uint8_t ActY, uint8_t ActZ,
  * @param[out]: none
  */
 void ADXL345::ReadACDC(uint8_t *acdc) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_ACT_INACT_CTL, acdc);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_ACT_INACT_CTL, acdc);
 }
 
 /*
@@ -317,7 +300,7 @@ void ADXL345::ReadACDC(uint8_t *acdc) {
  * @param[out]: none
  */
 void ADXL345::ReadThreshFF(uint8_t *threshff) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_FF, threshff);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_FF, threshff);
 }
 
 /*
@@ -326,7 +309,7 @@ void ADXL345::ReadThreshFF(uint8_t *threshff) {
  * @param[out]: none
  */
 void ADXL345::WriteThreshFF(uint8_t threshff) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_FF, threshff);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_FF, threshff);
 }
 
 /*
@@ -335,7 +318,7 @@ void ADXL345::WriteThreshFF(uint8_t threshff) {
  * @param[out]: none
  */
 void ADXL345::ReadTimeFF(uint8_t *timeff) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_TIME_FF, timeff);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_TIME_FF, timeff);
 }
 
 /*
@@ -344,7 +327,7 @@ void ADXL345::ReadTimeFF(uint8_t *timeff) {
  * @param[out]: none
  */
 void ADXL345::WriteTimeFF(uint8_t timeff) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_TIME_FF, timeff);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_TIME_FF, timeff);
 }
 
 /*
@@ -353,7 +336,7 @@ void ADXL345::WriteTimeFF(uint8_t timeff) {
  * @param[out]: none
  */
 void ADXL345::ReadTapAxes(uint8_t *tap_axes) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_TAP_AXES, tap_axes);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_TAP_AXES, tap_axes);
 }
 
 /*
@@ -370,7 +353,7 @@ void ADXL345::ReadTapAxes(uint8_t *tap_axes) {
  */
 void ADXL345::WriteTapAxes(uint8_t sup, uint8_t tapx, uint8_t tapy,
 		uint8_t tapz) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_TAP_AXES,
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_TAP_AXES,
 			sup | tapx | tapy | tapz);
 }
 
@@ -380,7 +363,7 @@ void ADXL345::WriteTapAxes(uint8_t sup, uint8_t tapx, uint8_t tapy,
  * @param[out]: none
  */
 void ADXL345::ReadActTapStatus(uint8_t *status) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_ACT_TAP_STATUS, status);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_ACT_TAP_STATUS, status);
 }
 
 /*
@@ -389,7 +372,7 @@ void ADXL345::ReadActTapStatus(uint8_t *status) {
  * @param[out]: none
  */
 void ADXL345::ReadBWRate(uint8_t *bw) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_BW_RATE, bw);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_BW_RATE, bw);
 }
 
 /*
@@ -416,7 +399,7 @@ void ADXL345::ReadBWRate(uint8_t *bw) {
  * @param[out]: none
  */
 void ADXL345::WriteBWRate(uint8_t pwr, uint8_t bw) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_BW_RATE, pwr | bw);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_BW_RATE, pwr | bw);
 }
 
 /*
@@ -425,7 +408,7 @@ void ADXL345::WriteBWRate(uint8_t pwr, uint8_t bw) {
  * @param[out]: none
  */
 void ADXL345::ReadPWRCtl(uint8_t *pwrctl) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL, pwrctl);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL, pwrctl);
 }
 
 /*
@@ -447,9 +430,9 @@ void ADXL345::ReadPWRCtl(uint8_t *pwrctl) {
  */
 void ADXL345::WritePWRCtl(uint8_t link, uint8_t autosleep, uint8_t measure,
 		uint8_t sleep, uint8_t wake) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL,
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL,
 			link | autosleep | measure | sleep | wake);
-//	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL, 0x00<<5|0x01<<4|0x01<<3|0x01<<2|0x00);
+//	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL, 0x00<<5|0x01<<4|0x01<<3|0x01<<2|0x00);
 
 }
 
@@ -476,7 +459,7 @@ void ADXL345::WritePWRCtl(uint8_t link, uint8_t autosleep, uint8_t measure,
 void ADXL345::WriteINTEnable(uint8_t DataRDY, uint8_t singletap,
 		uint8_t doubletap, uint8_t act, uint8_t inact, uint8_t ff,
 		uint8_t watermrk, uint8_t overrun) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_INT_ENABLE,
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_INT_ENABLE,
 			DataRDY | singletap | doubletap | act | inact | ff | watermrk
 					| overrun);
 }
@@ -487,7 +470,7 @@ void ADXL345::WriteINTEnable(uint8_t DataRDY, uint8_t singletap,
  * @param[out]: none
  */
 void ADXL345::ReadINTEnable(uint8_t *inten) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_INT_ENABLE, inten);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_INT_ENABLE, inten);
 }
 
 /*No functions for INT_MAP register*/
@@ -498,7 +481,7 @@ void ADXL345::ReadINTEnable(uint8_t *inten) {
  * @param[out]: none
  */
 void ADXL345::ReadINTSource(uint8_t *intsource) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_INT_SOURCE, intsource);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_INT_SOURCE, intsource);
 }
 
 /*
@@ -507,7 +490,7 @@ void ADXL345::ReadINTSource(uint8_t *intsource) {
  * @param[out]: none
  */
 void ADXL345::ReadDataFormat(uint8_t *data) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_DATA_FORMAT, data);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_DATA_FORMAT, data);
 }
 
 /*
@@ -531,7 +514,7 @@ void ADXL345::ReadDataFormat(uint8_t *data) {
  */
 void ADXL345::WriteDataFormat(uint8_t selftest, uint8_t spi, uint8_t intinv,
 		uint8_t fullres, uint8_t justify, uint8_t range) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_DATA_FORMAT,
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_DATA_FORMAT,
 			selftest | spi | intinv | 0x00 | fullres | justify | range);
 }
 
@@ -542,7 +525,7 @@ void ADXL345::WriteDataFormat(uint8_t selftest, uint8_t spi, uint8_t intinv,
  */
 void ADXL345::ReadXYZ(int16_t *xdata, int16_t *ydata, int16_t *zdata) {
 	uint8_t b[6];
-	pi2c->i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, b);
+	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, b);
 	*xdata = (int16_t) ((uint16_t) b[0] << 8 | (uint16_t) b[1]);
 	*ydata = (int16_t) ((uint16_t) b[2] << 8 | (uint16_t) b[3]);
 	*zdata = (int16_t) ((uint16_t) b[4] << 8 | (uint16_t) b[5]);
@@ -554,7 +537,7 @@ void ADXL345::ReadXYZ(int16_t *xdata, int16_t *ydata, int16_t *zdata) {
  * @param[out]: none
  */
 void ADXL345::ReadFIFOCtl(uint8_t *fifo) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_CTL, fifo);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_CTL, fifo);
 }
 
 /*
@@ -572,7 +555,7 @@ void ADXL345::ReadFIFOCtl(uint8_t *fifo) {
  * 	@param[out]: none
  */
 void ADXL345::WriteFIFOCtl(uint8_t fifo, uint8_t trigger, uint8_t sample) {
-	pi2c->i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_CTL,
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_CTL,
 			fifo | trigger | sample);
 }
 
@@ -582,5 +565,5 @@ void ADXL345::WriteFIFOCtl(uint8_t fifo, uint8_t trigger, uint8_t sample) {
  * @param[out]: none
  */
 void ADXL345::ReadFIFOStatus(uint8_t *fifost) {
-	pi2c->i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_STATUS, fifost);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_STATUS, fifost);
 }
