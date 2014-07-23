@@ -67,7 +67,19 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../src/10DOF/../NokiaLCD/nokiaLCD.h ../src/10DOF/../Delay/delay.h \
  ../src/10DOF/I2C.h ../src/10DOF/itg3200.h ../src/10DOF/adxl345.h \
  ../src/Accelerometer/accelerometer.h \
- ../src/Accelerometer/../NokiaLCD/nokiaLCD.h
+ ../src/Accelerometer/../NokiaLCD/nokiaLCD.h \
+ ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
+ ../include/usbd_conf.h \
+ ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
+ ../include/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
+ ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
+ ../include/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h \
+ ../include/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h \
+ ../include/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
+ ../include/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc_if_template.h \
+ ../include/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h \
+ ../include/usbd_desc.h \
+ ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h
 
 ../system/include/diag/Trace.h:
 
@@ -226,3 +238,27 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 ../src/Accelerometer/accelerometer.h:
 
 ../src/Accelerometer/../NokiaLCD/nokiaLCD.h:
+
+../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h:
+
+../include/usbd_conf.h:
+
+../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
+
+../include/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h:
+
+../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h:
+
+../include/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h:
+
+../include/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h:
+
+../include/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h:
+
+../include/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc_if_template.h:
+
+../include/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h:
+
+../include/usbd_desc.h:
+
+../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h:

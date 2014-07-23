@@ -5,6 +5,8 @@
 
 // ----------------------------------------------------------------------------
 
+#include "stm32f4xx.h"
+#include "stm32f4xx_hal.h"
 #include <sys/types.h>
 #include <errno.h>
 
@@ -17,6 +19,8 @@ _sbrk(int incr);
 
 // The definitions used here should be kept in sync with the
 // stack definitions in the linker script.
+
+
 
 caddr_t
 _sbrk(int incr)
@@ -57,6 +61,13 @@ _sbrk(int incr)
   current_heap_end += incr;
 
   return (caddr_t) current_block_address;
+}
+
+extern PCD_HandleTypeDef hpcd;
+
+void OTG_FS_IRQHandler(void)
+{
+    HAL_PCD_IRQHandler(&hpcd);
 }
 
 // ----------------------------------------------------------------------------

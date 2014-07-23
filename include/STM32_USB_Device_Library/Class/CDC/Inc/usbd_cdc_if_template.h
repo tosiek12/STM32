@@ -34,11 +34,13 @@
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
-
 extern USBD_CDC_ItfTypeDef  USBD_CDC_Template_fops;
-
+extern char g_VCPInitialized;
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+int VCP_read(void *pBuffer, int size);
+int VCP_write(const void *pBuffer, int size);
+
 #endif /* __USBD_CDC_IF_TEMPLATE_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

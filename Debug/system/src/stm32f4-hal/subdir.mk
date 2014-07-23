@@ -14,6 +14,7 @@ C_SRCS += \
 ../system/src/stm32f4-hal/stm32f4xx_hal_i2c.c \
 ../system/src/stm32f4-hal/stm32f4xx_hal_i2c_ex.c \
 ../system/src/stm32f4-hal/stm32f4xx_hal_iwdg.c \
+../system/src/stm32f4-hal/stm32f4xx_hal_pcd.c \
 ../system/src/stm32f4-hal/stm32f4xx_hal_pwr.c \
 ../system/src/stm32f4-hal/stm32f4xx_hal_pwr_ex.c \
 ../system/src/stm32f4-hal/stm32f4xx_hal_rcc.c \
@@ -34,6 +35,7 @@ OBJS += \
 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.o \
 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c_ex.o \
 ./system/src/stm32f4-hal/stm32f4xx_hal_iwdg.o \
+./system/src/stm32f4-hal/stm32f4xx_hal_pcd.o \
 ./system/src/stm32f4-hal/stm32f4xx_hal_pwr.o \
 ./system/src/stm32f4-hal/stm32f4xx_hal_pwr_ex.o \
 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.o \
@@ -54,6 +56,7 @@ C_DEPS += \
 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c.d \
 ./system/src/stm32f4-hal/stm32f4xx_hal_i2c_ex.d \
 ./system/src/stm32f4-hal/stm32f4xx_hal_iwdg.d \
+./system/src/stm32f4-hal/stm32f4xx_hal_pcd.d \
 ./system/src/stm32f4-hal/stm32f4xx_hal_pwr.d \
 ./system/src/stm32f4-hal/stm32f4xx_hal_pwr_ex.d \
 ./system/src/stm32f4-hal/stm32f4xx_hal_rcc.d \

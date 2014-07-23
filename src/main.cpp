@@ -16,6 +16,45 @@
 
 //#include "Accelerometer/stm32f4_discovery_lis3dsh.h"
 #include "Accelerometer/accelerometer.h"
+
+extern "C" {
+#include <usbd_core.h>
+#include <usbd_cdc.h>
+#include <usbd_cdc_if_template.h>
+#include <usbd_desc.h>
+
+USBD_HandleTypeDef USBD_Device;
+}
+
+static void SystemClock_Config(void) {
+	RCC_ClkInitTypeDef RCC_ClkInitStruct;
+	RCC_OscInitTypeDef RCC_OscInitStruct;
+
+	__PWR_CLK_ENABLE();
+	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+	RCC_OscInitStruct.PLL.PLLM = 8;
+	RCC_OscInitStruct.PLL.PLLN = 336;
+	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+	RCC_OscInitStruct.PLL.PLLQ = 7;
+	HAL_RCC_OscConfig(&RCC_OscInitStruct);
+
+	RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK |
+	RCC_CLOCKTYPE_HCLK |
+	RCC_CLOCKTYPE_PCLK1 |
+	RCC_CLOCKTYPE_PCLK2);
+
+	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+}
+
 // ----------------------------------------------------------------------------
 //
 // STM32F4 led blink sample (trace via ITM).
@@ -57,6 +96,13 @@ constexpr uint32_t BLINK_OFF_TICKS = 500;
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
 int main(int argc, char* argv[]) {
+	HAL_Init();
+	SystemClock_Config();
+	USBD_Init(&USBD_Device, &VCP_Desc, 0);
+
+	USBD_RegisterClass(&USBD_Device, &USBD_CDC);
+	USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_Template_fops);
+	USBD_Start(&USBD_Device);
 
 	Delay::initialize();	//Create, and initialize
 	NokiaLCD nokiaLCD;	//Create, and initialize
@@ -82,11 +128,18 @@ int main(int argc, char* argv[]) {
 //	}
 
 	uint8_t buf[10];
+	uint8_t byte;
 
 	// Perform all necessary initializations for the LED.
 	blinkLed.powerUp();
 	uint16_t c = 0;
 	while (1) {
+
+		if (VCP_read(&byte, 1) == 1) {
+			VCP_write("\r\nYou typed ", 12);
+			VCP_write(&(byte*2), 1);
+			VCP_write("\r\n", 2);
+		}
 
 		buttons.mainBegginingUpdate();
 		if (++c == 100) {
