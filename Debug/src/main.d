@@ -17,56 +17,25 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_dma.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_dma_ex.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_cortex.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_adc.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_adc_ex.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_can.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_crc.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_cryp.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_dma2d.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_dac.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_dac_ex.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_dcmi.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_eth.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_flash.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_flash_ex.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_sram.h \
- ../system/include/stm32f4-hal/stm32f4xx_ll_fsmc.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_nor.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_nand.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_pccard.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_sdram.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_hash.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_i2c.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_i2c_ex.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_i2s.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_i2s_ex.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_iwdg.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_ltdc.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_pwr.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_pwr_ex.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_rng.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_rtc.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_rtc_ex.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_sai.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_sd.h \
- ../system/include/stm32f4-hal/stm32f4xx_ll_sdmmc.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_spi.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_tim.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_tim_ex.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_uart.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_usart.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_irda.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_smartcard.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_wwdg.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_pcd.h \
  ../system/include/stm32f4-hal/stm32f4xx_ll_usb.h \
- ../system/include/stm32f4-hal/stm32f4xx_hal_hcd.h \
  ../src/NokiaLCD/nokiaLCD.h ../src/NokiaLCD/../Delay/delay.h \
  ../src/NokiaLCD/english_6x8_pixel.h ../src/NokiaLCD/bmp_pixel.h \
- ../src/GPIO/gpio.h ../src/10DOF/IMU.h \
+ ../src/GPIO/gpio.h ../src/10DOF/IMU.h ../system/include/cmsis/arm_math.h \
  ../src/10DOF/../NokiaLCD/nokiaLCD.h ../src/10DOF/../Delay/delay.h \
  ../src/10DOF/I2C.h ../src/10DOF/itg3200.h ../src/10DOF/adxl345.h \
- ../src/Accelerometer/accelerometer.h \
+ ../src/10DOF/Kalman.h ../src/Accelerometer/accelerometer.h \
  ../src/Accelerometer/../NokiaLCD/nokiaLCD.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../include/usbd_conf.h \
@@ -125,71 +94,17 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../system/include/stm32f4-hal/stm32f4xx_hal_cortex.h:
 
-../system/include/stm32f4-hal/stm32f4xx_hal_adc.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_adc_ex.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_can.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_crc.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_cryp.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_dma2d.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_dac.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_dac_ex.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_dcmi.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_eth.h:
-
 ../system/include/stm32f4-hal/stm32f4xx_hal_flash.h:
 
 ../system/include/stm32f4-hal/stm32f4xx_hal_flash_ex.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_sram.h:
-
-../system/include/stm32f4-hal/stm32f4xx_ll_fsmc.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_nor.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_nand.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_pccard.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_sdram.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_hash.h:
 
 ../system/include/stm32f4-hal/stm32f4xx_hal_i2c.h:
 
 ../system/include/stm32f4-hal/stm32f4xx_hal_i2c_ex.h:
 
-../system/include/stm32f4-hal/stm32f4xx_hal_i2s.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_i2s_ex.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_iwdg.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_ltdc.h:
-
 ../system/include/stm32f4-hal/stm32f4xx_hal_pwr.h:
 
 ../system/include/stm32f4-hal/stm32f4xx_hal_pwr_ex.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_rng.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_rtc.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_rtc_ex.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_sai.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_sd.h:
-
-../system/include/stm32f4-hal/stm32f4xx_ll_sdmmc.h:
 
 ../system/include/stm32f4-hal/stm32f4xx_hal_spi.h:
 
@@ -201,17 +116,9 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../system/include/stm32f4-hal/stm32f4xx_hal_usart.h:
 
-../system/include/stm32f4-hal/stm32f4xx_hal_irda.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_smartcard.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_wwdg.h:
-
 ../system/include/stm32f4-hal/stm32f4xx_hal_pcd.h:
 
 ../system/include/stm32f4-hal/stm32f4xx_ll_usb.h:
-
-../system/include/stm32f4-hal/stm32f4xx_hal_hcd.h:
 
 ../src/NokiaLCD/nokiaLCD.h:
 
@@ -225,6 +132,8 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../src/10DOF/IMU.h:
 
+../system/include/cmsis/arm_math.h:
+
 ../src/10DOF/../NokiaLCD/nokiaLCD.h:
 
 ../src/10DOF/../Delay/delay.h:
@@ -234,6 +143,8 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 ../src/10DOF/itg3200.h:
 
 ../src/10DOF/adxl345.h:
+
+../src/10DOF/Kalman.h:
 
 ../src/Accelerometer/accelerometer.h:
 

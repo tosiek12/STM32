@@ -198,20 +198,20 @@ private:
 		 based on this variable will be incorrect.
 		 ----------------------------------------------------------- */
 
-		#define COUNTER_CLK 10000	//100kHz
-		#define OUTPUT_CLK 1000	//1kHz
-		//Prescaler = ((SystemCoreClock/2) / TIM3 counter clock) - 1
-		const uint16_t PRESCALER = (((SystemCoreClock / 2) / COUNTER_CLK) - 1);
+
+		const uint32_t CounterClk = 10000;	//100kHz
+		const uint16_t OutputClk = 1000;	//1kHz		//Prescaler = ((SystemCoreClock/2) / TIM3 counter clock) - 1
+		const uint16_t Prescaler = (((SystemCoreClock / 2) / CounterClk) - 1);
 		//ARR(TIM_Period) = (TIM3 counter clock / TIM3 output clock) - 1
-		const uint32_t PERIOD = ((COUNTER_CLK / OUTPUT_CLK) - 1);
+		const uint32_t Period = ((CounterClk / OutputClk) - 1);
 
 		/* TIM2 Periph clock enable */
 		__TIM2_CLK_ENABLE();
 
 		/* Time base configuration */
 		TIM_TimeBaseStructure.Instance = TIM2;
-		TIM_TimeBaseStructure.Init.Period = PERIOD;
-		TIM_TimeBaseStructure.Init.Prescaler = PRESCALER;
+		TIM_TimeBaseStructure.Init.Period = Period;
+		TIM_TimeBaseStructure.Init.Prescaler = Prescaler;
 		TIM_TimeBaseStructure.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 		TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;
 		TIM_TimeBaseStructure.Init.RepetitionCounter = 0;

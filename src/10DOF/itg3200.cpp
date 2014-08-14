@@ -14,6 +14,8 @@
 void ITG3200::initialize() {
 	setFullScaleRange(ITG3200_FULLSCALE_2000);
     setClockSource(ITG3200_CLOCK_PLL_XGYRO);
+    setDLPFBandwidth(ITG3200_DLPF_BW_256);
+//    setRate(0);
 
 //	if (testConnection()) {
 //
@@ -38,29 +40,27 @@ void ITG3200::test(NokiaLCD & nokia) {
 		int32_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
 
 		for (uint16_t i = 0; i < 500; i++) {
-//			I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6,
-//					(uint8_t *) &axis);
-			getRotation(&axis.x,&axis.y,&axis.z);
+//			update();
 			Sum_x += axis.x;
 			Sum_y += axis.y;
 			Sum_z += axis.z;
 		}
-		Out_x = Sum_x / 500;
-		Out_y = Sum_y / 500;
-		Out_z = Sum_z / 500;
+		Out_x = (int16_t) (Sum_x / 500);
+		Out_y = (int16_t) (Sum_y / 500);
+		Out_z = (int16_t) (Sum_z / 500);
 
 		uint8_t buf[10];
 
 		nokia.ClearLine(3);
-		sprintf((char*) buf, "X=%d", (int16_t) (Out_x * ITG3200_2000G_FACTOR));
+		sprintf((char*) buf, "X=%d",Out_x);
 		nokia.WriteTextXY((char*) buf, 0, 3);
 
 		nokia.ClearLine(4);
-		sprintf((char*) buf, "Y=%d", (int16_t) (Out_y * ITG3200_2000G_FACTOR));
+		sprintf((char*) buf, "Y=%d", Out_y);
 		nokia.WriteTextXY((char*) buf, 0, 4);
 
 		nokia.ClearLine(5);
-		sprintf((char*) buf, "Z=%d", (int16_t) (Out_z * ITG3200_2000G_FACTOR));
+		sprintf((char*) buf, "Z=%d",Out_z);
 		nokia.WriteTextXY((char*) buf, 0, 5);
 	}
 
@@ -360,6 +360,10 @@ void ITG3200::getRotation(int16_t* x, int16_t* y, int16_t* z) {
     *x = (((int16_t)buffer[0]) << 8) | buffer[1];
     *y = (((int16_t)buffer[2]) << 8) | buffer[3];
     *z = (((int16_t)buffer[4]) << 8) | buffer[5];
+    //TODO: implement scaling factor!
+    *x =  (int16_t) (*x * ITG3200_2000G_FACTOR);
+    *y =  (int16_t) (*y * ITG3200_2000G_FACTOR);
+    *z =  (int16_t) (*z * ITG3200_2000G_FACTOR);
 }
 /** Get X-axis gyroscope reading.
  * @return X-axis rotation measurement in 16-bit 2's complement format
@@ -367,6 +371,7 @@ void ITG3200::getRotation(int16_t* x, int16_t* y, int16_t* z) {
  */
 int16_t ITG3200::getRotationX() {
     I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 2, buffer);
+    //TODO: implement scaling factor!
     return (((int16_t)buffer[0]) << 8) | buffer[1];
 }
 /** Get Y-axis gyroscope reading.
@@ -375,6 +380,7 @@ int16_t ITG3200::getRotationX() {
  */
 int16_t ITG3200::getRotationY() {
     I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_YOUT_H, 2, buffer);
+    //TODO: implement scaling factor!
     return (((int16_t)buffer[0]) << 8) | buffer[1];
 }
 /** Get Z-axis gyroscope reading.
@@ -383,6 +389,7 @@ int16_t ITG3200::getRotationY() {
  */
 int16_t ITG3200::getRotationZ() {
     I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_ZOUT_H, 2, buffer);
+    //TODO: implement scaling factor!
     return (((int16_t)buffer[0]) << 8) | buffer[1];
 }
 
@@ -511,4 +518,22 @@ uint8_t ITG3200::getClockSource() {
  */
 void ITG3200::setClockSource(uint8_t source) {
     I2C::i2c_WriteBits(devAddr, ITG3200_RA_PWR_MGM, ITG3200_PWR_CLK_SEL_BIT, ITG3200_PWR_CLK_SEL_LENGTH, source);
+}
+
+void ITG3200::update() {
+    I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer);
+    axis.x = (((int16_t)buffer[0]) << 8) | buffer[1];
+    axis.y = (((int16_t)buffer[2]) << 8) | buffer[3];
+    axis.z = (((int16_t)buffer[4]) << 8) | buffer[5];
+
+    //TODO: implement scaling factor!
+	axis.x =  (int16_t) (axis.x * ITG3200_2000G_FACTOR);
+	axis.y =  (int16_t) (axis.y * ITG3200_2000G_FACTOR);
+	axis.z =  (int16_t) (axis.z * ITG3200_2000G_FACTOR);
+	//TODO: Implement bias removing!
+
+	axis.x -=  -31;
+	axis.y -=  19;
+	axis.z -=  -4;
+
 }

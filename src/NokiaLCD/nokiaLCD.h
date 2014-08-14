@@ -26,26 +26,30 @@ public:
 	void WriteTextXY(char *s, uint8_t X, uint8_t Y);
 
 	void WriteNumberInDec(uint16_t b) {
-		uint8_t datas[3];
+		uint8_t datas[4];
 
-		datas[0] = b / 1000;
-		b = b - datas[0] * 1000;
-		datas[1] = b / 100;
-		b = b - datas[1] * 100;
-		datas[2] = b / 10;
-		b = b - datas[2] * 10;
-		datas[3] = b;
+		datas[0] = b / 10000;
+		b = b - datas[0] * 10000;
+		datas[1] = b / 1000;
+		b = b - datas[1] * 1000;
+		datas[2] = b / 100;
+		b = b - datas[2] * 100;
+		datas[3] = b / 10;
+		b = b - datas[3] * 10;
+		datas[4] = b;
 
 		//Change number to its ASCII code.
 		datas[0] += 48;
 		datas[1] += 48;
 		datas[2] += 48;
 		datas[3] += 48;
+		datas[4] += 48;
 
 		WriteData(datas[0]);
 		WriteData(datas[1]);
 		WriteData(datas[2]);
 		WriteData(datas[3]);
+		WriteData(datas[4]);
 	}
 
 	void WriteBMP() {

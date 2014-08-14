@@ -112,42 +112,50 @@ int main(int argc, char* argv[]) {
 	buttons.InitButtons();
 
 	nokiaLCD.Clear();
-	nokiaLCD.WriteTextXY((char*) "TROLOLO", 0, 0);
-	nokiaLCD.WriteBMP();
-	Delay::delay_ms(1000);
-
 	//InitAccelerometer();
 	//acc_initialized = 1;
 
-	IMU imu10DOF;	//
-	imu10DOF.gyro.initialize();
-	imu10DOF.accelerometer.initialize();
-//	if (gyro.testConnection() == 0) {
-//		while (1) {
-//		}	//Error handler.
-//	}
+	imu10DOF.initialize();
 
 	uint8_t buf[10];
 	uint8_t byte;
 
 	// Perform all necessary initializations for the LED.
 	blinkLed.powerUp();
-	uint16_t c = 0;
+	uint16_t counter = 0;
+	imu10DOF.setConnected();
 	while (1) {
-
-		if (VCP_read(&byte, 1) == 1) {
-			VCP_write("\r\nYou typed ", 12);
-			VCP_write(&(byte*2), 1);
-			VCP_write("\r\n", 2);
-		}
-
 		buttons.mainBegginingUpdate();
-		if (++c == 100) {
-			//Main_AccelerometerAction(&nokiaLCD);
-			imu10DOF.accelerometer.test(nokiaLCD);
-			imu10DOF.gyro.test(nokiaLCD);
-			c = 0;
+
+
+		if((VCP_read(buf,1) == 1)) {
+			switch(buf[0]) {
+			case 'S':
+				imu10DOF.setConnected();
+				break;
+			case 'E':
+				imu10DOF.setDisconnected();
+				break;
+			case ((char) 40):
+				imu10DOF.setRequestOfData();
+				break;
+			default:
+
+				break;
+			}
 		}
+
+		 if(imu10DOF.sendViaVirtualCom()) {
+			if (++counter == 100) {
+				imu10DOF.showAnglesKalman(nokiaLCD);
+				counter = 0;
+			}
+			imu10DOF.setRequestOfData();
+//			 nokiaLCD.WriteTextXY((char*)"Wyslano, ",0,0);
+//			 nokiaLCD.GoTo(0,1);
+//			 nokiaLCD.WriteNumberInDec(c);
+		 }
+
 		if (buttons.getButtonState(0) == GPIO::longPush) {
 			nokiaLCD.WriteTextXY((char*) "longPush const", 0, 0);
 		}

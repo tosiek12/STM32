@@ -130,15 +130,16 @@ class ITG3200 {
 		}
 
 		struct OutXYZTypeDef {
-			int16_t x;
-			int16_t y;
-			int16_t z;
+			volatile int16_t x;
+			volatile int16_t y;
+			volatile int16_t z;
 		};
 		OutXYZTypeDef axis;
 
         void initialize();
         uint8_t testConnection();
         void test(NokiaLCD & nokia);
+        void update();
 
         // WHO_AM_I register
         uint8_t getDeviceID();

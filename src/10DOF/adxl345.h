@@ -6,7 +6,6 @@
 #include "../NokiaLCD/nokiaLCD.h"
 #include "../Delay/delay.h"
 #include "I2C.h"
-//#include "IMU.h"
 
 #define I2C_ID_ADXL345								 0xA6	//(0x53<<1)
 #define ADXL345_ADDRESS_ALT_LOW 					 0xA6 // alt address pin low (GND)
@@ -303,27 +302,32 @@
 #define ADXL345_RA_FIFO_STATUS 						 0x39
 
 class ADXL345 {
-    public:
+private:
+	struct OutXYZTypeDef {
+		volatile int16_t x;
+		volatile int16_t y;
+		volatile int16_t z;
+	};
+
+public:
+	OutXYZTypeDef axis;
 		ADXL345(uint8_t address = ADXL345_DEFAULT_ADDRESS) {
 			devAddr = address;
+			axis.x = 0;
+			axis.y = 0;
+			axis.z = 0;
 		}
-
-		struct OutXYZTypeDef {
-			int16_t x;
-			int16_t y;
-			int16_t z;
-		};
-		OutXYZTypeDef axis;
 
         void initialize();
         uint8_t testConnection();
         void test(NokiaLCD & nokia);
+        void update();
 
         // WHO_AM_I register
         uint8_t getDeviceID();
         void setDeviceID(uint8_t id);
 
-        void  ReadTapThresh(uint8_t *tap);
+        void ReadTapThresh(uint8_t *tap);
         void WriteTapThresh(uint8_t tap);
 
         void ReadXOffSet(int8_t *xoff);

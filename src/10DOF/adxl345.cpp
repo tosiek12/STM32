@@ -5,9 +5,17 @@
  */
 void ADXL345::initialize() {
 	//Need to set power control bit to wake up the adxl345
-	I2C::i2c_WriteByte(I2C_ID_ADXL345,ADXL345_RA_DATA_FORMAT,ADXL345_DATA_RANGE_2G);
-	I2C::i2c_WriteByte(I2C_ID_ADXL345,ADXL345_RA_POWER_CTL, ADXL345_MEASURE_ENABLE);
-	I2C::i2c_WriteByte(I2C_ID_ADXL345,ADXL345_RA_BW_RATE, ADXL345_BW_1600_HZ);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_DATA_FORMAT,
+			ADXL345_DATA_RANGE_2G);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL,
+			ADXL345_MEASURE_ENABLE);
+	WriteBWRate(ADXL345_NormalPower, ADXL345_BW_1600_HZ);
+
+//	TODO: WriteXYZOffSet(&xoff,&yoff,&zoff);
+//	TODO:	WritePWRCtl(ADXL345_LINK_DISABLE, ADXL345_ASLEEP_DISABLE, ADXL345_MEASURE_ENABLE, ADXL345_SLEEP_DISABLE, ADXL345_WAKE_8HZ);
+//	TODO:	WriteDataFormat(ADXL345_DATA_SELFTEST_DISABLE, ADXL345_DATA_SPI_3,
+//			ADXL345_DATA_INT_INVERT_DISABLE, ADXL345_DATA_FULLRES_ENABLE,
+//			ADXL345_DATA_JUSTIFY_LEFT, ADXL345_DATA_RANGE_2G);
 
 //	if (testConnection()) {
 //
@@ -21,8 +29,7 @@ void ADXL345::test(NokiaLCD & nokia) {
 	int16_t Out_x = 0, Out_y = 0, Out_z = 0;
 	int32_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
 	for (uint16_t i = 0; i < 500; i++) {
-		I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6,
-				(uint8_t *) &axis);
+//		update();
 		Sum_x += axis.x;
 		Sum_y += axis.y;
 		Sum_z += axis.z;
@@ -34,15 +41,15 @@ void ADXL345::test(NokiaLCD & nokia) {
 	uint8_t buf[10];
 
 	nokia.ClearLine(0);
-	sprintf((char*) buf, "X=%d", (int16_t) (Out_x * ADXL345_2G_FACTOR));
+	sprintf((char*) buf, "X=%d", Out_x);
 	nokia.WriteTextXY((char*) buf, 0, 0);
 
 	nokia.ClearLine(1);
-	sprintf((char*) buf, "Y=%d", (int16_t) (Out_y * ADXL345_2G_FACTOR));
+	sprintf((char*) buf, "Y=%d", Out_y);
 	nokia.WriteTextXY((char*) buf, 0, 1);
 
 	nokia.ClearLine(2);
-	sprintf((char*) buf, "Z=%d", (int16_t) (Out_z * ADXL345_2G_FACTOR));
+	sprintf((char*) buf, "Z=%d", Out_z);
 	nokia.WriteTextXY((char*) buf, 0, 2);
 }
 
@@ -524,11 +531,16 @@ void ADXL345::WriteDataFormat(uint8_t selftest, uint8_t spi, uint8_t intinv,
  * @param[out]: none
  */
 void ADXL345::ReadXYZ(int16_t *xdata, int16_t *ydata, int16_t *zdata) {
-	uint8_t b[6];
-	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, b);
-	*xdata = (int16_t) ((uint16_t) b[0] << 8 | (uint16_t) b[1]);
-	*ydata = (int16_t) ((uint16_t) b[2] << 8 | (uint16_t) b[3]);
-	*zdata = (int16_t) ((uint16_t) b[4] << 8 | (uint16_t) b[5]);
+	uint8_t buffer[6];
+	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, buffer);
+	*xdata = (int16_t) ((uint16_t) buffer[0] << 8 | (uint16_t) buffer[1]);
+	*ydata = (int16_t) ((uint16_t) buffer[2] << 8 | (uint16_t) buffer[3]);
+	*zdata = (int16_t) ((uint16_t) buffer[4] << 8 | (uint16_t) buffer[5]);
+
+	//TODO: implement scaling factor!
+	*xdata =  (int16_t) (*xdata * ADXL345_2G_FACTOR);
+	*ydata =  (int16_t) (*ydata * ADXL345_2G_FACTOR);
+	*zdata =  (int16_t) (*zdata * ADXL345_2G_FACTOR);
 }
 
 /*
@@ -566,4 +578,13 @@ void ADXL345::WriteFIFOCtl(uint8_t fifo, uint8_t trigger, uint8_t sample) {
  */
 void ADXL345::ReadFIFOStatus(uint8_t *fifost) {
 	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_STATUS, fifost);
+}
+
+void ADXL345::update() {
+	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6,
+			(uint8_t *) &axis);
+	//TODO: implement scaling factor!
+	axis.x =  (int16_t) (axis.x * ADXL345_2G_FACTOR);
+	axis.y =  (int16_t) (axis.y * ADXL345_2G_FACTOR);
+	axis.z =  (int16_t) (axis.z * ADXL345_2G_FACTOR);
 }
