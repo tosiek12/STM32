@@ -134,6 +134,7 @@ class ITG3200 {
 			volatile int16_t y;
 			volatile int16_t z;
 		};
+		// Values in (grad/sek)
 		OutXYZTypeDef axis;
 
         void initialize();

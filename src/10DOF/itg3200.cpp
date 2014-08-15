@@ -530,8 +530,8 @@ void ITG3200::update() {
 	axis.x =  (int16_t) (axis.x * ITG3200_2000G_FACTOR);
 	axis.y =  (int16_t) (axis.y * ITG3200_2000G_FACTOR);
 	axis.z =  (int16_t) (axis.z * ITG3200_2000G_FACTOR);
-	//TODO: Implement bias removing!
 
+	//TODO: Implement bias removing!
 	axis.x -=  -31;
 	axis.y -=  19;
 	axis.z -=  -4;

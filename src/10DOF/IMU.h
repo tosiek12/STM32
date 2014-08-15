@@ -140,9 +140,9 @@ public:
 		float64_t accYangle = (atan2(accelerometer.axis.y, accelerometer.axis.z) + PI) * RAD_TO_DEG;
 
 		// Complementary filter
-		compAngleX = (0.93 * (compAngleX + gyroXangle))
+		compAngleX = (0.93 * (compAngleX + gyroYrate * dt_inSec))
 				+ (0.07 * accXangle);
-		compAngleY = (0.93 * (compAngleY + gyroYangle))
+		compAngleY = (0.93 * (compAngleY + gyroYrate * dt_inSec))
 				+ (0.07 * accYangle);
 
 		// Kalman filter
