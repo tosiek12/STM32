@@ -10,6 +10,8 @@
 #include "I2C.h"
 #include "itg3200.h"
 #include "adxl345.h"
+#include "hmc5883l.h"
+#include "bmp085.h"
 #include "Kalman.h"
 
 /* Definition for TIMx clock resources */
@@ -26,6 +28,8 @@ public:
 private:
 	ITG3200 gyro;
 	ADXL345 accelerometer;
+	HMC5883L magnetometer;
+	BMP085 pressure;
 	const uint8_t I2C_ID_BMP085 = 0x77 << 1;		//Barometr?
 	volatile uint8_t sendDataTriger;
 	uint8_t connected;
@@ -95,7 +99,7 @@ private:
 
 public:
 	IMU() :
-			gyro(), accelerometer() {
+			gyro(), accelerometer(), magnetometer(), pressure() {
 		sendDataTriger = 0;
 		connected = 0;
 		request = 0;
@@ -107,12 +111,16 @@ public:
 		initializeI2C();
 		gyro.initialize();
 		accelerometer.initialize();
+		magnetometer.initialize();
+		pressure.initialize();
+
 		initializeTimerForUpdate();
 
 	}
 	void showMeasurment(NokiaLCD &nokiaLCD) {
 		accelerometer.test(nokiaLCD);
-		gyro.test(nokiaLCD);
+//		gyro.test(nokiaLCD);
+		magnetometer.test(nokiaLCD);
 	}
 
 	void timerAction();

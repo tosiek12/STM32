@@ -123,7 +123,10 @@ int main(int argc, char* argv[]) {
 	// Perform all necessary initializations for the LED.
 	blinkLed.powerUp();
 	uint16_t counter = 0;
+
 	imu10DOF.setConnected();
+	imu10DOF.setRequestOfData();
+
 	while (1) {
 		buttons.mainBegginingUpdate();
 
@@ -146,9 +149,10 @@ int main(int argc, char* argv[]) {
 		}
 
 		 if(imu10DOF.sendViaVirtualCom()) {
-			if (++counter == 1000) {
-				imu10DOF.showAnglesKalman(nokiaLCD);
+			if (++counter == 250) {
+//				imu10DOF.showAnglesKalman(nokiaLCD);
 				counter = 0;
+				imu10DOF.showMeasurment(nokiaLCD);
 			}
 			imu10DOF.setRequestOfData();
 //			 nokiaLCD.WriteTextXY((char*)"Wyslano, ",0,0);
