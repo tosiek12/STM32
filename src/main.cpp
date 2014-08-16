@@ -149,7 +149,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		 if(imu10DOF.sendViaVirtualCom()) {
-			if (++counter == 250) {
+			if (++counter == 100) {
 //				imu10DOF.showAnglesKalman(nokiaLCD);
 				counter = 0;
 				imu10DOF.showMeasurment(nokiaLCD);

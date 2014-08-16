@@ -35,7 +35,7 @@
 #include "hmc5883l.h"
 #include "IMU.h"
 
-void HMC5883L::test(NokiaLCD & nokia) {
+void HMC5883L::test(NokiaLCD & nokia, uint8_t height) {
 	int16_t Out_x = 0, Out_y = 0, Out_z = 0;
 	int32_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
 
@@ -53,17 +53,17 @@ void HMC5883L::test(NokiaLCD & nokia) {
 	      heading += 2 * PI;
 	uint8_t buf[10];
 
-	nokia.ClearLine(3);	//* HMC5883L_COEF_GAIN_1090
+	nokia.ClearLine(height*3);	//* HMC5883L_COEF_GAIN_1090
 	sprintf((char*) buf, "X=%3dY=%3d", (int16_t) (Out_x), (int16_t) (Out_y));
-	nokia.WriteTextXY((char*) buf, 0, 3);
+	nokia.WriteTextXY((char*) buf, 0, height*3);
 
-	nokia.ClearLine(4);	//* HMC5883L_COEF_GAIN_1090
+	nokia.ClearLine(height*3 +1);	//* HMC5883L_COEF_GAIN_1090
 	sprintf((char*) buf, "Z=%3d", (int16_t) (Out_z));
-	nokia.WriteTextXY((char*) buf, 0, 4);
+	nokia.WriteTextXY((char*) buf, 0, height*3 +1);
 
-	nokia.ClearLine(5);
+	nokia.ClearLine(height*3 +2);
 	sprintf((char*) buf, "head=%d", (int16_t) (heading * 180/PI));
-	nokia.WriteTextXY((char*) buf, 0, 5);
+	nokia.WriteTextXY((char*) buf, 0, height*3 +2);
 }
 
 /** Default constructor, uses default I2C address.

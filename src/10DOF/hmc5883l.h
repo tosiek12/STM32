@@ -129,7 +129,7 @@ class HMC5883L {
 
         void initialize();
         bool testConnection();
-        void test(NokiaLCD & nokia);
+        void test(NokiaLCD & nokia, uint8_t height);
 
         // CONFIG_A register
         uint8_t getSampleAveraging();

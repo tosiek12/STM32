@@ -118,9 +118,10 @@ public:
 
 	}
 	void showMeasurment(NokiaLCD &nokiaLCD) {
-		accelerometer.test(nokiaLCD);
-//		gyro.test(nokiaLCD);
-		magnetometer.test(nokiaLCD);
+//		accelerometer.test(nokiaLCD,0);
+//		gyro.test(nokiaLCD,1);
+		magnetometer.test(nokiaLCD, 0);
+		pressure.test(nokiaLCD, 1);
 	}
 
 	void timerAction();
