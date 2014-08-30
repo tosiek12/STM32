@@ -33,10 +33,10 @@ uint8_t IMU::sendViaVirtualCom() {
 
 	if ((request == 1 ) && (connected == 1) && (sendDataTriger == 1)) {
 		kalmanStepAction();
-//		VCP_write("D", 1);
-//		VCP_write(&accelerometer.axis, frameSize);
-//		VCP_write(&gyro.axis, frameSize);
-//		VCP_write("\n", 1);
+		VCP_write("D", 1);
+		VCP_write(&accelerometer.axis, frameSize);
+		VCP_write(&gyro.axis, frameSize);
+		VCP_write("\n", 1);
 
 		sendDataTriger = 0;
 		request = 0;

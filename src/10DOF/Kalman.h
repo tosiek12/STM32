@@ -21,7 +21,17 @@ private:
 
 	float64_t angle; // The angle calculated by the Kalman filter - part of the 2x1 state vector
 	float64_t bias; // The gyro bias calculated by the Kalman filter - part of the 2x1 state vector
-	float64_t rate; // Unbiased rate calculated from the rate and the calculated bias - you have to call getAngle to update the rate
+
+	arm_matrix_instance_f32 P_matrix;
+	float32_t P_new[2*2];
+	arm_matrix_instance_f32 A_matrix;
+	float32_t A[2*2];
+	arm_matrix_instance_f32 B_matrix;
+	float32_t B[2*1];
+	arm_matrix_instance_f32 C_matrix;
+	float32_t C[2*1];
+	arm_matrix_instance_f32 X_matrix;
+	float32_t X[2*1];
 
 	float64_t P[2][2]; // Error covariance matrix - This is a 2x2 matrix
 	float64_t K[2]; // Kalman gain - This is a 2x1 vector
@@ -32,7 +42,29 @@ public:
 		/* We will set the variables like so, these can also be tuned by the user */
 		Q_angle = 0.001;
 		Q_bias = 0.003;
-		R_measure = 0.03;
+		R_measure = 0.3;
+
+		//A = [1, -dt; 0, 1]
+		//B = [1;0]
+		//C = [1,0]
+		//D = [0]
+		X_matrix.numCols = 1;
+		X_matrix.numRows = 2;
+		X_matrix.pData = X;
+
+		P_matrix.numCols = 2;
+		P_matrix.numRows = 2;
+		P_matrix.pData = P_new;
+
+
+
+		A_matrix.numCols = 2;
+		A_matrix.numRows = 2;
+		A_matrix.pData = A;
+
+		C_matrix.numCols = 2;
+		C_matrix.numRows = 1;
+		C_matrix.pData = C;
 
 		angle = 0; // Reset the angle
 		bias = 0; // Reset bias
@@ -41,6 +73,8 @@ public:
 		P[0][1] = 0;
 		P[1][0] = 0;
 		P[1][1] = 0;
+
+
 	}
 
 	;
@@ -50,36 +84,29 @@ public:
 		// Modified by Kristian Lauszus
 		// See my blog post for more information: http://blog.tkjelectronics.dk/2012/09/a-practical-approach-to-kalman-filter-and-how-to-implement-it
 
-		// Time Update ("Predict")
+		// Stage 1: Predict
 		// Update xhat - Project the state ahead
-		/* Step 1 */
-		rate = newRate - bias;
-		angle += dt * rate;
-
+		angle += dt * (newRate - bias);
 		// Update estimation error covariance
-		/* Step 2 */
 		P[0][0] += dt * (dt * P[1][1] - P[0][1] - P[1][0] + Q_angle);
-		P[0][1] -= dt * P[1][1];
-		P[1][0] -= dt * P[1][1];
+		P[0][1] += - dt * P[1][1];
+		P[1][0] += - dt * P[1][1];
 		P[1][1] += Q_bias * dt;
 
-		// Measurement Update ("Correct")
+		// Stage 2: Correct
 		// Calculate Kalman gain
-		/* Step 4 */
 		S = P[0][0] + R_measure;
 		/* Step 5 */
 		K[0] = P[0][0] / S;
 		K[1] = P[1][0] / S;
 
-		// Calculate angle and bias - Update estimate with measurement zk (newAngle)
-		/* Step 3 */
+		// Update estimate with measurement zk (newAngle)
 		y = newAngle - angle;
 		/* Step 6 */
 		angle += K[0] * y;
 		bias += K[1] * y;
 
 		// Update the error covariance
-		/* Step 7 */
 		P[0][0] -= K[0] * P[0][0];
 		P[0][1] -= K[0] * P[0][1];
 		P[1][0] -= K[1] * P[0][0];
@@ -92,11 +119,6 @@ public:
 	 // Used to set angle, this should be set as the starting angle
 	void setAngle(float64_t newAngle) {
 		angle = newAngle;
-	}
-
-	// Return the unbiased rate
-	float64_t getRate() {
-		return rate;
 	}
 
 	/* These are used to tune the Kalman filter */

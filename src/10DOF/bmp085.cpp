@@ -38,6 +38,7 @@ THE SOFTWARE.
  */
 BMP085::BMP085() {
     devAddr = BMP085_DEFAULT_ADDRESS;
+    pressure = 220;
 }
 
 /**
@@ -63,25 +64,25 @@ void BMP085::test(NokiaLCD & nokia, uint8_t height) {
 	Delay::delay_us(getMeasureDelayMicroseconds());
 
 	// read calibrated pressure value in Pascals (Pa)
-	pressure = getPressure();
+	float32_t k = 1;	//Low-Pass filter coefficient.
+	pressure = (1-k)*pressure +k*getPressure();
 
 	// calculate absolute altitude in meters based on known pressure
 	// (may pass a second "sea level pressure" parameter here,
 	// otherwise uses the standard value of 101325 Pa)
-	altitude = getAltitude(pressure);
-
+	altitude = getAltitude(pressure,101325);	//101175 - kiedys lepiej dzialalo
 	uint8_t buf[10];
 
 	nokia.ClearLine(height*3);	//* HMC5883L_COEF_GAIN_1090
-	sprintf((char*) buf, "P=%3d", (int16_t) (pressure));
+	sprintf((char*) buf, "P=%3d", (int32_t) (pressure));
 	nokia.WriteTextXY((char*) buf, 0, height*3);
 
 	nokia.ClearLine(height*3+1);	//* HMC5883L_COEF_GAIN_1090
-	sprintf((char*) buf, "T=%3d", (int16_t) (temperature));
+	sprintf((char*) buf, "T=%3d", (int16_t) (temperature*10));
 	nokia.WriteTextXY((char*) buf, 0, height*3+1);
 
 	nokia.ClearLine(height*3+2);	//* HMC5883L_COEF_GAIN_1090
-	sprintf((char*) buf, "Alt=%3d", (int16_t) (altitude));
+	sprintf((char*) buf, "Alt=%3d (2217)", (int16_t) (altitude*10));
 	nokia.WriteTextXY((char*) buf, 0, height*3+2);
 
 }
@@ -234,7 +235,7 @@ uint16_t BMP085::getRawTemperature() {
     return 0; // wrong measurement mode for temperature request
 }
 
-float BMP085::getTemperatureC() {
+float32_t BMP085::getTemperatureC() {
     /*
     Datasheet formula:
         UT = raw temperature
@@ -247,10 +248,10 @@ float BMP085::getTemperatureC() {
     int32_t x1 = ((ut - (int32_t)ac6) * (int32_t)ac5) >> 15;
     int32_t x2 = ((int32_t)mc << 11) / (x1 + md);
     b5 = x1 + x2;
-    return (float)((b5 + 8) >> 4) / 10.0f;
+    return (float32_t)((b5 + 8) >> 4) / 10.0f;
 }
 
-float BMP085::getTemperatureF() {
+float32_t BMP085::getTemperatureF() {
     return getTemperatureC() * 9.0f / 5.0f + 32;
 }
 
@@ -259,7 +260,7 @@ uint32_t BMP085::getRawPressure() {
     return 0; // wrong measurement mode for pressure request
 }
 
-float BMP085::getPressure() {
+float32_t BMP085::getPressure() {
     /*
     Datasheet forumla
         UP = raw pressure
@@ -304,6 +305,6 @@ float BMP085::getPressure() {
     return p + ((x1 + x2 + (int32_t)3791) >> 4);
 }
 
-float BMP085::getAltitude(float pressure, float seaLevelPressure) {
-    return 44330 * (1.0 - pow(pressure / seaLevelPressure, 0.1903));
+float32_t BMP085::getAltitude(float32_t pressure, float32_t seaLevelPressure) {
+    return 44330.8 * (1.0 - pow(pressure / seaLevelPressure, 0.190295));
 }

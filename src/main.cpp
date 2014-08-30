@@ -112,24 +112,24 @@ int main(int argc, char* argv[]) {
 	buttons.InitButtons();
 
 	nokiaLCD.Clear();
-	//InitAccelerometer();
-	//acc_initialized = 1;
 
 	imu10DOF.initialize();
+	imu10DOF.selfTests(nokiaLCD);
 
+	imu10DOF.initialize();
 	uint8_t buf[10];
-	uint8_t byte;
 
 	// Perform all necessary initializations for the LED.
 	blinkLed.powerUp();
 	uint16_t counter = 0;
 
-	imu10DOF.setConnected();
+	imu10DOF.setConnected();	//manually imitate
 	imu10DOF.setRequestOfData();
+
+
 
 	while (1) {
 		buttons.mainBegginingUpdate();
-
 
 		if((VCP_read(buf,1) == 1)) {
 			switch(buf[0]) {
@@ -155,9 +155,6 @@ int main(int argc, char* argv[]) {
 				imu10DOF.showMeasurment(nokiaLCD);
 			}
 			imu10DOF.setRequestOfData();
-//			 nokiaLCD.WriteTextXY((char*)"Wyslano, ",0,0);
-//			 nokiaLCD.GoTo(0,1);
-//			 nokiaLCD.WriteNumberInDec(c);
 		 }
 
 		if (buttons.getButtonState(0) == GPIO::longPush) {

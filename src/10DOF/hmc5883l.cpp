@@ -35,35 +35,97 @@
 #include "hmc5883l.h"
 #include "IMU.h"
 
-void HMC5883L::test(NokiaLCD & nokia, uint8_t height) {
-	int16_t Out_x = 0, Out_y = 0, Out_z = 0;
-	int32_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
+uint8_t HMC5883L::selfTest(NokiaLCD &nokia) {
+	/*
+	 * X & Y Ases +-1.16gauss
+	 * Z Axis +-1.08gauss
+	 *
+	 * X & Y & Z Axes (GN = 100) 510LSb
+	 */
+	I2C::i2c_WriteByte(devAddr, HMC5883L_RA_CONFIG_A,
+			(HMC5883L_RATE_15
+					<< (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH + 1)
+					| HMC5883L_BIAS_POSITIVE
+							<< (HMC5883L_CRA_BIAS_BIT - HMC5883L_CRA_BIAS_LENGTH
+									+ 1)));
 
-	for (uint16_t i = 0; i < 1000; i++) {
+	// write CONFIG_B register
+	setGain(HMC5883L_GAIN_660);
+	// write MODE register
+	setMode(HMC5883L_MODE_SINGLE);
+
+	// 720/706/688
+	getHeading(&axis.x,&axis.y, &axis.z);
+
+	getHeading(&axis.x,&axis.y, &axis.z);
+
+	getHeading(&axis.x,&axis.y, &axis.z);
+
+	return 1;
+}
+
+void HMC5883L::test(NokiaLCD & nokia, uint8_t height) {
+	float64_t Out_x = 0, Out_y = 0, Out_z = 0;
+	float64_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
+
+	volatile bool test = getReadyStatus();
+	volatile bool testLock = getLockStatus();
+
+	for (uint16_t i = 0; i < 100; i++) {
 		getHeading(&axis.x, &axis.y, &axis.z);
 		Sum_x += axis.x;
 		Sum_y += axis.y;
 		Sum_z += axis.z;
 	}
-	Out_x = Sum_x / 1000;
-	Out_y = Sum_y / 1000;
-	Out_z = Sum_z / 1000;
-	heading = atan2(Out_y, Out_x);
-	if(heading < 0)
-	      heading += 2 * PI;
+	Out_x = Sum_x / 100;
+	Out_y = Sum_y / 100;
+	Out_z = Sum_z / 100;
+
+	//Remove offset
+	Out_x += 256;
+	Out_y += -53;
+	Out_z += -117;
+
+	//Change to mili Gauss [mG]
+	Out_x *= 0.92;
+	Out_y *= 0.92;
+	Out_z *= 0.92;
+	heading = atan2(Out_y, Out_x);	//[-PI,PI]
+
+	//http://magnetic-declination.com/
+	float32_t declinationAngle = (5.0 + (16.0 / 60.0)) / (180.0 / PI); //Positive declination
+	heading += declinationAngle;
+	if (heading < 0) {
+		heading += 2 * PI;
+	} else if (heading > 2 * PI) {
+		heading -= 2 * PI;
+	}
+
+	heading *= 180.0 / PI; //Change to degree
+
+	// Poprawka nierownomiernosci pomiarow HMC5883L
+	float fixedHeadingDegrees;
+	if (heading >= 1 && heading < 240) {
+//		fixedHeadingDegrees = map(headingDegrees, 0, 239, 0, 179);
+		heading = (heading / 239.0) * 179.0;
+	} else if (heading >= 240) {
+//		fixedHeadingDegrees = map(headingDegrees, 240, 360, 180, 360);
+		heading = ((heading - 240) / 120) * 180 + 180;
+	}
+
 	uint8_t buf[10];
 
-	nokia.ClearLine(height*3);	//* HMC5883L_COEF_GAIN_1090
+	nokia.ClearLine(height * 3);	//* HMC5883L_COEF_GAIN_1090
 	sprintf((char*) buf, "X=%3dY=%3d", (int16_t) (Out_x), (int16_t) (Out_y));
-	nokia.WriteTextXY((char*) buf, 0, height*3);
+	nokia.WriteTextXY((char*) buf, 0, height * 3);
 
-	nokia.ClearLine(height*3 +1);	//* HMC5883L_COEF_GAIN_1090
+	nokia.ClearLine(height * 3 + 1);	//* HMC5883L_COEF_GAIN_1090
 	sprintf((char*) buf, "Z=%3d", (int16_t) (Out_z));
-	nokia.WriteTextXY((char*) buf, 0, height*3 +1);
+	nokia.WriteTextXY((char*) buf, 0, height * 3 + 1);
 
-	nokia.ClearLine(height*3 +2);
-	sprintf((char*) buf, "head=%d", (int16_t) (heading * 180/PI));
-	nokia.WriteTextXY((char*) buf, 0, height*3 +2);
+	nokia.ClearLine(height * 3 + 2);
+	sprintf((char*) buf, "head=%d", (int16_t) (heading));
+	nokia.WriteTextXY((char*) buf, 0, height * 3 + 2);
 }
 
 /** Default constructor, uses default I2C address.
@@ -108,6 +170,29 @@ void HMC5883L::initialize() {
 
 	// write MODE register
 	setMode(HMC5883L_MODE_SINGLE);
+
+	volatile float64_t x_max,x_min,y_min,y_max,z_min, z_max;
+
+	while(false) {
+		getHeading(&axis.x, &axis.y, &axis.z);
+		if(axis.x> x_max) {
+			x_max = axis.x;
+		} else if(axis.x < x_min) {
+			x_min = axis.x;
+		}
+
+		if(axis.y> y_max) {
+			y_max = axis.y;
+		} else if(axis.y <y_min) {
+			y_min = axis.y;
+		}
+
+		if(axis.z> z_max) {
+			z_max = axis.z;
+		} else if(axis.z <z_min) {
+			z_min = axis.z;
+		}
+	}
 }
 
 /** Verify the I2C connection.
@@ -324,6 +409,15 @@ void HMC5883L::getHeading(int16_t *x, int16_t *y, int16_t *z) {
 	*x = (((int16_t) buffer[0]) << 8) | buffer[1];
 	*y = (((int16_t) buffer[4]) << 8) | buffer[5];
 	*z = (((int16_t) buffer[2]) << 8) | buffer[3];
+	if(*x == -4096) {
+		*x = 0;
+	}
+	if(*y == -4096) {
+		*y = 0;
+	}
+	if(*z == -4096) {
+		*z = 0;
+	}
 }
 /** Get X-axis heading measurement.
  * @return 16-bit signed integer with X-axis heading

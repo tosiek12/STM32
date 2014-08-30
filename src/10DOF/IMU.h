@@ -123,7 +123,9 @@ public:
 		magnetometer.test(nokiaLCD, 0);
 		pressure.test(nokiaLCD, 1);
 	}
-
+	void selfTests(NokiaLCD &nokiaLCD) {
+		magnetometer.selfTest(nokiaLCD);
+	}
 	void timerAction();
 	uint8_t sendViaVirtualCom();
 	void setConnected() {
