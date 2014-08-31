@@ -51,6 +51,8 @@ uint8_t HMC5883L::selfTest(NokiaLCD &nokia) {
 
 	// write CONFIG_B register
 	setGain(HMC5883L_GAIN_660);
+
+
 	// write MODE register
 	setMode(HMC5883L_MODE_SINGLE);
 
@@ -68,9 +70,6 @@ void HMC5883L::test(NokiaLCD & nokia, uint8_t height) {
 	float64_t Out_x = 0, Out_y = 0, Out_z = 0;
 	float64_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
 
-	volatile bool test = getReadyStatus();
-	volatile bool testLock = getLockStatus();
-
 	for (uint16_t i = 0; i < 100; i++) {
 		getHeading(&axis.x, &axis.y, &axis.z);
 		Sum_x += axis.x;
@@ -82,29 +81,26 @@ void HMC5883L::test(NokiaLCD & nokia, uint8_t height) {
 	Out_z = Sum_z / 100;
 
 	//Remove offset
-	Out_x += 256;
-	Out_y += -53;
-	Out_z += -117;
+	Out_x += offset.x;
+	Out_y += offset.y;
+	Out_z += offset.z;
 
 	//Change to mili Gauss [mG]
-	Out_x *= 0.92;
-	Out_y *= 0.92;
-	Out_z *= 0.92;
+	Out_x *= scalingFactor;
+	Out_y *= scalingFactor;
+	Out_z *= scalingFactor;
+
 	heading = atan2(Out_y, Out_x);	//[-PI,PI]
-
-	//http://magnetic-declination.com/
-	float32_t declinationAngle = (5.0 + (16.0 / 60.0)) / (180.0 / PI); //Positive declination
-	heading += declinationAngle;
-	if (heading < 0) {
-		heading += 2 * PI;
-	} else if (heading > 2 * PI) {
-		heading -= 2 * PI;
-	}
-
 	heading *= 180.0 / PI; //Change to degree
 
+	heading += declinationInDeg;
+	if (heading < 0) {
+		heading += 360;
+	} else if (heading > 360) {
+		heading -= 360;
+	}
+
 	// Poprawka nierownomiernosci pomiarow HMC5883L
-	float fixedHeadingDegrees;
 	if (heading >= 1 && heading < 240) {
 //		fixedHeadingDegrees = map(headingDegrees, 0, 239, 0, 179);
 		heading = (heading / 239.0) * 179.0;
@@ -113,19 +109,29 @@ void HMC5883L::test(NokiaLCD & nokia, uint8_t height) {
 		heading = ((heading - 240) / 120) * 180 + 180;
 	}
 
-	uint8_t buf[10];
+	uint8_t buf[20];
 
-	nokia.ClearLine(height * 3);	//* HMC5883L_COEF_GAIN_1090
+	nokia.ClearLine(height * 3);
 	sprintf((char*) buf, "X=%3dY=%3d", (int16_t) (Out_x), (int16_t) (Out_y));
 	nokia.WriteTextXY((char*) buf, 0, height * 3);
 
-	nokia.ClearLine(height * 3 + 1);	//* HMC5883L_COEF_GAIN_1090
+	nokia.ClearLine(height * 3 + 1);
 	sprintf((char*) buf, "Z=%3d", (int16_t) (Out_z));
 	nokia.WriteTextXY((char*) buf, 0, height * 3 + 1);
 
 	nokia.ClearLine(height * 3 + 2);
 	sprintf((char*) buf, "head=%d", (int16_t) (heading));
 	nokia.WriteTextXY((char*) buf, 0, height * 3 + 2);
+}
+
+void HMC5883L::calibrate() {
+	//Set offset
+	offset.x = 256;
+	offset.y = -53;
+	offset.z = -117;
+
+	//http://magnetic-declination.com/
+	declinationInDeg = 5.0 + (16.0 / 60.0); //Positive declination
 }
 
 /** Default constructor, uses default I2C address.
@@ -335,6 +341,33 @@ void HMC5883L::setGain(uint8_t gain) {
 	// use this method to guarantee that bits 4-0 are set to zero, which is a
 	// requirement specified in the datasheet; it's actually more efficient than
 	// using the I2Cdev.writeBits method
+	switch (gain) {
+	case HMC5883L_GAIN_1370:
+		scalingFactor = 0.73;	//(1000.0/HMC5883L_COEF_GAIN_1370)
+		break;
+	case HMC5883L_GAIN_1090:
+		scalingFactor = 0.92;
+		break;
+	case HMC5883L_GAIN_820:
+		scalingFactor = 1.22;
+		break;
+	case HMC5883L_GAIN_660:
+		scalingFactor = 1.52;
+		break;
+	case HMC5883L_GAIN_440:
+		scalingFactor = 2.27;
+		break;
+	case HMC5883L_GAIN_390:
+		scalingFactor = 2.56;
+		break;
+	case HMC5883L_GAIN_330:
+		scalingFactor = 3.03;
+		break;
+	case HMC5883L_GAIN_220:
+		scalingFactor = 4.35;
+		break;
+	}
+
 	I2C::i2c_WriteByte(devAddr, HMC5883L_RA_CONFIG_B,
 			gain << (HMC5883L_CRB_GAIN_BIT - HMC5883L_CRB_GAIN_LENGTH + 1));
 }

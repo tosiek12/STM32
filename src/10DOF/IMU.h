@@ -32,6 +32,7 @@ private:
 	BMP085 pressure;
 	const uint8_t I2C_ID_BMP085 = 0x77 << 1;		//Barometr?
 	volatile uint8_t sendDataTriger;
+	volatile uint8_t showDataTriger;
 	uint8_t connected;
 	uint8_t request;
 
@@ -123,9 +124,16 @@ public:
 		magnetometer.test(nokiaLCD, 0);
 		pressure.test(nokiaLCD, 1);
 	}
-	void selfTests(NokiaLCD &nokiaLCD) {
+	inline uint8_t __attribute__((always_inline))  getShowDataTriger() {
+		return showDataTriger;
+	}
+	inline void __attribute__((always_inline)) clearShowDataTriger() {
+		showDataTriger = 0;
+	}
+	inline void __attribute__((always_inline)) selfTests(NokiaLCD &nokiaLCD) {
 		magnetometer.selfTest(nokiaLCD);
 	}
+	void calibrateAllSensors();
 	void timerAction();
 	uint8_t sendViaVirtualCom();
 	void setConnected() {

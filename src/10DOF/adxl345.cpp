@@ -53,6 +53,10 @@ void ADXL345::test(NokiaLCD & nokia) {
 	nokia.WriteTextXY((char*) buf, 0, 2);
 }
 
+void ADXL345::calibrate() {
+
+}
+
 /*
  * @brief: Test ADXL345 module address
  * @param[in]: none

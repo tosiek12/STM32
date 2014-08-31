@@ -88,17 +88,17 @@ private:
 
 	inline void __attribute__((always_inline)) Initialize(void) {
 		GPIO_Config();
-		Delay::delay_ms(10);
+		Delay::delay_us(10000);
 
 		RST(0); //LCD_RST = 0;
-		Delay::delay_ms(1);
+		Delay::delay_us(1000);
 		RST(1); //LCD_RST = 1;
 
 		CS(0); //SPI_CS = 0;
-		Delay::delay_ms(1);
+		Delay::delay_us(1000);
 		CS(1); //SPI_CS = 1;
 
-		Delay::delay_ms(1);
+		Delay::delay_us(1000);
 
 #define LCD5110_BIAS_1_100 0x10	//n=7 1:100
 #define LCD5110_BIAS_1_80 0x11	//n=6 1:80

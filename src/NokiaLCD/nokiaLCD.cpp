@@ -90,12 +90,12 @@ void NokiaLCD::ClearLine(uint8_t line) {
 void NokiaLCD::LCD_write_byte(uint8_t dat, uint8_t command) {
 	uint8_t i;
 	CS(0);	//SPI_CS = 0;
-	Delay::delay_us(10);
+	Delay::delay_us(1);//10
 	if (command == 0)
 		DC(0);	//LCD_DC = 0;
 	else
 		DC(1);	//LCD_DC = 1; - write data to RAM
-	Delay::delay_us(10);
+	Delay::delay_us(1);//10
 	for (i = 0; i < 8; i++) {
 		MO(dat & 0x80);	//SPI_MO = dat & 0x80;
 		dat = dat << 1;

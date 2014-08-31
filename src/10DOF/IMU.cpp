@@ -13,16 +13,22 @@ extern "C" {
 IMU imu10DOF;
 
 void IMU::timerAction() {
+	static uint16_t counter = 0;
 	accelerometer.update();
 	gyro.update();
+	kalmanStepAction();
 	sendDataTriger = 1;
+	if (++counter == 200) {	//update LCD after x ms.
+		showDataTriger = 1;
+		counter = 0;
+	}
+
 }
 
 // ----- TIM_IRQHandler() ----------------------------------------------------
 extern "C" void TIM3_IRQHandler(void) {
 	if (__HAL_TIM_GET_ITSTATUS(&imu10DOF.TimHandle, TIM_IT_UPDATE ) != RESET) {
 		imu10DOF.timerAction();
-
 		__HAL_TIM_CLEAR_IT(&imu10DOF.TimHandle, TIM_IT_UPDATE);
 	}
 
@@ -32,7 +38,6 @@ uint8_t IMU::sendViaVirtualCom() {
 	const uint8_t frameSize = 6;
 
 	if ((request == 1 ) && (connected == 1) && (sendDataTriger == 1)) {
-		kalmanStepAction();
 		VCP_write("D", 1);
 		VCP_write(&accelerometer.axis, frameSize);
 		VCP_write(&gyro.axis, frameSize);
@@ -44,4 +49,11 @@ uint8_t IMU::sendViaVirtualCom() {
 		return 2 * frameSize + 2;
 	}
 	return 0;
+}
+
+
+void IMU::calibrateAllSensors() {
+	gyro.calibrate();
+	accelerometer.calibrate();
+	magnetometer.calibrate();
 }

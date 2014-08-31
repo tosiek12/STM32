@@ -33,6 +33,7 @@ system/src/diag \
 system/src/cortexm \
 system/src/cmsis \
 src \
+src/SpeedTester \
 src/STM32_USB_Device_Library/Core/Src \
 src/STM32_USB_Device_Library/Class/CDC/Src \
 src/NokiaLCD \

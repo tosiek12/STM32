@@ -114,19 +114,13 @@ int main(int argc, char* argv[]) {
 	nokiaLCD.Clear();
 
 	imu10DOF.initialize();
-	imu10DOF.selfTests(nokiaLCD);
+	imu10DOF.calibrateAllSensors();
 
-	imu10DOF.initialize();
 	uint8_t buf[10];
 
 	// Perform all necessary initializations for the LED.
 	blinkLed.powerUp();
 	uint16_t counter = 0;
-
-	imu10DOF.setConnected();	//manually imitate
-	imu10DOF.setRequestOfData();
-
-
 
 	while (1) {
 		buttons.mainBegginingUpdate();
@@ -147,14 +141,16 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 		}
+		if(imu10DOF.getShowDataTriger() == 1) {
+			//imu10DOF.showAnglesKalman(nokiaLCD);
+			imu10DOF.showMeasurment(nokiaLCD);
+			imu10DOF.clearShowDataTriger();
+		}
 
 		 if(imu10DOF.sendViaVirtualCom()) {
-			if (++counter == 100) {
-//				imu10DOF.showAnglesKalman(nokiaLCD);
-				counter = 0;
-				imu10DOF.showMeasurment(nokiaLCD);
-			}
-			imu10DOF.setRequestOfData();
+			 if(++counter == 10000) {
+				 counter = 0;
+			 }
 		 }
 
 		if (buttons.getButtonState(0) == GPIO::longPush) {
@@ -162,6 +158,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		if (buttons.getButtonStateChange(1, GPIO::shortPush)) {
+			imu10DOF.calibrateAllSensors();
 			blinkLed.turnOn();
 			nokiaLCD.WriteTextXY((char*) "1", 5, 5);
 			Delay::delay_ms(BLINK_ON_TICKS);

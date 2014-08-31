@@ -132,6 +132,8 @@ class HMC5883L {
         void test(NokiaLCD & nokia, uint8_t height);
         uint8_t selfTest(NokiaLCD &nokia);
 
+        void calibrate();
+
         // CONFIG_A register
         uint8_t getSampleAveraging();
         void setSampleAveraging(uint8_t averaging);
@@ -164,6 +166,9 @@ class HMC5883L {
         uint8_t getIDC();
 
     private:
+        OutXYZTypeDef offset;
+        float32_t scalingFactor;
+        float32_t declinationInDeg;
         uint8_t devAddr;
         uint8_t buffer[6];
         uint8_t mode;

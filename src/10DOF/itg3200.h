@@ -2,6 +2,7 @@
 #define ITG3200_H_
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
+#include "arm_math.h"
 
 #include "../NokiaLCD/nokiaLCD.h"
 #include "../Delay/delay.h"
@@ -38,7 +39,7 @@
 #define ITG3200_DF_FS_SEL_LENGTH    2
 #define ITG3200_FULLSCALE_2000      0x03
 //Sensitivity from datasheet for 10bit resolution [mg/LSB]:
-#define  ITG3200_2000G_FACTOR    ((float)0.067565)     // 14.375 LSB/(grad/s)
+#define  ITG3200_2000G_FACTOR    ((float32_t)0.067565)     // 14.375 LSB/(grad/s)
 
 #define ITG3200_DF_DLPF_CFG_BIT     2
 #define ITG3200_DF_DLPF_CFG_LENGTH  3
@@ -130,9 +131,9 @@ class ITG3200 {
 		}
 
 		struct OutXYZTypeDef {
-			volatile int16_t x;
-			volatile int16_t y;
-			volatile int16_t z;
+			float32_t x;
+			float32_t y;
+			float32_t z;
 		};
 		// Values in (grad/sek)
 		OutXYZTypeDef axis;
@@ -141,6 +142,7 @@ class ITG3200 {
         uint8_t testConnection();
         void test(NokiaLCD & nokia);
         void update();
+        void calibrate();
 
         // WHO_AM_I register
         uint8_t getDeviceID();
@@ -197,6 +199,7 @@ class ITG3200 {
         void setClockSource(uint8_t source);
 
     private:
+        OutXYZTypeDef offset;
         uint8_t devAddr;
         uint8_t buffer[6];
 };
