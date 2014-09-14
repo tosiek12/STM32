@@ -16,6 +16,7 @@ void IMU::timerAction() {
 	static uint16_t counter = 0;
 	accelerometer.update();
 	gyro.update();
+	magnetometer.update();
 	kalmanStepAction();
 	sendDataTriger = 1;
 	if (++counter == 200) {	//update LCD after x ms.
@@ -36,24 +37,31 @@ extern "C" void TIM3_IRQHandler(void) {
 
 uint8_t IMU::sendViaVirtualCom() {
 	const uint8_t frameSize = 6;
-
+	uint16_t temp;
 	if ((request == 1 ) && (connected == 1) && (sendDataTriger == 1)) {
-		VCP_write("D", 1);
+		//VCP_write("D", 1);
+
+		//Stop updateTimer()
 		VCP_write(&accelerometer.axis, frameSize);
 		VCP_write(&gyro.axis, frameSize);
-		VCP_write("\n", 1);
+		VCP_write(&magnetometer.axis, frameSize);
+		temp = (uint16_t) magnetometer.heading;
+		VCP_write(&temp, 2);
+		//Start updateTimer()
+
+		//VCP_write("\n", 1);
 
 		sendDataTriger = 0;
 		request = 0;
 
-		return 2 * frameSize + 2;
+		return 3 * frameSize;
 	}
 	return 0;
 }
 
 
 void IMU::calibrateAllSensors() {
-	gyro.calibrate();
-	accelerometer.calibrate();
-	magnetometer.calibrate();
+	gyro.calibrate(false);
+	accelerometer.calibrate(false);
+	magnetometer.calibrate(false);
 }

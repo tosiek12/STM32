@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
 	nokiaLCD.Clear();
 
 	imu10DOF.initialize();
-	imu10DOF.calibrateAllSensors();
+
 
 	uint8_t buf[10];
 
@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
 		}
 		if(imu10DOF.getShowDataTriger() == 1) {
 			//imu10DOF.showAnglesKalman(nokiaLCD);
-			imu10DOF.showMeasurment(nokiaLCD);
+			//imu10DOF.showMeasurment(nokiaLCD);
 			imu10DOF.clearShowDataTriger();
 		}
 
@@ -158,7 +158,6 @@ int main(int argc, char* argv[]) {
 		}
 
 		if (buttons.getButtonStateChange(1, GPIO::shortPush)) {
-			imu10DOF.calibrateAllSensors();
 			blinkLed.turnOn();
 			nokiaLCD.WriteTextXY((char*) "1", 5, 5);
 			Delay::delay_ms(BLINK_ON_TICKS);

@@ -53,8 +53,38 @@ void ADXL345::test(NokiaLCD & nokia) {
 	nokia.WriteTextXY((char*) buf, 0, 2);
 }
 
-void ADXL345::calibrate() {
+void ADXL345::calibrate(bool doFullCalibartion) {
+	int16_t Max_x = 0, Max_y = 0, Max_z = 0;
+	int16_t Min_x = 0, Min_y = 0, Min_z = 0;
+	if(doFullCalibartion) {
+		while(true) {
+			I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6,
+						(uint8_t *) &axis);
+			if(axis.x > Max_x) {
+				Max_x = axis.x;
+			}
+			if(axis.y > Max_y) {
+				Max_y = axis.y;
+			}
+			if(axis.z > Max_z) {
+				Max_z = axis.z;
+			}
 
+			if(axis.x < Min_x) {
+				Min_x = axis.x;
+			}
+			if(axis.y < Min_y) {
+				Min_y = axis.y;
+			}
+			if(axis.z < Min_z) {
+				Min_z = axis.z;
+			}
+		}
+	} else {
+		offset.x = 2;
+		offset.y = 11;
+		offset.z = 1;
+	}
 }
 
 /*
@@ -540,11 +570,6 @@ void ADXL345::ReadXYZ(int16_t *xdata, int16_t *ydata, int16_t *zdata) {
 	*xdata = (int16_t) ((uint16_t) buffer[0] << 8 | (uint16_t) buffer[1]);
 	*ydata = (int16_t) ((uint16_t) buffer[2] << 8 | (uint16_t) buffer[3]);
 	*zdata = (int16_t) ((uint16_t) buffer[4] << 8 | (uint16_t) buffer[5]);
-
-	//TODO: implement scaling factor!
-	*xdata =  (int16_t) (*xdata * ADXL345_2G_FACTOR);
-	*ydata =  (int16_t) (*ydata * ADXL345_2G_FACTOR);
-	*zdata =  (int16_t) (*zdata * ADXL345_2G_FACTOR);
 }
 
 /*
@@ -587,6 +612,11 @@ void ADXL345::ReadFIFOStatus(uint8_t *fifost) {
 void ADXL345::update() {
 	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6,
 			(uint8_t *) &axis);
+
+	axis.x += offset.x;
+	axis.y += offset.y;
+	axis.z += offset.z;
+
 	//TODO: implement scaling factor!
 	axis.x =  (int16_t) (axis.x * ADXL345_2G_FACTOR);
 	axis.y =  (int16_t) (axis.y * ADXL345_2G_FACTOR);

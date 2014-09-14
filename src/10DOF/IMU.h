@@ -115,6 +115,8 @@ public:
 		magnetometer.initialize();
 		pressure.initialize();
 
+		calibrateAllSensors();
+
 		initializeTimerForUpdate();
 
 	}
@@ -138,9 +140,11 @@ public:
 	uint8_t sendViaVirtualCom();
 	void setConnected() {
 		connected = 1;
+		request = 0;
 	}
 	void setDisconnected() {
 		connected = 0;
+		request = 0;
 	}
 	void setRequestOfData() {
 		request = 1;

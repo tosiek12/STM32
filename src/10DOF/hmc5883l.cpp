@@ -124,14 +124,82 @@ void HMC5883L::test(NokiaLCD & nokia, uint8_t height) {
 	nokia.WriteTextXY((char*) buf, 0, height * 3 + 2);
 }
 
-void HMC5883L::calibrate() {
-	//Set offset
-	offset.x = 256;
-	offset.y = -53;
-	offset.z = -117;
+void HMC5883L::calibrate(bool doFullCalibartion) {
+	int16_t Max_x = 0, Max_y = 0, Max_z = 0;
+	int16_t Min_x = 0, Min_y = 0, Min_z = 0;
+	if (doFullCalibartion) {
+		while(true) {
+			getHeading(&axis.x, &axis.y, &axis.z);
+			if(axis.x > Max_x) {
+				Max_x = axis.x;
+			}
+			if(axis.y > Max_y) {
+				Max_y = axis.y;
+			}
+			if(axis.z > Max_z) {
+				Max_z = axis.z;
+			}
 
-	//http://magnetic-declination.com/
-	declinationInDeg = 5.0 + (16.0 / 60.0); //Positive declination
+			if(axis.x < Min_x) {
+				Min_x = axis.x;
+			}
+			if(axis.y < Min_y) {
+				Min_y = axis.y;
+			}
+			if(axis.z < Min_z) {
+				Min_z = axis.z;
+			}
+		}
+	} else {
+		//Set offset - z wielu serii
+		offset.x = 205;
+		offset.y = -91;
+		offset.z = -125;
+
+		//	//Set offset - stary, z jednego pomiaru.
+		//	offset.x = 256;
+		//	offset.y = -53;
+		//	offset.z = -117;
+
+		//http://magnetic-declination.com/
+		declinationInDeg = 5.0 + (16.0 / 60.0); //Positive declination
+	}
+
+
+
+
+}
+
+void HMC5883L::update() {
+	getHeading(&axis.x, &axis.y, &axis.z);
+	//Remove offset
+	axis.x += offset.x;
+	axis.y += offset.y;
+	axis.z += offset.z;
+
+	//Change to mili Gauss [mG]
+	axis.x *= scalingFactor;
+	axis.y *= scalingFactor;
+	axis.z *= scalingFactor;
+
+	heading = atan2(axis.y, axis.x);	//[-PI,PI]
+	heading *= 180.0 / PI; //Change to degree
+
+	heading += declinationInDeg;
+	if (heading < 0) {
+		heading += 360;
+	} else if (heading > 360) {
+		heading -= 360;
+	}
+
+	// Poprawka nierownomiernosci pomiarow HMC5883L
+	if (heading >= 1 && heading < 240) {
+//		fixedHeadingDegrees = map(headingDegrees, 0, 239, 0, 179);
+		heading = (heading / 239.0) * 179.0;
+	} else if (heading >= 240) {
+//		fixedHeadingDegrees = map(headingDegrees, 240, 360, 180, 360);
+		heading = ((heading - 240) / 120) * 180 + 180;
+	}
 }
 
 /** Default constructor, uses default I2C address.
@@ -442,15 +510,15 @@ void HMC5883L::getHeading(int16_t *x, int16_t *y, int16_t *z) {
 	*x = (((int16_t) buffer[0]) << 8) | buffer[1];
 	*y = (((int16_t) buffer[4]) << 8) | buffer[5];
 	*z = (((int16_t) buffer[2]) << 8) | buffer[3];
-	if(*x == -4096) {
-		*x = 0;
-	}
-	if(*y == -4096) {
-		*y = 0;
-	}
-	if(*z == -4096) {
-		*z = 0;
-	}
+//	if(*x == -4096) {
+//		*x = 0;
+//	}
+//	if(*y == -4096) {
+//		*y = 0;
+//	}
+//	if(*z == -4096) {
+//		*z = 0;
+//	}
 }
 /** Get X-axis heading measurement.
  * @return 16-bit signed integer with X-axis heading

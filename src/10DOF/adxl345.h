@@ -322,7 +322,7 @@ public:
 	uint8_t testConnection();
 	void test(NokiaLCD & nokia);
 	void update();
-	void calibrate();
+	void calibrate(bool doFullCalibartion);
 
 	// WHO_AM_I register
 	uint8_t getDeviceID();

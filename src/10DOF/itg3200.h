@@ -131,9 +131,9 @@ class ITG3200 {
 		}
 
 		struct OutXYZTypeDef {
-			float32_t x;
-			float32_t y;
-			float32_t z;
+			int16_t x;
+			int16_t y;
+			int16_t z;
 		};
 		// Values in (grad/sek)
 		OutXYZTypeDef axis;
@@ -142,7 +142,7 @@ class ITG3200 {
         uint8_t testConnection();
         void test(NokiaLCD & nokia);
         void update();
-        void calibrate();
+        void calibrate(bool doFullCalibartion);
 
         // WHO_AM_I register
         uint8_t getDeviceID();

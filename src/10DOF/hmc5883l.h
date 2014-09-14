@@ -132,7 +132,8 @@ class HMC5883L {
         void test(NokiaLCD & nokia, uint8_t height);
         uint8_t selfTest(NokiaLCD &nokia);
 
-        void calibrate();
+        void calibrate(bool doFullCalibartion);
+        void update();
 
         // CONFIG_A register
         uint8_t getSampleAveraging();

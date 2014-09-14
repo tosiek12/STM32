@@ -38,14 +38,13 @@ void ITG3200::test(NokiaLCD & nokia) {
 	int32_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
 
 	for (uint16_t i = 0; i < 500; i++) {
-//			update();
 		Sum_x += axis.x;
 		Sum_y += axis.y;
 		Sum_z += axis.z;
 	}
-	Out_x = (int16_t) (Sum_x / 500);
-	Out_y = (int16_t) (Sum_y / 500);
-	Out_z = (int16_t) (Sum_z / 500);
+	Out_x = (int16_t) (Sum_x / 500.0);
+	Out_y = (int16_t) (Sum_y / 500.0);
+	Out_z = (int16_t) (Sum_z / 500.0);
 
 	uint8_t buf[10];
 
@@ -62,24 +61,38 @@ void ITG3200::test(NokiaLCD & nokia) {
 	nokia.WriteTextXY((char*) buf, 0, 5);
 }
 
-void ITG3200::calibrate() {
-	float32_t Out_x = 0, Out_y = 0, Out_z = 0;
-	int32_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
+void ITG3200::calibrate(bool doFullCalibartion) {
 
-	for (uint16_t i = 0; i < 500; i++) {
-		update();
-		Sum_x += axis.x;
-		Sum_y += axis.y;
-		Sum_z += axis.z;
+	int16_t Out_x = 0, Out_y = 0, Out_z = 0;
+	int64_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
+	if(doFullCalibartion) {
+		for (uint16_t i = 0; i < 1000; i++) {
+			I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer);
+			axis.x = (((int16_t) buffer[0]) << 8) | buffer[1];
+			axis.y = (((int16_t) buffer[2]) << 8) | buffer[3];
+			axis.z = (((int16_t) buffer[4]) << 8) | buffer[5];
+
+			Sum_x += axis.x;
+			Sum_y += axis.y;
+			Sum_z += axis.z;
+		}
+		Out_x = (int16_t) (Sum_x / 1000.0);
+		Out_y = (int16_t) (Sum_y / 1000.0);
+		Out_z = (int16_t) (Sum_z / 1000.0);
+
+		offset.x = -Out_x;
+		offset.y = -Out_y;
+		offset.z = -Out_z;
+	} else {
+		offset.x = -472;
+		offset.y = 279;
+		offset.z = -61;
 	}
-	Out_x = (Sum_x / 500.0);
-	Out_y = (Sum_y / 500.0);
-	Out_z = (Sum_z /500.0);
 
-	offset.x = Out_x;
-	offset.y = Out_y;
-	offset.z = Out_z;
-
+//{x = 474, y = -277, z = 62} -> przed przemno¿eniem
+//{x = 471, y = -279, z = 62}
+//{x = 470, y = -279, z = 64}
+//{x = 475, y = -279, z = 64}
 //	offset.x = 32;
 //	offset.y = -19;
 //	offset.z = 4;
@@ -577,12 +590,11 @@ void ITG3200::update() {
 	axis.y = (((int16_t) buffer[2]) << 8) | buffer[3];
 	axis.z = (((int16_t) buffer[4]) << 8) | buffer[5];
 
-	axis.x *= ITG3200_2000G_FACTOR;
-	axis.y *= ITG3200_2000G_FACTOR;
-	axis.z *= ITG3200_2000G_FACTOR;
-
 	axis.x += offset.x;
 	axis.y += offset.y;
 	axis.z += offset.z;
 
+	axis.x *= ITG3200_2000G_FACTOR;
+	axis.y *= ITG3200_2000G_FACTOR;
+	axis.z *= ITG3200_2000G_FACTOR;
 }
