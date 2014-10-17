@@ -12,7 +12,7 @@
 #include "adxl345.h"
 #include "hmc5883l.h"
 #include "bmp085.h"
-#include "Kalman.h"
+#include "Filters/Kalman.h"
 
 /* Definition for TIMx clock resources */
 #define TIMx                           TIM3

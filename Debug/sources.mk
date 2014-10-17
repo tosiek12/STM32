@@ -41,4 +41,5 @@ src/GPIO \
 src/Delay \
 src/Accelerometer \
 src/10DOF \
+src/10DOF/Filters \
 

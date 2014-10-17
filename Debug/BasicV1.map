@@ -4072,6 +4072,115 @@ Discarded input sections
  .debug_macro   0x00000000      0x1df ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
  .debug_macro   0x00000000       0xfa ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
  .debug_macro   0x00000000      0x126 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .group         0x00000000        0x8 ./src/10DOF/Filters/Kalman.o
+ .text          0x00000000        0x0 ./src/10DOF/Filters/Kalman.o
+ .data          0x00000000        0x0 ./src/10DOF/Filters/Kalman.o
+ .bss           0x00000000        0x0 ./src/10DOF/Filters/Kalman.o
+ .debug_info    0x00000000       0xb7 ./src/10DOF/Filters/Kalman.o
+ .debug_abbrev  0x00000000       0x55 ./src/10DOF/Filters/Kalman.o
+ .debug_aranges
+                0x00000000       0x18 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x281 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x89e ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x28 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x28 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x3b ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x1c ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x16 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x44 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x209 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x2d ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x26 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0xd39 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000     0x8f1b ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x43 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x1a5 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x4c ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0xb80 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x40f ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x1e7 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x137 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x2c6 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x52 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x132 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x217 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x1df ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x17f ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x1ca ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x822 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x4d ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x1ed ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x1ae ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x1df ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0xfa ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x126 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x12 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x58 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x35 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0xa3 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x174 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x52 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x16 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x43 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x180 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x2ad ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x10 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x35 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0x1f ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000      0x1da ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00000000       0xc1 ./src/10DOF/Filters/Kalman.o
+ .debug_line    0x00000000      0x5cf ./src/10DOF/Filters/Kalman.o
+ .debug_str     0x00000000    0x5c3a2 ./src/10DOF/Filters/Kalman.o
+ .comment       0x00000000       0x71 ./src/10DOF/Filters/Kalman.o
+ .ARM.attributes
+                0x00000000       0x39 ./src/10DOF/Filters/Kalman.o
  .group         0x00000000        0x8 ./src/10DOF/I2C.o
  .group         0x00000000        0x8 ./src/10DOF/I2C.o
  .group         0x00000000        0x8 ./src/10DOF/I2C.o
@@ -4274,115 +4383,6 @@ Discarded input sections
  .debug_macro   0x00000000       0x52 ./src/10DOF/IMU.o
  .debug_macro   0x00000000      0x1b3 ./src/10DOF/IMU.o
  .debug_macro   0x00000000       0x83 ./src/10DOF/IMU.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .group         0x00000000        0x8 ./src/10DOF/Kalman.o
- .text          0x00000000        0x0 ./src/10DOF/Kalman.o
- .data          0x00000000        0x0 ./src/10DOF/Kalman.o
- .bss           0x00000000        0x0 ./src/10DOF/Kalman.o
- .debug_info    0x00000000       0xb7 ./src/10DOF/Kalman.o
- .debug_abbrev  0x00000000       0x55 ./src/10DOF/Kalman.o
- .debug_aranges
-                0x00000000       0x18 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x281 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x89e ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x28 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x28 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x3b ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x1c ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x16 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x44 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x209 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x2d ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x26 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0xd39 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000     0x8f1b ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x43 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x1a5 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x4c ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0xb80 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x40f ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x1e7 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x137 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x2c6 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x52 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x132 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x217 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x1df ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x17f ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x1ca ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x822 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x4d ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x1ed ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x1ae ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x1df ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0xfa ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x126 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x12 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x58 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x35 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0xa3 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x174 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x52 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x16 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x43 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x180 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x2ad ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x10 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x35 ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0x1f ./src/10DOF/Kalman.o
- .debug_macro   0x00000000      0x1da ./src/10DOF/Kalman.o
- .debug_macro   0x00000000       0xc1 ./src/10DOF/Kalman.o
- .debug_line    0x00000000      0x5c7 ./src/10DOF/Kalman.o
- .debug_str     0x00000000    0x5c39a ./src/10DOF/Kalman.o
- .comment       0x00000000       0x71 ./src/10DOF/Kalman.o
- .ARM.attributes
-                0x00000000       0x39 ./src/10DOF/Kalman.o
  .group         0x00000000        0x8 ./src/10DOF/adxl345.o
  .group         0x00000000        0x8 ./src/10DOF/adxl345.o
  .group         0x00000000        0x8 ./src/10DOF/adxl345.o
@@ -5960,9 +5960,9 @@ LOAD ./src/GPIO/gpio.o
 LOAD ./src/Delay/delay.o
 LOAD ./src/Accelerometer/accelerometer.o
 LOAD ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
+LOAD ./src/10DOF/Filters/Kalman.o
 LOAD ./src/10DOF/I2C.o
 LOAD ./src/10DOF/IMU.o
-LOAD ./src/10DOF/Kalman.o
 LOAD ./src/10DOF/adxl345.o
 LOAD ./src/10DOF/bmp085.o
 LOAD ./src/10DOF/hmc5883l.o
@@ -7549,7 +7549,7 @@ END GROUP
  .debug_abbrev  0x00005b70      0x2eb ./src/usbd_conf.o
  .debug_abbrev  0x00005e5b      0x1b7 ./src/usbd_desc.o
 
-.debug_line     0x00000000    0x1379b
+.debug_line     0x00000000    0x137ef
  *(.debug_line)
  .debug_line    0x00000000      0x60f ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_line    0x0000060f      0x67b ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
@@ -7581,16 +7581,16 @@ END GROUP
  .debug_line    0x0000c98c      0x7be ./src/Accelerometer/accelerometer.o
  .debug_line    0x0000d14a      0x669 ./src/Accelerometer/stm32f4_discovery_lis3dsh.o
  .debug_line    0x0000d7b3      0x4ea ./src/10DOF/I2C.o
- .debug_line    0x0000dc9d      0x91f ./src/10DOF/IMU.o
- .debug_line    0x0000e5bc      0xbea ./src/10DOF/adxl345.o
- .debug_line    0x0000f1a6      0x8ef ./src/10DOF/bmp085.o
- .debug_line    0x0000fa95      0xb35 ./src/10DOF/hmc5883l.o
- .debug_line    0x000105ca      0xd14 ./src/10DOF/itg3200.o
- .debug_line    0x000112de      0x4ec ./src/BlinkLed.o
- .debug_line    0x000117ca      0x4ec ./src/_initialize_hardware.o
- .debug_line    0x00011cb6      0xada ./src/main.o
- .debug_line    0x00012790      0x8c4 ./src/usbd_conf.o
- .debug_line    0x00013054      0x747 ./src/usbd_desc.o
+ .debug_line    0x0000dc9d      0x934 ./src/10DOF/IMU.o
+ .debug_line    0x0000e5d1      0xbea ./src/10DOF/adxl345.o
+ .debug_line    0x0000f1bb      0x904 ./src/10DOF/bmp085.o
+ .debug_line    0x0000fabf      0xb4a ./src/10DOF/hmc5883l.o
+ .debug_line    0x00010609      0xd14 ./src/10DOF/itg3200.o
+ .debug_line    0x0001131d      0x4ec ./src/BlinkLed.o
+ .debug_line    0x00011809      0x4ec ./src/_initialize_hardware.o
+ .debug_line    0x00011cf5      0xaef ./src/main.o
+ .debug_line    0x000127e4      0x8c4 ./src/usbd_conf.o
+ .debug_line    0x000130a8      0x747 ./src/usbd_desc.o
 
 .debug_frame    0x00000000     0x44b8
  *(.debug_frame)

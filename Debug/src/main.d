@@ -35,8 +35,8 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../src/GPIO/gpio.h ../src/10DOF/IMU.h ../system/include/cmsis/arm_math.h \
  ../src/10DOF/../NokiaLCD/nokiaLCD.h ../src/10DOF/../Delay/delay.h \
  ../src/10DOF/I2C.h ../src/10DOF/itg3200.h ../src/10DOF/adxl345.h \
- ../src/10DOF/hmc5883l.h ../src/10DOF/bmp085.h ../src/10DOF/Kalman.h \
- ../src/Accelerometer/accelerometer.h \
+ ../src/10DOF/hmc5883l.h ../src/10DOF/bmp085.h \
+ ../src/10DOF/Filters/Kalman.h ../src/Accelerometer/accelerometer.h \
  ../src/Accelerometer/../NokiaLCD/nokiaLCD.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../include/usbd_conf.h \
@@ -149,7 +149,7 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../src/10DOF/bmp085.h:
 
-../src/10DOF/Kalman.h:
+../src/10DOF/Filters/Kalman.h:
 
 ../src/Accelerometer/accelerometer.h:
 
