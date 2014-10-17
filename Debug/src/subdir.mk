@@ -3,15 +3,15 @@
 ################################################################################
 
 # Add inputs and outputs from these tool invocations to the build variables 
-CPP_SRCS += \
-../src/BlinkLed.cpp \
-../src/CommonException_handlers.cpp \
-../src/main.cpp 
-
 C_SRCS += \
 ../src/_initialize_hardware.c \
 ../src/usbd_conf.c \
 ../src/usbd_desc.c 
+
+CPP_SRCS += \
+../src/BlinkLed.cpp \
+../src/CommonException_handlers.cpp \
+../src/main.cpp 
 
 OBJS += \
 ./src/BlinkLed.o \
