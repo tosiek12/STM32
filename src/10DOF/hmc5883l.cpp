@@ -57,11 +57,11 @@ uint8_t HMC5883L::selfTest(NokiaLCD &nokia) {
 	setMode(HMC5883L_MODE_SINGLE);
 
 	// 720/706/688
-	getHeading(&axis.x,&axis.y, &axis.z);
+	getHeading(&axis[0],&axis[1], &axis[2]);
 
-	getHeading(&axis.x,&axis.y, &axis.z);
+	getHeading(&axis[0],&axis[1], &axis[2]);
 
-	getHeading(&axis.x,&axis.y, &axis.z);
+	getHeading(&axis[0],&axis[1], &axis[2]);
 
 	return 1;
 }
@@ -71,19 +71,19 @@ void HMC5883L::test(NokiaLCD & nokia, uint8_t height) {
 	float64_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
 
 	for (uint16_t i = 0; i < 100; i++) {
-		getHeading(&axis.x, &axis.y, &axis.z);
-		Sum_x += axis.x;
-		Sum_y += axis.y;
-		Sum_z += axis.z;
+		getHeading(&axis[0], &axis[1], &axis[2]);
+		Sum_x += axis[0];
+		Sum_y += axis[1];
+		Sum_z += axis[2];
 	}
 	Out_x = Sum_x / 100;
 	Out_y = Sum_y / 100;
 	Out_z = Sum_z / 100;
 
 	//Remove offset
-	Out_x += offset.x;
-	Out_y += offset.y;
-	Out_z += offset.z;
+	Out_x += offset[0];
+	Out_y += offset[1];
+	Out_z += offset[2];
 
 	//Change to mili Gauss [mG]
 	Out_x *= scalingFactor;
@@ -129,37 +129,37 @@ void HMC5883L::calibrate(bool doFullCalibartion) {
 	int16_t Min_x = 0, Min_y = 0, Min_z = 0;
 	if (doFullCalibartion) {
 		while(true) {
-			getHeading(&axis.x, &axis.y, &axis.z);
-			if(axis.x > Max_x) {
-				Max_x = axis.x;
+			getHeading(&axis[0], &axis[1], &axis[2]);
+			if(axis[0] > Max_x) {
+				Max_x = axis[0];
 			}
-			if(axis.y > Max_y) {
-				Max_y = axis.y;
+			if(axis[1] > Max_y) {
+				Max_y = axis[1];
 			}
-			if(axis.z > Max_z) {
-				Max_z = axis.z;
+			if(axis[2] > Max_z) {
+				Max_z = axis[2];
 			}
 
-			if(axis.x < Min_x) {
-				Min_x = axis.x;
+			if(axis[0] < Min_x) {
+				Min_x = axis[0];
 			}
-			if(axis.y < Min_y) {
-				Min_y = axis.y;
+			if(axis[1] < Min_y) {
+				Min_y = axis[1];
 			}
-			if(axis.z < Min_z) {
-				Min_z = axis.z;
+			if(axis[2] < Min_z) {
+				Min_z = axis[2];
 			}
 		}
 	} else {
 		//Set offset - z wielu serii
-		offset.x = 205;
-		offset.y = -91;
-		offset.z = -125;
+		offset[0] = 205;
+		offset[1] = -91;
+		offset[2] = -125;
 
 		//	//Set offset - stary, z jednego pomiaru.
-		//	offset.x = 256;
-		//	offset.y = -53;
-		//	offset.z = -117;
+		//	offset[0] = 256;
+		//	offset[1] = -53;
+		//	offset[2] = -117;
 
 		//http://magnetic-declination.com/
 		declinationInDeg = 5.0 + (16.0 / 60.0); //Positive declination
@@ -171,18 +171,18 @@ void HMC5883L::calibrate(bool doFullCalibartion) {
 }
 
 void HMC5883L::update() {
-	getHeading(&axis.x, &axis.y, &axis.z);
+	getHeading(&axis[0], &axis[1], &axis[2]);
 	//Remove offset
-	axis.x += offset.x;
-	axis.y += offset.y;
-	axis.z += offset.z;
+	axis[0] += offset[0];
+	axis[1] += offset[1];
+	axis[2] += offset[2];
 
 	//Change to mili Gauss [mG]
-	axis.x *= scalingFactor;
-	axis.y *= scalingFactor;
-	axis.z *= scalingFactor;
+	axis[0] *= scalingFactor;
+	axis[1] *= scalingFactor;
+	axis[2] *= scalingFactor;
 
-	heading = atan2(axis.y, axis.x);	//[-PI,PI]
+	heading = atan2(axis[1], axis[0]);	//[-PI,PI]
 	heading *= 180.0 / PI; //Change to degree
 
 	heading += declinationInDeg;
@@ -248,23 +248,23 @@ void HMC5883L::initialize() {
 	volatile float64_t x_max,x_min,y_min,y_max,z_min, z_max;
 
 	while(false) {
-		getHeading(&axis.x, &axis.y, &axis.z);
-		if(axis.x> x_max) {
-			x_max = axis.x;
-		} else if(axis.x < x_min) {
-			x_min = axis.x;
+		getHeading(&axis[0], &axis[1], &axis[2]);
+		if(axis[0]> x_max) {
+			x_max = axis[0];
+		} else if(axis[0] < x_min) {
+			x_min = axis[0];
 		}
 
-		if(axis.y> y_max) {
-			y_max = axis.y;
-		} else if(axis.y <y_min) {
-			y_min = axis.y;
+		if(axis[1]> y_max) {
+			y_max = axis[1];
+		} else if(axis[1] <y_min) {
+			y_min = axis[1];
 		}
 
-		if(axis.z> z_max) {
-			z_max = axis.z;
-		} else if(axis.z <z_min) {
-			z_min = axis.z;
+		if(axis[2]> z_max) {
+			z_max = axis[2];
+		} else if(axis[2] <z_min) {
+			z_min = axis[2];
 		}
 	}
 }

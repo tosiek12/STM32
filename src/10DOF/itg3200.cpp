@@ -41,9 +41,9 @@ void ITG3200::test(NokiaLCD & nokia) {
 	int32_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
 
 	for (uint16_t i = 0; i < 500; i++) {
-		Sum_x += axis.x;
-		Sum_y += axis.y;
-		Sum_z += axis.z;
+		Sum_x += axis[0];
+		Sum_y += axis[1];
+		Sum_z += axis[2];
 	}
 	Out_x = (int16_t) (Sum_x / 500.0);
 	Out_y = (int16_t) (Sum_y / 500.0);
@@ -65,19 +65,19 @@ void ITG3200::test(NokiaLCD & nokia) {
 }
 
 void ITG3200::getOversampledValueAndSendViaCOM(const uint8_t numberOfSamples) {
-	OutXYZTypeDef temp;
+	int16_t temp[3];
 	uint8_t numberOfChars = 0;
 	uint8_t buf[30];
 	for (uint8_t i = 0; i <= numberOfSamples; ++i) {
 		I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer);
-		temp.x += (((int16_t) buffer[0]) << 8) | buffer[1];
-		temp.y += (((int16_t) buffer[2]) << 8) | buffer[3];
-		temp.z += (((int16_t) buffer[4]) << 8) | buffer[5];
+		temp[0] += (((int16_t) buffer[0]) << 8) | buffer[1];
+		temp[1] += (((int16_t) buffer[2]) << 8) | buffer[3];
+		temp[2] += (((int16_t) buffer[4]) << 8) | buffer[5];
 		Delay::delay_ms(1);
 	}
-	temp.x /= numberOfSamples;
-	temp.y /= numberOfSamples;
-	temp.z /= numberOfSamples;
+	temp[0] /= numberOfSamples;
+	temp[1] /= numberOfSamples;
+	temp[2] /= numberOfSamples;
 	/*numberOfChars = sprintf(buf, "%ld,%ld,%ld", average[0],
 					average[1], average[2], stdDev[0], stdDev[1], stdDev[2]);
 			VCP_write(buf, numberOfChars);*/
@@ -95,97 +95,25 @@ void ITG3200::calibrate(bool doFullCalibartion,
 	const uint8_t decimal = 100;
 	int16_t it = 0;
 
-	int32_t average[3];
-	OutXYZTypeDef max, min, temp;
-	min.x = 1000;
-	min.y = 1000;
-	min.z = 1000;
-	max.x = -1000;
-	max.y = -1000;
-	max.z = -1000;
-
 	if (doFullCalibartion) {
 		numberOfChars = sprintf(buf, "Gyro calibration Start");
 		VCP_write(buf, numberOfChars);
-		while ((++it) <= numberOfSamples) {
 
-			for (uint8_t i = 0; i <= oversampling; ++i) {
-				I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer);
-				temp.x = (((int16_t) buffer[0]) << 8) | buffer[1];
-				temp.y = (((int16_t) buffer[2]) << 8) | buffer[3];
-				temp.z = (((int16_t) buffer[4]) << 8) | buffer[5];
-				axis.x += temp.x;
-				axis.y += temp.y;
-				axis.z += temp.z;
-				Delay::delay_ms(1);
-			}
-			axis.x /= oversampling;
-			axis.y /= oversampling;
-			axis.z /= oversampling;
-
-			//Update sum and sum of squeres
-			sum[0] += axis.x;
-			sum[1] += axis.y;
-			sum[1] += axis.z;
-
-			sumOfSqueres[0] += axis.x * axis.x;
-			sumOfSqueres[1] += axis.y * axis.y;
-			sumOfSqueres[2] += axis.z * axis.z;
-
-			//Find max value
-			if (axis.x > max.x) {
-				max.x = axis.x;
-			}
-			if (axis.y > max.y) {
-				max.y = axis.y;
-			}
-			if (axis.z > max.z) {
-				max.z = axis.z;
-			}
-
-			//Find min value
-			if (axis.x < min.x) {
-				min.x = axis.x;
-			}
-			if (axis.y < min.y) {
-				min.y = axis.y;
-			}
-			if (axis.z < min.z) {
-				min.z = axis.z;
-			}
-		}
-
-		for (uint8_t axisNumber = 0; axisNumber < 3; axisNumber++) {
-			stdDev[axisNumber] = decimal / ((float32_t) (numberOfSamples - 1))
-					* (sumOfSqueres[axisNumber]
-							- (int64_t) (sum[axisNumber])
-									* (sum[axisNumber]
-											/ (float32_t) (numberOfSamples)));
-			average[axisNumber] = sum[axisNumber] * decimal
-					/ (float32_t) (numberOfSamples);
-		}
-
-		numberOfChars = sprintf(buf, "%ld,%ld,%ld,%lu,%lu,%lu", average[0],
-				average[1], average[2], stdDev[0], stdDev[1], stdDev[2]);
-		VCP_write(buf, numberOfChars);
-		numberOfChars = sprintf(buf, "%d,%d,%d,%d,%d,%d\r\n", min.x, min.y,
-				min.z, max.x, max.y, max.z);
-		VCP_write(buf, numberOfChars);
 		numberOfChars = sprintf(buf, "Gyro calibration End");
 		VCP_write(buf, numberOfChars);
 	} else {
-		offset.x = -472;
-		offset.y = 279;
-		offset.z = -61;
+		offset[0] = -472;
+		offset[1] = 279;
+		offset[2] = -61;
 	}
 
 //{x = 474, y = -277, z = 62} -> przed przemno¿eniem
 //{x = 471, y = -279, z = 62}
 //{x = 470, y = -279, z = 64}
 //{x = 475, y = -279, z = 64}
-//	offset.x = 32;
-//	offset.y = -19;
-//	offset.z = 4;
+//	offset[0] = 32;
+//	offset[1] = -19;
+//	offset[2] = 4;
 }
 
 // WHO_AM_I register
@@ -676,15 +604,15 @@ void ITG3200::setClockSource(uint8_t source) {
 
 void ITG3200::update() {
 	I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer);
-	axis.x = (((int16_t) buffer[0]) << 8) | buffer[1];
-	axis.y = (((int16_t) buffer[2]) << 8) | buffer[3];
-	axis.z = (((int16_t) buffer[4]) << 8) | buffer[5];
+	axis[0] = (((int16_t) buffer[0]) << 8) | buffer[1];
+	axis[1] = (((int16_t) buffer[2]) << 8) | buffer[3];
+	axis[2] = (((int16_t) buffer[4]) << 8) | buffer[5];
 
-	axis.x += offset.x;
-	axis.y += offset.y;
-	axis.z += offset.z;
+	axis[0] += offset[0];
+	axis[1] += offset[1];
+	axis[2] += offset[2];
 
-	axis.x *= ITG3200_2000G_FACTOR;
-	axis.y *= ITG3200_2000G_FACTOR;
-	axis.z *= ITG3200_2000G_FACTOR;
+	axis[0] *= ITG3200_2000G_FACTOR;
+	axis[1] *= ITG3200_2000G_FACTOR;
+	axis[2] *= ITG3200_2000G_FACTOR;
 }

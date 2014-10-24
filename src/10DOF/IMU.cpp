@@ -43,8 +43,8 @@ uint8_t IMU::sendViaVirtualCom() {
 
 		//Stop updateTimer()
 		VCP_write(accelerometer.axis, frameSize);
-		VCP_write(&gyro.axis, frameSize);
-		VCP_write(&magnetometer.axis, frameSize);
+		VCP_write(gyro.axis, frameSize);
+		VCP_write(magnetometer.axis, frameSize);
 		temp = (uint16_t) magnetometer.heading;
 		VCP_write(&temp, 2);
 		//Start updateTimer()

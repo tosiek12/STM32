@@ -119,12 +119,7 @@ class HMC5883L {
         HMC5883L();
         HMC5883L(uint8_t address);
 
-		struct OutXYZTypeDef {
-			int16_t x;
-			int16_t y;
-			int16_t z;
-		};
-		OutXYZTypeDef axis;
+		int16_t axis[3];
 		float64_t heading;
 
         void initialize();
@@ -167,7 +162,7 @@ class HMC5883L {
         uint8_t getIDC();
 
     private:
-        OutXYZTypeDef offset;
+        int16_t offset[3];
         float32_t scalingFactor;
         float32_t declinationInDeg;
         uint8_t devAddr;

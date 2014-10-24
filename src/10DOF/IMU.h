@@ -145,10 +145,10 @@ public:
 	void kalmanStepAction() {
 		const float64_t RAD_TO_DEG = 57.29577951f;
 		float64_t dt_inSec = 0.001;
-		float64_t gyroXrate = -((float64_t) gyro.axis.x);
+		float64_t gyroXrate = -((float64_t) gyro.axis[0]);
 		gyroXangle += gyroXrate * dt_inSec; // Without any filter
 
-		float64_t gyroYrate = ((float64_t) gyro.axis.y);
+		float64_t gyroYrate = ((float64_t) gyro.axis[1]);
 		gyroYangle += gyroYrate * dt_inSec; // Without any filter
 
 		float64_t accXangle = (atan2(accelerometer.axis[0], accelerometer.axis[2]) + PI) * RAD_TO_DEG;

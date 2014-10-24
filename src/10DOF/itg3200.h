@@ -130,13 +130,8 @@ class ITG3200 {
 			devAddr = address;
 		}
 
-		struct OutXYZTypeDef {
-			int16_t x;
-			int16_t y;
-			int16_t z;
-		};
 		// Values in (grad/sek)
-		OutXYZTypeDef axis;
+		int16_t axis[3];
 
         void initialize();
         uint8_t testConnection();
@@ -200,7 +195,7 @@ class ITG3200 {
         void setClockSource(uint8_t source);
 
     private:
-        OutXYZTypeDef offset;
+        int32_t offset[3];
         uint8_t devAddr;
         uint8_t buffer[6];
 };
