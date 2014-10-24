@@ -29,7 +29,7 @@ void IMU::timerAction() {
 // ----- TIM_IRQHandler() ----------------------------------------------------
 extern "C" void TIM3_IRQHandler(void) {
 	if (__HAL_TIM_GET_ITSTATUS(&imu10DOF.TimHandle, TIM_IT_UPDATE ) != RESET) {
-		imu10DOF.timerAction();
+		//imu10DOF.timerAction();
 		__HAL_TIM_CLEAR_IT(&imu10DOF.TimHandle, TIM_IT_UPDATE);
 	}
 
@@ -38,11 +38,11 @@ extern "C" void TIM3_IRQHandler(void) {
 uint8_t IMU::sendViaVirtualCom() {
 	const uint8_t frameSize = 6;
 	uint16_t temp;
-	if ((request == 1 ) && (connected == 1) && (sendDataTriger == 1)) {
+	if ((request == 1) && (connected == 1) && (sendDataTriger == 1)) {
 		//VCP_write("D", 1);
 
 		//Stop updateTimer()
-		VCP_write(&accelerometer.axis, frameSize);
+		VCP_write(accelerometer.axis, frameSize);
 		VCP_write(&gyro.axis, frameSize);
 		VCP_write(&magnetometer.axis, frameSize);
 		temp = (uint16_t) magnetometer.heading;
@@ -59,9 +59,50 @@ uint8_t IMU::sendViaVirtualCom() {
 	return 0;
 }
 
-
 void IMU::calibrateAllSensors() {
-	gyro.calibrate(false);
-	accelerometer.calibrate(false);
-	magnetometer.calibrate(false);
+	//gyro.calibrate(false,100);
+	accelerometer.calibrate(true, 100);
+	//magnetometer.calibrate(false);
+}
+
+void IMU::calibrateGyroProcedure() {
+
+	Delay::delay_ms(1);
+
+}
+
+void IMU::initialize() {
+	initializeI2C();
+	gyro.initialize();
+	accelerometer.initialize();
+	magnetometer.initialize();
+	pressure.initialize();
+
+	//calibrateAllSensors();
+
+	initializeTimerForUpdate();
+}
+
+void IMU::computeAngles() {
+	float32_t XRollAngle;	//Range -180,180
+	float32_t YPitchAngle;	//Range -90,90
+	float32_t TiltAngle;		//Range 0,180	//odchylenie od pionu (grawitacji)
+
+	float32_t sqrt_argument;
+	float32_t sqrt_result;
+	const int16_t xActual= accelerometer.axis[0], yActual = accelerometer.axis[1], zActual = accelerometer.axis[2];
+
+	XRollAngle = atan2f((float32_t)(yActual), (float32_t)(zActual))*180/PI;	//zgodne z teori¹
+	sqrt_argument = 0;
+	sqrt_argument +=(float32_t)(zActual)*(float32_t)(zActual);
+	sqrt_argument +=(float32_t)(yActual)*(float32_t)(yActual);
+	arm_sqrt_f32(sqrt_argument,&sqrt_result);
+	YPitchAngle = atan2f(-(xActual),sqrt_result)*180/PI;
+
+	sqrt_argument = 0;
+	sqrt_argument +=(float32_t)(zActual)*(float32_t)(zActual);
+	sqrt_argument +=(float32_t)(xActual)*(float32_t)(xActual);
+	sqrt_argument +=(float32_t)(yActual)*(float32_t)(yActual);
+	arm_sqrt_f32(sqrt_argument,&sqrt_result);
+	TiltAngle = acosf((zActual)/sqrt_result)*180/PI;
 }

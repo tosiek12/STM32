@@ -108,21 +108,10 @@ public:
 	~IMU() {
 	}
 	TIM_HandleTypeDef TimHandle;
-	void initialize() {
-		initializeI2C();
-		gyro.initialize();
-		accelerometer.initialize();
-		magnetometer.initialize();
-		pressure.initialize();
-
-		calibrateAllSensors();
-
-		initializeTimerForUpdate();
-
-	}
+	void initialize();
 	void showMeasurment(NokiaLCD &nokiaLCD) {
-//		accelerometer.test(nokiaLCD,0);
-//		gyro.test(nokiaLCD,1);
+//		accelerometer.test(nokiaLCD);
+//		gyro.test(nokiaLCD);
 		magnetometer.test(nokiaLCD, 0);
 		pressure.test(nokiaLCD, 1);
 	}
@@ -136,7 +125,10 @@ public:
 		magnetometer.selfTest(nokiaLCD);
 	}
 	void calibrateAllSensors();
+	void calibrateGyroProcedure();
 	void timerAction();
+	void computeAngles();
+
 	uint8_t sendViaVirtualCom();
 	void setConnected() {
 		connected = 1;
@@ -159,8 +151,8 @@ public:
 		float64_t gyroYrate = ((float64_t) gyro.axis.y);
 		gyroYangle += gyroYrate * dt_inSec; // Without any filter
 
-		float64_t accXangle = (atan2(accelerometer.axis.x, accelerometer.axis.z) + PI) * RAD_TO_DEG;
-		float64_t accYangle = (atan2(accelerometer.axis.y, accelerometer.axis.z) + PI) * RAD_TO_DEG;
+		float64_t accXangle = (atan2(accelerometer.axis[0], accelerometer.axis[2]) + PI) * RAD_TO_DEG;
+		float64_t accYangle = (atan2(accelerometer.axis[1], accelerometer.axis[2]) + PI) * RAD_TO_DEG;
 
 		// Complementary filter
 		compAngleX = (0.93 * (compAngleX + gyroYrate * dt_inSec))

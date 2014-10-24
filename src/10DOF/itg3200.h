@@ -142,7 +142,8 @@ class ITG3200 {
         uint8_t testConnection();
         void test(NokiaLCD & nokia);
         void update();
-        void calibrate(bool doFullCalibartion);
+        void calibrate(bool doFullCalibartion, const uint16_t numberOfSamples);
+        void getOversampledValueAndSendViaCOM(const uint8_t numberOfSamples);
 
         // WHO_AM_I register
         uint8_t getDeviceID();

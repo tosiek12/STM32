@@ -2,6 +2,7 @@
 #define ADXL345_H_
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
+#include "arm_math.h"
 
 #include "../NokiaLCD/nokiaLCD.h"
 #include "../Delay/delay.h"
@@ -302,27 +303,19 @@
 #define ADXL345_RA_FIFO_STATUS 						 0x39
 
 class ADXL345 {
-private:
-	struct OutXYZTypeDef {
-		volatile int16_t x;
-		volatile int16_t y;
-		volatile int16_t z;
-	};
-
 public:
-	OutXYZTypeDef axis;
+	int16_t axis[3];
 	ADXL345(uint8_t address = ADXL345_DEFAULT_ADDRESS) {
 		devAddr = address;
-		axis.x = 0;
-		axis.y = 0;
-		axis.z = 0;
+		axis[1] = 0;
+		axis[2] = 0;
+		axis[3] = 0;
 	}
 
 	void initialize();
 	uint8_t testConnection();
-	void test(NokiaLCD & nokia);
 	void update();
-	void calibrate(bool doFullCalibartion);
+	void calibrate(bool doFullCalibartion, const uint16_t numberOfSamples);
 
 	// WHO_AM_I register
 	uint8_t getDeviceID();
@@ -397,9 +390,9 @@ public:
 	void WriteFIFOCtl(uint8_t fifo, uint8_t trigger, uint8_t sample);
 
 	void ReadFIFOStatus(uint8_t *fifost);
-
 private:
-	OutXYZTypeDef offset;
+	int16_t offset[3];
+	float32_t scalingFactor[3];
 	uint8_t devAddr;
 	uint8_t buffer[6];
 };

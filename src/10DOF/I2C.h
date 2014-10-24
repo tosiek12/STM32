@@ -90,14 +90,12 @@ public:
 
 		resetBus();
 
-		volatile HAL_StatusTypeDef a;
-
 		__I2C1_CLK_ENABLE();
 
 		__I2C1_FORCE_RESET();
 		__I2C1_RELEASE_RESET();
 
-		a = HAL_I2C_Init(&hi2c);
+		HAL_I2C_Init(&hi2c);
 		Delay::delay_ms(2);
 		initialized = 1;
 	}
@@ -145,7 +143,7 @@ public:
 			return HAL_ERROR;
 		}
 		uint8_t b;
-		HAL_StatusTypeDef res = i2c_ReadByte(devAddr, regAddr, &b);
+		i2c_ReadByte(devAddr, regAddr, &b);
 		b = (data != 0) ? (b | (1 << bitNum)) : (b & ~(1 << bitNum));
 		return i2c_WriteByte(devAddr, regAddr, b);
 	}

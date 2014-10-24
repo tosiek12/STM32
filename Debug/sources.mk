@@ -39,7 +39,6 @@ src/STM32_USB_Device_Library/Class/CDC/Src \
 src/NokiaLCD \
 src/GPIO \
 src/Delay \
-src/Accelerometer \
 src/10DOF \
 src/10DOF/Filters \
 

@@ -198,9 +198,8 @@ private:
 		 based on this variable will be incorrect.
 		 ----------------------------------------------------------- */
 
-
 		const uint32_t CounterClk = 10000;	//100kHz
-		const uint16_t OutputClk = 1000;	//1kHz		//Prescaler = ((SystemCoreClock/2) / TIM3 counter clock) - 1
+		const uint16_t OutputClk = 1000;	//1kHz
 		const uint16_t Prescaler = (((SystemCoreClock / 2) / CounterClk) - 1);
 		//ARR(TIM_Period) = (TIM3 counter clock / TIM3 output clock) - 1
 		const uint32_t Period = ((CounterClk / OutputClk) - 1);

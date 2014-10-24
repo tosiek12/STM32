@@ -74,7 +74,7 @@ void BMP085::test(NokiaLCD & nokia, uint8_t height) {
 	uint8_t buf[10];
 
 	nokia.ClearLine(height*3);	//* HMC5883L_COEF_GAIN_1090
-	sprintf((char*) buf, "P=%3d", (int32_t) (pressure));
+	sprintf((char*) buf, "P=%3ld", (int32_t) (pressure));
 	nokia.WriteTextXY((char*) buf, 0, height*3);
 
 	nokia.ClearLine(height*3+1);	//* HMC5883L_COEF_GAIN_1090

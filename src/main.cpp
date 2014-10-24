@@ -137,6 +137,9 @@ int main(int argc, char* argv[]) {
 			case ((char) 40):
 				imu10DOF.setRequestOfData();
 				break;
+			case 'C':
+				imu10DOF.calibrateAllSensors();
+				break;
 			default:
 
 				break;

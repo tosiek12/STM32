@@ -73,9 +73,7 @@ extern "C" void EXTI9_5_IRQHandler(void) {
 extern "C" void TIM2_IRQHandler(void) {
 	if (__HAL_TIM_GET_ITSTATUS(&GPIO::TIM_TimeBaseStructure, TIM_IT_UPDATE ) != RESET) {
 		GPIO::Timer_ButtonAction();
-		if(acc_initialized) {
-			SysTick_UpdateAccelerometer();
-		}
+
 		__HAL_TIM_CLEAR_IT(&GPIO::TIM_TimeBaseStructure, TIM_IT_UPDATE );
 	}
 
