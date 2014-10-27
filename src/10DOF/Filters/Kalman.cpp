@@ -14,7 +14,11 @@ Kalman::Kalman() {
 		Q_bias = 0.003;
 		R_measure = 0.3;
 
-		//A = [1, -dt; 0, 1]
+		//State: x = [angle; bias]
+		//Control: u = omega;
+		//bledy = [szum omegi; blad przesuniecia]
+
+		//A = F = [1, -dt; 0, 1]
 		//B = [1;0]
 		//C = [1,0]
 		//D = [0]

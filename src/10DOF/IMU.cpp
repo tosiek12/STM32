@@ -86,23 +86,36 @@ void IMU::initialize() {
 void IMU::computeAngles() {
 	float32_t XRollAngle;	//Range -180,180
 	float32_t YPitchAngle;	//Range -90,90
+	float32_t YPitchAngle_2;
 	float32_t TiltAngle;		//Range 0,180	//odchylenie od pionu (grawitacji)
+	float32_t Z_YawAngle;	//Range -180,180
 
-	float32_t sqrt_argument;
+	float32_t arg1, arg2;
 	float32_t sqrt_result;
 	const int16_t xActual= accelerometer.axis[0], yActual = accelerometer.axis[1], zActual = accelerometer.axis[2];
+	const int16_t g = 435;	//TODO: uzupelnic wartosc g.
+
+	const int16_t xMActual= magnetometer.axis[0], yMActual = magnetometer.axis[1], zMActual = magnetometer.axis[2];
+	const int16_t MaxB = 123;	//TODO: uzupelnic wartos max do skalowania.
+
 
 	XRollAngle = atan2f((float32_t)(yActual), (float32_t)(zActual))*180/PI;	//zgodne z teori¹
-	sqrt_argument = 0;
-	sqrt_argument +=(float32_t)(zActual)*(float32_t)(zActual);
-	sqrt_argument +=(float32_t)(yActual)*(float32_t)(yActual);
-	arm_sqrt_f32(sqrt_argument,&sqrt_result);
-	YPitchAngle = atan2f(-(xActual),sqrt_result)*180/PI;
 
-	sqrt_argument = 0;
-	sqrt_argument +=(float32_t)(zActual)*(float32_t)(zActual);
-	sqrt_argument +=(float32_t)(xActual)*(float32_t)(xActual);
-	sqrt_argument +=(float32_t)(yActual)*(float32_t)(yActual);
-	arm_sqrt_f32(sqrt_argument,&sqrt_result);
+	arg1 = 0;
+	arg1 +=(float32_t)(zActual)*(float32_t)(zActual);
+	arg1 +=(float32_t)(yActual)*(float32_t)(yActual);
+	arm_sqrt_f32(arg1,&sqrt_result);
+	YPitchAngle = atan2f(-(xActual),sqrt_result)*180/PI;
+	YPitchAngle_2 = asinf((float32_t)(-xActual)/(float32_t)(g))*180/PI;
+
+	arg1 = 0;
+	arg1 +=(float32_t)(zActual)*(float32_t)(zActual);
+	arg1 +=(float32_t)(xActual)*(float32_t)(xActual);
+	arg1 +=(float32_t)(yActual)*(float32_t)(yActual);
+	arm_sqrt_f32(arg1,&sqrt_result);
 	TiltAngle = acosf((zActual)/sqrt_result)*180/PI;
+
+	arg1 = sinf(XRollAngle)*zMActual - cosf(XRollAngle)*yMActual;
+	arg2 = cosf(YPitchAngle)*xMActual + sinf(XRollAngle)*sinf(YPitchAngle)* yMActual + cosf(XRollAngle)*sinf(YPitchAngle)*zMActual;
+	Z_YawAngle = atan2f(arg1,arg2);
 }
