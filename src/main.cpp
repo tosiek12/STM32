@@ -122,6 +122,7 @@ int main(int argc, char* argv[]) {
 	// Perform all necessary initializations for the LED.
 	blinkLed.powerUp();
 	uint16_t counter = 0;
+	Kalman test;
 
 	while (1) {
 		buttons.mainBegginingUpdate();
@@ -134,11 +135,17 @@ int main(int argc, char* argv[]) {
 			case 'E':
 				imu10DOF.setDisconnected();
 				break;
-			case ((char) 40):
+			case 'R':
 				imu10DOF.setRequestOfData();
 				break;
 			case 'C':
 				imu10DOF.calibrateAllSensors();
+				break;
+			case 'T':
+				test.testMatrixOperations();
+				break;
+			case 'Z':
+				test.testExample();
 				break;
 			default:
 

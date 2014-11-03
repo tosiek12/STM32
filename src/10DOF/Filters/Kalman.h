@@ -76,6 +76,13 @@ public:
 	float64_t getRmeasure() {
 		return R_measure;
 	}
-};
 
+	void testMatrixOperations();
+	void ble();
+	void sendMatrixViaCom(arm_matrix_instance_f32* matrix);
+	/* ----------------------------------------------------------------------
+	 * Max magnitude FFT Bin test
+	 * ------------------------------------------------------------------- */
+	int32_t testExample(void);
+};
 #endif /* KALMAN_H_ */
