@@ -36,9 +36,13 @@ src \
 src/SpeedTester \
 src/STM32_USB_Device_Library/Core/Src \
 src/STM32_USB_Device_Library/Class/CDC/Src \
+src/SDCard \
+src/SDCard/fatfs/option \
+src/SDCard/fatfs \
 src/NokiaLCD \
 src/GPIO \
 src/Delay \
+src/Algorithms \
 src/10DOF \
 src/10DOF/Filters \
 

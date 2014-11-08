@@ -1,8 +1,6 @@
 #include "gpio.h"
 #include "cortexm/ExceptionHandlers.h"
 
-#include "../Accelerometer/accelerometer.h"
-
 //Initializing static variables//
 volatile GPIO::state GPIO::buttons[3] = { noPush, noPush, noPush };
 volatile uint32_t GPIO::buttonsTime[3] = { 0 };

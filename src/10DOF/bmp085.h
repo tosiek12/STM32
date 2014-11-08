@@ -118,7 +118,7 @@ class BMP085 {
 
    private:
         uint8_t devAddr;
-        uint8_t buffer[2];
+        uint8_t buffer[10];
 
         bool calibrationLoaded;
         int16_t ac1, ac2, ac3, b1, b2, mb, mc, md;

@@ -1,7 +1,7 @@
 #include "algorithms.h"
 
 //funkcja dla ktorej obliczamy calke
-float func(float x) {
+float32_t func(float32_t x) {
 	return x*x+3;
 }
 
@@ -10,11 +10,11 @@ float func(float x) {
  * xk - Koniec przedzialu calkowania
  * numberOfIntervals - ilosc podprzedzialow do sumy
  */
-float integralTrapezoid(float xp, float xk, uint8_t numberOfIntervals) {
-	float integral = 0, dx = 0;
+float32_t integralTrapezoid(float32_t xp, float32_t xk, uint8_t numberOfIntervals) {
+	float32_t integral = 0, dx = 0;
 	uint8_t i = 1;
 
-	dx = (xk - xp) / (float) numberOfIntervals;
+	dx = (xk - xp) / (float32_t) numberOfIntervals;
 	for (i = 1; i < numberOfIntervals; i++) {
 		integral += func(xp + i * dx);
 	}
@@ -25,11 +25,11 @@ float integralTrapezoid(float xp, float xk, uint8_t numberOfIntervals) {
 
 }
 
-float integralSimpson(float xp, float xk, uint8_t numberOfIntervals) {
-	float integral = 0, dx = 0,s = 0, x = 0;
+float32_t integralSimpson(float32_t xp, float32_t xk, uint8_t numberOfIntervals) {
+	float32_t integral = 0, dx = 0,s = 0, x = 0;
 	uint8_t i = 1;
 
-	dx = (xk - xp) / (float) numberOfIntervals;
+	dx = (xk - xp) / (float32_t) numberOfIntervals;
 	for (i = 1; i < numberOfIntervals; i++) {
 		x = xp + i*dx;
 		s += func(x - dx / 2);

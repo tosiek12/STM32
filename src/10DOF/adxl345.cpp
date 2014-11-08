@@ -102,10 +102,27 @@ void ADXL345::calibrate(bool doFullCalibartion,
 		numberOfCharsInBuffer = sprintf(buf, "Accelerometer calibration End\n");
 		VCP_write(buf, numberOfCharsInBuffer);
 	} else {
-		offset[0] = 2;
-		offset[1] = 11;
-		offset[2] = 1;
+		offset[0] = 22;
+		offset[1] = 31;
+		offset[2] = 14;
+//		//Dla 4g
+//		offset[0] = 24;
+//		offset[1] = 30;
+//		offset[2] = 12;
 	}
+}
+
+void ADXL345::update() {
+	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, (uint8_t *) &axis);
+
+	//TODO: implement scaling factor!
+	axis[0] = (int16_t) (axis[0] * ADXL345_2G_CALIBRATED_FACTOR);
+	axis[1] = (int16_t) (axis[1] * ADXL345_2G_CALIBRATED_FACTOR);
+	axis[2] = (int16_t) (axis[2] * ADXL345_2G_CALIBRATED_FACTOR);
+
+	axis[0] += offset[0];
+	axis[1] += offset[1];
+	axis[2] += offset[2];
 }
 
 /*
@@ -627,17 +644,4 @@ void ADXL345::WriteFIFOCtl(uint8_t fifo, uint8_t trigger, uint8_t sample) {
  */
 void ADXL345::ReadFIFOStatus(uint8_t *fifost) {
 	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_STATUS, fifost);
-}
-
-void ADXL345::update() {
-	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, (uint8_t *) &axis);
-
-	axis[0] += offset[0];
-	axis[1] += offset[1];
-	axis[2] += offset[2];
-
-	//TODO: implement scaling factor!
-	axis[0] = (int16_t) (axis[0] * ADXL345_2G_FACTOR);
-	axis[1] = (int16_t) (axis[1] * ADXL345_2G_FACTOR);
-	axis[2] = (int16_t) (axis[2] * ADXL345_2G_FACTOR);
 }

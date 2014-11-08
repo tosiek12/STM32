@@ -55,13 +55,13 @@ void BMP085::test(NokiaLCD & nokia, uint8_t height) {
 	setControl(BMP085_MODE_TEMPERATURE);
 
 	// wait appropriate time for conversion (4.5ms delay)
-	Delay::delay_us(getMeasureDelayMicroseconds());
+	Delay::delay_ms(getMeasureDelayMicroseconds());
 
 	// read calibrated temperature value in degrees Celsius
 	temperature = getTemperatureC();
 	setControl(BMP085_MODE_PRESSURE_3);
 	// request pressure (3x oversampling mode, high detail, 23.5ms delay)
-	Delay::delay_us(getMeasureDelayMicroseconds());
+	Delay::delay_ms(getMeasureDelayMicroseconds());
 
 	// read calibrated pressure value in Pascals (Pa)
 	float32_t k = 1;	//Low-Pass filter coefficient.

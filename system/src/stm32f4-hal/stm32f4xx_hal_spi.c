@@ -78,7 +78,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-
+#include "stm32f4xx_hal_spi.h"
 /** @addtogroup STM32F4xx_HAL_Driver
   * @{
   */
@@ -200,6 +200,8 @@ HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi)
 
   /* Activate the SPI mode (Make sure that I2SMOD bit in I2SCFGR register is reset) */
   hspi->Instance->I2SCFGR &= (uint32_t)(~SPI_I2SCFGR_I2SMOD);
+
+  __HAL_SPI_ENABLE(hspi);
 
   hspi->ErrorCode = HAL_SPI_ERROR_NONE;
   hspi->State = HAL_SPI_STATE_READY;

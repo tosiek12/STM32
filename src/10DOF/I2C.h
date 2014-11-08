@@ -41,12 +41,12 @@ private:
 
 		while (HAL_GPIO_ReadPin(I2C_SDA_PORT, I2C_SDA_PIN) != GPIO_PIN_SET) {
 			HAL_GPIO_TogglePin(I2C_SCL_PORT, I2C_SCL_PIN);
-			Delay::delay_us(100);
+			Delay::delay_ms(1);
 		}
 
 		while (HAL_GPIO_ReadPin(I2C_SDA_PORT, I2C_SDA_PIN) != GPIO_PIN_SET) {
 			HAL_GPIO_TogglePin(I2C_SCL_PORT, I2C_SCL_PIN);
-			Delay::delay_us(100);
+			Delay::delay_ms(1);
 		}
 
 		//Return to basic configuration

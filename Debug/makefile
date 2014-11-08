@@ -16,9 +16,13 @@ RM := rm -rf
 -include src/SpeedTester/subdir.mk
 -include src/STM32_USB_Device_Library/Core/Src/subdir.mk
 -include src/STM32_USB_Device_Library/Class/CDC/Src/subdir.mk
+-include src/SDCard/fatfs/option/subdir.mk
+-include src/SDCard/fatfs/subdir.mk
+-include src/SDCard/subdir.mk
 -include src/NokiaLCD/subdir.mk
 -include src/GPIO/subdir.mk
 -include src/Delay/subdir.mk
+-include src/Algorithms/subdir.mk
 -include src/10DOF/Filters/subdir.mk
 -include src/10DOF/subdir.mk
 -include src/subdir.mk
@@ -69,7 +73,7 @@ all: BasicV1.elf secondary-outputs
 BasicV1.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross ARM C++ Linker'
-	arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Og -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal  -g3 -T mem.ld -T libs.ld -T sections.ld -nostartfiles -Xlinker --gc-sections -L"../ldscripts" -Wl,-Map,"BasicV1.map" --specs=nano.specs -o "BasicV1.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -O3 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal  -g3 -T mem.ld -T libs.ld -T sections.ld -nostartfiles -Xlinker --gc-sections -L"../ldscripts" -Wl,-Map,"BasicV1.map" --specs=nano.specs -o "BasicV1.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

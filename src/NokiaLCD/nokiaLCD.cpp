@@ -89,20 +89,25 @@ void NokiaLCD::ClearLine(uint8_t line) {
 
 void NokiaLCD::LCD_write_byte(uint8_t dat, uint8_t command) {
 	uint8_t i;
+	uint8_t cnt;
 	CS(0);	//SPI_CS = 0;
-	Delay::delay_us(1);//10
+//	Delay::delay_us(1);//10
+	cnt = 100; while(--cnt) { asm volatile("nop"); }
 	if (command == 0)
 		DC(0);	//LCD_DC = 0;
 	else
 		DC(1);	//LCD_DC = 1; - write data to RAM
-	Delay::delay_us(1);//10
+//	Delay::delay_us(1);//10
+	cnt = 100; while(--cnt) { asm volatile("nop"); }
 	for (i = 0; i < 8; i++) {
 		MO(dat & 0x80);	//SPI_MO = dat & 0x80;
 		dat = dat << 1;
 		SCK(0);	//SPI_SCK = 0;
-		Delay::delay_us(1);
+//		Delay::delay_us(1);
+		cnt = 100; while(--cnt) { asm volatile("nop");}
 		SCK(1);	//SPI_SCK = 1;
-		Delay::delay_us(1);
+//		Delay::delay_us(1);
+		cnt = 100; while(--cnt) { asm volatile("nop");}
 	}
 	CS(1);	//SPI_CS = 1;
 }

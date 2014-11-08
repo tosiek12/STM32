@@ -5,12 +5,15 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../system/include/cmsis/core_cmInstr.h \
  ../system/include/cmsis/core_cmFunc.h \
  ../system/include/cmsis/core_cm4_simd.h \
- ../system/include/cmsis/system_stm32f4xx.h ../include/BlinkLed.h \
+ ../system/include/cmsis/system_stm32f4xx.h \
+ ../include/../src/SDCard/fatfs/drivers_fatfs_sd.h \
+ ../include/../src/SDCard/fatfs/diskio.h \
+ ../include/../src/SDCard/fatfs/integer.h \
+ ../system/include/cmsis/stm32f4xx.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal.h \
  ../include/stm32f4xx_hal_conf.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_rcc.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_def.h \
- ../system/include/cmsis/stm32f4xx.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_rcc_ex.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_gpio.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_gpio_ex.h \
@@ -29,15 +32,16 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_uart.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_usart.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_pcd.h \
- ../system/include/stm32f4-hal/stm32f4xx_ll_usb.h \
+ ../system/include/stm32f4-hal/stm32f4xx_ll_usb.h ../include/BlinkLed.h \
  ../src/NokiaLCD/nokiaLCD.h ../src/NokiaLCD/../Delay/delay.h \
  ../src/NokiaLCD/english_6x8_pixel.h ../src/NokiaLCD/bmp_pixel.h \
  ../src/GPIO/gpio.h ../src/10DOF/IMU.h ../system/include/cmsis/arm_math.h \
  ../src/10DOF/../NokiaLCD/nokiaLCD.h ../src/10DOF/../Delay/delay.h \
  ../src/10DOF/I2C.h ../src/10DOF/itg3200.h ../src/10DOF/adxl345.h \
  ../src/10DOF/hmc5883l.h ../src/10DOF/bmp085.h \
- ../src/10DOF/Filters/Kalman.h ../src/Accelerometer/accelerometer.h \
- ../src/Accelerometer/../NokiaLCD/nokiaLCD.h \
+ ../src/10DOF/Filters/Kalman.h ../src/SDCard/tm_stm32f4_fatfs.h \
+ ../src/SDCard/fatfs/ff.h ../src/SDCard/fatfs/integer.h \
+ ../src/SDCard/fatfs/ffconf.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../include/usbd_conf.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
@@ -71,7 +75,13 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../system/include/cmsis/system_stm32f4xx.h:
 
-../include/BlinkLed.h:
+../include/../src/SDCard/fatfs/drivers_fatfs_sd.h:
+
+../include/../src/SDCard/fatfs/diskio.h:
+
+../include/../src/SDCard/fatfs/integer.h:
+
+../system/include/cmsis/stm32f4xx.h:
 
 ../system/include/stm32f4-hal/stm32f4xx_hal.h:
 
@@ -80,8 +90,6 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 ../system/include/stm32f4-hal/stm32f4xx_hal_rcc.h:
 
 ../system/include/stm32f4-hal/stm32f4xx_hal_def.h:
-
-../system/include/cmsis/stm32f4xx.h:
 
 ../system/include/stm32f4-hal/stm32f4xx_hal_rcc_ex.h:
 
@@ -121,6 +129,8 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../system/include/stm32f4-hal/stm32f4xx_ll_usb.h:
 
+../include/BlinkLed.h:
+
 ../src/NokiaLCD/nokiaLCD.h:
 
 ../src/NokiaLCD/../Delay/delay.h:
@@ -151,9 +161,13 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../src/10DOF/Filters/Kalman.h:
 
-../src/Accelerometer/accelerometer.h:
+../src/SDCard/tm_stm32f4_fatfs.h:
 
-../src/Accelerometer/../NokiaLCD/nokiaLCD.h:
+../src/SDCard/fatfs/ff.h:
+
+../src/SDCard/fatfs/integer.h:
+
+../src/SDCard/fatfs/ffconf.h:
 
 ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h:
 

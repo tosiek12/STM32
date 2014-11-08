@@ -11,35 +11,10 @@ extern "C" {
 }
 
 Kalman::Kalman() {
-	/* We will set the variables like so, these can also be tuned by the user */
+	/* The variables are set like so, these can also be tuned by the user. */
 	Q_angle = 0.001;
 	Q_bias = 0.003;
 	R_measure = 0.3;
-
-	//State: x = [angle; bias]
-	//Control: u = omega;
-	//bledy = [szum omegi; blad przesuniecia]
-
-	//A = F = [1, -dt; 0, 1]
-	//B = [1;0]
-	//C = [1,0]
-	//D = [0]
-	X_matrix.numCols = 1;
-	X_matrix.numRows = 2;
-	X_matrix.pData = X;
-
-	P_matrix.numCols = 2;
-	P_matrix.numRows = 2;
-	P_matrix.pData = P_new;
-
-	A_matrix.numCols = 2;
-	A_matrix.numRows = 2;
-	A_matrix.pData = A;
-
-	C_matrix.numCols = 2;
-	C_matrix.numRows = 1;
-	C_matrix.pData = C;
-
 	angle = 0; // Reset the angle
 	bias = 0; // Reset bias
 
@@ -47,10 +22,28 @@ Kalman::Kalman() {
 	P[0][1] = 0;
 	P[1][0] = 0;
 	P[1][1] = 0;
+
+
+	arm_mat_init_f32(&xMatrix, 2, 1, xSource);
+	xSource[0] = 0;
+	xSource[1] = 0;	//Zero initial bias, zero initial angle.
+	arm_mat_init_f32(&aMatrix, 2, 2, aSource);
+	arm_mat_init_f32(&cMatrix, 1, 2, cSource);
+	arm_mat_init_f32(&pMatrix, 2, 2, pSource);
+	pSource[0] = 0; //It could be set to bigger value, if we do not know initial angle. If used setAngle left it as 0.
+	pSource[1] = 0;
+	pSource[2] = 0;
+	pSource[3] = 0;	//We assume that the bias is 0.
+	// Due to that assumptions the error covariance matrix is set like so. ref: http://en.wikipedia.org/wiki/Kalman_filter#Example_application.2C_technical
+	arm_mat_init_f32(&qMatrix, 2, 2, qSource);
+	qSource[0] = Q_angle;
+	qSource[1] = 0;
+	qSource[2] = 0;
+	qSource[3] = Q_bias;
 }
 
 // The angle in degrees and the rate in degrees per second and the dt in seconds
-void Kalman::step(float64_t newAngle, float64_t newRate, float64_t dt) {
+void Kalman::stepOldVersion(float32_t newAngle, float32_t newRate, float32_t dt) {
 	// KasBot V2  -  Kalman filter module - http://www.x-firm.com/?page_id=145
 	// Modified by Kristian Lauszus
 	// See my blog post for more information: http://blog.tkjelectronics.dk/2012/09/a-practical-approach-to-kalman-filter-and-how-to-implement-it
@@ -82,6 +75,64 @@ void Kalman::step(float64_t newAngle, float64_t newRate, float64_t dt) {
 	P[0][1] -= K[0] * P[0][1];
 	P[1][0] -= K[1] * P[0][0];
 	P[1][1] -= K[1] * P[0][1];
+}
+
+void Kalman::stepNewVersion(float32_t newAngle, float32_t newRate,
+		float32_t dt) {
+	// KasBot V2  -  Kalman filter module - http://www.x-firm.com/?page_id=145
+	// Modified by Kristian Lauszus
+	// See my blog post for more information: http://blog.tkjelectronics.dk/2012/09/a-practical-approach-to-kalman-filter-and-how-to-implement-it
+	float32_t xTempSource[2], xTemp2Source[2], pTempSource[2*2], aTransposeSource[2*2];
+	arm_matrix_instance_f32 xTemp, xTemp2, pTemp, aTranspose;
+	volatile arm_status status = ARM_MATH_TEST_FAILURE;
+
+	// Stage 1: Predict
+	// Update state estimation:
+	aMatrix.pData[2] = -dt;	//Time from previous computations.
+	arm_mat_init_f32(&xTemp, 2, 1, xTempSource);
+	arm_mat_init_f32(&xTemp2, 2, 1, xTemp2Source);
+	status = arm_mat_mult_f32(&aMatrix, &xMatrix, &xTemp);
+	status = arm_mat_scale_f32(&aMatrix, newRate*dt, &xTemp2);
+	status = arm_mat_add_f32(&xTemp, &xTemp2, &xMatrix);
+	sendMatrixViaCom(&xMatrix);
+
+	// Update error covariance estimation:
+	arm_mat_init_f32(&pTemp, 2, 2, pTempSource);
+	arm_mat_init_f32(&aTranspose, 2, 2, aTransposeSource);
+	status = arm_mat_mult_f32(&aMatrix, &pMatrix, &pTemp);
+	status = arm_mat_trans_f32(&aMatrix, &aTranspose);
+	status = arm_mat_mult_f32(&pTemp, &aTranspose, &pMatrix);
+	status = arm_mat_add_f32(&pMatrix, &qMatrix, &xMatrix);
+
+	// Stage 2: Correct
+	// Calculate Kalman gain:
+	status = arm_mat_trans_f32(&cMatrix, &xTemp);	//cTranspose
+	status = arm_mat_mult_f32(&pMatrix, &xTemp, &xTemp2);	//P*cTranspose
+
+	float32_t cPcTSource[1*1], rTempSource[1*1];
+	arm_matrix_instance_f32 cPcT, rTemp;
+	arm_mat_init_f32(&cPcT, 1, 1, cPcTSource);
+	arm_mat_init_f32(&rTemp, 1, 1, rTempSource);
+	status = arm_mat_mult_f32(&cMatrix, &xTemp2, &cPcT);	// c*(P*cTranspose)
+	status = arm_mat_add_f32(&cPcT, &rMatrix, &rTemp);
+	status = arm_mat_inverse_f32(&rTemp, &cPcT);	// inv(S)
+	status = arm_mat_mult_f32(&xTemp2, &cPcT, &xTemp);	// K = (P*cTranspose) * inv(S)
+	sendMatrixViaCom(&xTemp);
+
+	// Update estimate with measurement zk (newAngle)
+	y = newAngle - angle;
+	/* Step 6 */
+	angle += K[0] * y;
+	bias += K[1] * y;
+
+	// Update the error covariance
+	P[0][0] -= K[0] * P[0][0];
+	P[0][1] -= K[0] * P[0][1];
+	P[1][0] -= K[1] * P[0][0];
+	P[1][1] -= K[1] * P[0][1];
+
+
+
 }
 
 void Kalman::testMatrixOperations() {
@@ -128,6 +179,10 @@ void Kalman::sendMatrixViaCom(arm_matrix_instance_f32* matrix) {
 	VCP_write(buf, numberOfCharsInBuffer);
 }
 
+void Kalman::sendStateViaCom() {
+	sendMatrixViaCom(&xMatrix);
+}
+
 int32_t Kalman::testExample(void) {
 	/* --------------------------------------------------------------------------------
 	 * Test input data(Cycles) taken from FIR Q15 module for different cases of blockSize
@@ -158,7 +213,7 @@ int32_t Kalman::testExample(void) {
 	arm_matrix_instance_f32 B; /* Matrix B instance */
 	arm_matrix_instance_f32 X; /* Matrix X(Unknown Matrix) instance */
 	arm_status status;
-	arm_mat_init_f32(&A, 4, 4, (float32_t*) ((((((A_f32)))))));
+	arm_mat_init_f32(&A, 4, 4, (float32_t*) (A_f32));
 	arm_mat_init_f32(&At, 4, 4, AT_f32);
 	status = arm_mat_trans_f32(&A, &At);
 	arm_mat_init_f32(&At_m_A, 4, 4, ATMA_f32);

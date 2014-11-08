@@ -38,6 +38,12 @@ private:
 
 	Kalman kalmanX;
 	Kalman kalmanY;
+	float32_t XRollAngle;	//Range -180,180
+	float32_t YPitchAngle;	//Range -90,90
+	float32_t YPitchAngle_2;
+	float32_t TiltAngle;		//Range 0,180	//odchylenie od pionu (grawitacji)
+	float32_t ZYawAngle;	//Range -180,180
+
 //	float64_t zeroValue[5] = { -200, 44, 660, 52.3, -18.5 }; // Found by experimenting
 	/* All the angles start at 180 degrees */
 	float64_t gyroXangle = 180;
@@ -66,7 +72,7 @@ private:
 		__TIM3_CLK_ENABLE();
 
 		const uint32_t CounterClk = 10000;	//Hz
-		const uint16_t OutputClk = 1000;	//Hz
+		const uint16_t OutputClk = 100;	//Hz
 		//Prescaler = ((SystemCoreClock/2) / TIM3 counter clock) - 1
 		const uint16_t Prescaler = (((SystemCoreClock / 2) / CounterClk) - 1);
 		//ARR(TIM_Period) = (TIM3 counter clock / TIM3 output clock) - 1
@@ -99,22 +105,12 @@ private:
 	}
 
 public:
-	IMU() :
-			gyro(), accelerometer(), magnetometer(), pressure() {
-		sendDataTriger = 0;
-		connected = 0;
-		request = 0;
-	}
+	IMU();
 	~IMU() {
 	}
 	TIM_HandleTypeDef TimHandle;
 	void initialize();
-	void showMeasurment(NokiaLCD &nokiaLCD) {
-//		accelerometer.test(nokiaLCD);
-//		gyro.test(nokiaLCD);
-		magnetometer.test(nokiaLCD, 0);
-		pressure.test(nokiaLCD, 1);
-	}
+	void showMeasurment(NokiaLCD& nokiaLCD);
 	inline uint8_t __attribute__((always_inline))  getShowDataTriger() {
 		return showDataTriger;
 	}
@@ -142,49 +138,9 @@ public:
 		request = 1;
 	}
 
-	void kalmanStepAction() {
-		const float64_t RAD_TO_DEG = 57.29577951f;
-		float64_t dt_inSec = 0.001;
-		float64_t gyroXrate = -((float64_t) gyro.axis[0]);
-		gyroXangle += gyroXrate * dt_inSec; // Without any filter
-
-		float64_t gyroYrate = ((float64_t) gyro.axis[1]);
-		gyroYangle += gyroYrate * dt_inSec; // Without any filter
-
-		float64_t accXangle = (atan2(accelerometer.axis[0], accelerometer.axis[2]) + PI) * RAD_TO_DEG;
-		float64_t accYangle = (atan2(accelerometer.axis[1], accelerometer.axis[2]) + PI) * RAD_TO_DEG;
-
-		// Complementary filter
-		compAngleX = (0.93 * (compAngleX + gyroYrate * dt_inSec))
-				+ (0.07 * accXangle);
-		compAngleY = (0.93 * (compAngleY + gyroYrate * dt_inSec))
-				+ (0.07 * accYangle);
-
-		// Kalman filter
-		kalmanX.step(accXangle, gyroXrate, dt_inSec);
-		kalmanY.step(accYangle, gyroYrate, dt_inSec);
-	}
-	void showAnglesKalman(NokiaLCD &nokiaLCD) {
-		uint8_t buf[10];
-
-		nokiaLCD.ClearLine(0);
-		sprintf((char*) buf, "X=%d", (int16_t) compAngleX);
-		nokiaLCD.WriteTextXY((char*) buf, 0, 0);
-
-		nokiaLCD.ClearLine(1);
-		sprintf((char*) buf, "Y=%d", (int16_t) compAngleY);
-		nokiaLCD.WriteTextXY((char*) buf, 0, 1);
-
-		nokiaLCD.ClearLine(2);
-		sprintf((char*) buf, "X_K=%d", (int16_t) kalmanX.getAngle());
-		nokiaLCD.WriteTextXY((char*) buf, 0, 2);
-
-		nokiaLCD.ClearLine(3);
-		sprintf((char*) buf, "Y_K=%d", (int16_t) kalmanY.getAngle());
-		nokiaLCD.WriteTextXY((char*) buf, 0, 3);
-	}
+	void kalmanStepAction();
+	void showAnglesKalman(NokiaLCD& nokiaLCD);
 };
 
 extern IMU imu10DOF;
-
 #endif

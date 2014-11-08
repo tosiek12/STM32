@@ -244,6 +244,10 @@
 #define  ADXL345_4G_FACTOR    ((float)7.8)     // 128 LSB/g
 #define  ADXL345_8G_FACTOR    ((float)15.6)     //64  LSB/g
 #define  ADXL345_16G_FACTOR   ((float)31.2)    //32 LSB/g
+//After calibration:
+#define  ADXL345_2G_CALIBRATED_FACTOR    ((float)3.2)     // 256 LSB/g
+#define  ADXL345_4G_CALIBRATED_FACTOR    ((float)6.4)     // 128 LSB/g
+
 
 /*	Rejestr DATAX0 --------- X-Axis Data 0. ------------------------------------------------
  *	Default value: 00000000
@@ -307,9 +311,9 @@ public:
 	int16_t axis[3];
 	ADXL345(uint8_t address = ADXL345_DEFAULT_ADDRESS) {
 		devAddr = address;
+		axis[0] = 0;
 		axis[1] = 0;
 		axis[2] = 0;
-		axis[3] = 0;
 	}
 
 	void initialize();

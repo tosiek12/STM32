@@ -2,17 +2,18 @@
 #define DELAY_H_
 
 #include "cmsis_device.h"
+#include "../src/SDCard/fatfs/drivers_fatfs_sd.h"
 
 class Delay {
 private:
-	static constexpr uint32_t FREQUENCY_HZ = 1000000u;	//1Mhz
+	static constexpr uint32_t FREQUENCY_HZ = 1000u;	//1khz
 	static volatile uint32_t delayCount;
 
 public:
 	static void initialize() {
 		// Use SysTick as reference for the delay loops.
 		//168/8 = 21MHz
-		//21MHz/21=1MHz => T=1ms;
+		//21MHz/21=1kHz => T=1ms;
 		if (SysTick_Config(SystemCoreClock / FREQUENCY_HZ)) {
 			//Capture error
 			while (1) {
@@ -25,18 +26,21 @@ public:
 		if (delayCount != 0u) {
 			--delayCount;
 		}
+		if (TimeSPI != 0u) {
+			--TimeSPI;
+		}
 	}
 
 	void static delay_ms(uint32_t timeInMs) {
-		delayCount = timeInMs * 1000;
+		delayCount = timeInMs;
 		while (delayCount) {
 		}
 	}
-	void static delay_us(uint32_t timeInUs) {
-		delayCount = timeInUs;
-		while (delayCount) {
-		}
-	}
+//	void static delay_us(uint32_t timeInUs) {
+//		delayCount = timeInUs;
+//		while (delayCount) {
+//		}
+//	}
 };
 
 #endif

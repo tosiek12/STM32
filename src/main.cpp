@@ -14,8 +14,10 @@
 #include "GPIO/gpio.h"
 #include "10DOF/IMU.h"
 
+#include "SDCard/tm_stm32f4_fatfs.h"
+
 //#include "Accelerometer/stm32f4_discovery_lis3dsh.h"
-#include "Accelerometer/accelerometer.h"
+//#include "Accelerometer/accelerometer.h"
 
 extern "C" {
 #include <usbd_core.h>
@@ -55,6 +57,26 @@ static void SystemClock_Config(void) {
 	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 }
 
+
+void testSD();
+FRESULT TM_FATFS_DriveSize2(uint32_t* total, uint32_t* free) {
+	FATFS *fs;
+    DWORD fre_clust;
+	FRESULT res;
+
+    /* Get volume information and free clusters of drive */
+    res = f_getfree("0:", &fre_clust, &fs);
+    if (res != FR_OK) {
+		return res;
+	}
+
+    /* Get total sectors and free sectors */
+    *total = (fs->n_fatent - 2) * fs->csize / 2;
+    *free = fre_clust * fs->csize / 2;
+
+	/* Return OK */
+	return FR_OK;
+}
 // ----------------------------------------------------------------------------
 //
 // STM32F4 led blink sample (trace via ITM).
@@ -95,6 +117,8 @@ constexpr uint32_t BLINK_OFF_TICKS = 500;
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
+
+
 int main(int argc, char* argv[]) {
 	HAL_Init();
 	SystemClock_Config();
@@ -124,6 +148,8 @@ int main(int argc, char* argv[]) {
 	uint16_t counter = 0;
 	Kalman test;
 
+	testSD();
+
 	while (1) {
 		buttons.mainBegginingUpdate();
 
@@ -142,10 +168,11 @@ int main(int argc, char* argv[]) {
 				imu10DOF.calibrateAllSensors();
 				break;
 			case 'T':
-				test.testMatrixOperations();
+				imu10DOF.computeAngles();
+				imu10DOF.kalmanStepAction();
 				break;
 			case 'Z':
-				test.testExample();
+				testSD();
 				break;
 			default:
 
@@ -182,6 +209,61 @@ int main(int argc, char* argv[]) {
 		buttons.mainEndUpdate();
 	}
 }
+
+void testSD() {
+	FATFS FatFs;
+	//File object
+	FIL fil;
+	//Free and total space
+	uint32_t total, free;
+	volatile uint8_t state = 0;
+	//Mount drive
+	state = f_mount(&FatFs, "", 0);
+	if (state == FR_OK) {
+		//Mounted OK, turn on RED LED
+
+		//Try to open file
+		state = f_open(&fil, "1stfile", FA_OPEN_ALWAYS | FA_READ | FA_WRITE);
+		if (state == FR_OK) {
+			//File opened, turn off RED and turn on GREEN led
+
+			//If we put more than 0 characters (everything OK)
+			state = f_puts("First string in my file\n", &fil);
+			if (state > 0) {
+				state = TM_FATFS_DriveSize2(&total, &free) ;
+				if (state == FR_OK) {
+					//Data for drive size are valid
+				}
+
+				//Turn on both leds
+			}
+
+			//Close file, don't forget this!
+			f_close(&fil);
+		}
+
+		//Try to open file
+		if (f_open(&fil, "2ndfile.txt", FA_OPEN_ALWAYS | FA_READ | FA_WRITE) == FR_OK) {
+			//File opened, turn off RED and turn on GREEN led
+
+			//If we put more than 0 characters (everything OK)
+			if (f_puts("First string in my file\n", &fil) > 0) {
+				if (TM_FATFS_DriveSize2(&total, &free) == FR_OK) {
+					//Data for drive size are valid
+				}
+
+				//Turn on both leds
+			}
+
+			//Close file, don't forget this!
+			f_close(&fil);
+		}
+
+		//Unmount drive, don't forget this!
+		f_mount(0, "", 1);
+	}
+}
+
 
 #pragma GCC diagnostic pop
 

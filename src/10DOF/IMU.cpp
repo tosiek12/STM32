@@ -17,22 +17,23 @@ void IMU::timerAction() {
 	accelerometer.update();
 	gyro.update();
 	magnetometer.update();
-	kalmanStepAction();
+
+//	computeAngles();
+//	kalmanStepAction();
+
 	sendDataTriger = 1;
 	if (++counter == 200) {	//update LCD after x ms.
 		showDataTriger = 1;
 		counter = 0;
 	}
-
 }
 
 // ----- TIM_IRQHandler() ----------------------------------------------------
 extern "C" void TIM3_IRQHandler(void) {
 	if (__HAL_TIM_GET_ITSTATUS(&imu10DOF.TimHandle, TIM_IT_UPDATE ) != RESET) {
-		//imu10DOF.timerAction();
+		imu10DOF.timerAction();
 		__HAL_TIM_CLEAR_IT(&imu10DOF.TimHandle, TIM_IT_UPDATE);
 	}
-
 }
 
 uint8_t IMU::sendViaVirtualCom() {
@@ -59,6 +60,13 @@ uint8_t IMU::sendViaVirtualCom() {
 	return 0;
 }
 
+void IMU::showMeasurment(NokiaLCD& nokiaLCD) {
+	//		accelerometer.test(nokiaLCD);
+	//		gyro.test(nokiaLCD);
+	magnetometer.test(nokiaLCD, 0);
+	pressure.test(nokiaLCD, 1);
+}
+
 void IMU::calibrateAllSensors() {
 	//gyro.calibrate(false,100);
 	accelerometer.calibrate(true, 100);
@@ -69,6 +77,13 @@ void IMU::calibrateGyroProcedure() {
 
 	Delay::delay_ms(1);
 
+}
+
+IMU::IMU() :
+		gyro(), accelerometer(), magnetometer(), pressure() {
+	sendDataTriger = 0;
+	connected = 0;
+	request = 0;
 }
 
 void IMU::initialize() {
@@ -84,12 +99,6 @@ void IMU::initialize() {
 }
 
 void IMU::computeAngles() {
-	float32_t XRollAngle;	//Range -180,180
-	float32_t YPitchAngle;	//Range -90,90
-	float32_t YPitchAngle_2;
-	float32_t TiltAngle;		//Range 0,180	//odchylenie od pionu (grawitacji)
-	float32_t Z_YawAngle;	//Range -180,180
-
 	float32_t arg1, arg2;
 	float32_t sqrt_result;
 	const int16_t xActual= accelerometer.axis[0], yActual = accelerometer.axis[1], zActual = accelerometer.axis[2];
@@ -117,5 +126,41 @@ void IMU::computeAngles() {
 
 	arg1 = sinf(XRollAngle)*zMActual - cosf(XRollAngle)*yMActual;
 	arg2 = cosf(YPitchAngle)*xMActual + sinf(XRollAngle)*sinf(YPitchAngle)* yMActual + cosf(XRollAngle)*sinf(YPitchAngle)*zMActual;
-	Z_YawAngle = atan2f(arg1,arg2);
+	ZYawAngle = atan2f(arg1,arg2);
+}
+
+void IMU::kalmanStepAction() {
+	const float64_t RAD_TO_DEG = 57.29577951f;
+	float64_t dt_inSec = 0.001;
+	float64_t gyroXrate = -((float64_t) ((gyro.axis[0])));
+	gyroXangle += gyroXrate * dt_inSec; // Without any filter
+	float64_t gyroYrate = ((float64_t) ((gyro.axis[1])));
+	gyroYangle += gyroYrate * dt_inSec; // Without any filter
+
+	// Complementary filter
+	compAngleX = (0.93 * (compAngleX + gyroYrate * dt_inSec))
+			+ (0.07 * XRollAngle);
+	compAngleY = (0.93 * (compAngleY + gyroYrate * dt_inSec))
+			+ (0.07 * YPitchAngle);
+	// Kalman filter
+	kalmanX.stepNewVersion(XRollAngle, gyroXrate, dt_inSec);
+	kalmanY.stepNewVersion(YPitchAngle, gyroYrate, dt_inSec);
+//	kalmanX.stepOldVersion(XRollAngle, gyroXrate, dt_inSec);
+//	kalmanY.stepOldVersion(YPitchAngle, gyroYrate, dt_inSec);
+}
+
+void IMU::showAnglesKalman(NokiaLCD& nokiaLCD) {
+	uint8_t buf[10];
+	nokiaLCD.ClearLine(0);
+	sprintf((char*) ((buf)), "X=%d", (int16_t) ((compAngleX)));
+	nokiaLCD.WriteTextXY((char*) ((buf)), 0, 0);
+	nokiaLCD.ClearLine(1);
+	sprintf((char*) ((buf)), "Y=%d", (int16_t) ((compAngleY)));
+	nokiaLCD.WriteTextXY((char*) ((buf)), 0, 1);
+	nokiaLCD.ClearLine(2);
+	sprintf((char*) ((buf)), "X_K=%d", (int16_t) ((kalmanX.getAngle())));
+	nokiaLCD.WriteTextXY((char*) ((buf)), 0, 2);
+	nokiaLCD.ClearLine(3);
+	sprintf((char*) ((buf)), "Y_K=%d", (int16_t) ((kalmanY.getAngle())));
+	nokiaLCD.WriteTextXY((char*) ((buf)), 0, 3);
 }
