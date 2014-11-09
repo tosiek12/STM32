@@ -5,7 +5,7 @@
  *      Author: Antonio
  */
 
-#include "SPI.h"
+#include "SDCard/SPI.h"
 
 // Create static fields	//
 uint8_t SPI::initialized = 0;

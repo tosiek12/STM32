@@ -1,4 +1,4 @@
-#include "gpio.h"
+#include "GPIO/gpio.h"
 #include "cortexm/ExceptionHandlers.h"
 
 //Initializing static variables//
@@ -68,7 +68,7 @@ extern "C" void EXTI9_5_IRQHandler(void) {
 
 // ----- TIM_IRQHandler() ----------------------------------------------------
 
-extern "C" void TIM2_IRQHandler(void) {
+extern "C" void TIM4_IRQHandler(void) {
 	if (__HAL_TIM_GET_ITSTATUS(&GPIO::TIM_TimeBaseStructure, TIM_IT_UPDATE ) != RESET) {
 		GPIO::Timer_ButtonAction();
 

@@ -14,14 +14,6 @@
 #include "bmp085.h"
 #include "Filters/Kalman.h"
 
-/* Definition for TIMx clock resources */
-#define TIMx                           TIM3
-#define TIMx_CLK_ENABLE                __TIM3_CLK_ENABLE
-
-/* Definition for TIMx's NVIC */
-#define TIMx_IRQn                      (IRQn_Type) TIM3_IRQn
-#define TIMx_IRQHandler                TIM3_IRQHandler
-
 class IMU {
 public:
 
@@ -52,21 +44,6 @@ private:
 	float64_t compAngleX = 180;
 	float64_t compAngleY = 180;
 
-	inline void __attribute__((always_inline)) initializeI2C() {
-		I2C_HandleTypeDef hi2c;
-		hi2c.Instance = I2C1;
-		hi2c.Init.ClockSpeed = 400000;
-		hi2c.Init.DutyCycle = I2C_DUTYCYCLE_2;
-		hi2c.Init.OwnAddress1 = 0x10;
-		hi2c.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-		hi2c.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
-		hi2c.Init.OwnAddress2 = 0x10;
-		hi2c.Init.GeneralCallMode = I2C_GENERALCALL_DISABLED;
-		hi2c.Init.NoStretchMode = I2C_NOSTRETCH_DISABLED;
-
-		I2C::initialize(&hi2c);
-	}
-
 	inline void __attribute__((always_inline)) initializeTimerForUpdate() {
 		/* TIMx Peripheral clock enable */
 		__TIM3_CLK_ENABLE();
@@ -79,7 +56,7 @@ private:
 		const uint32_t Period = ((CounterClk / OutputClk) - 1);
 
 		/* Set TIMx instance */
-		TimHandle.Instance = TIMx;
+		TimHandle.Instance = TIM3;
 		TimHandle.Init.Period = Period;
 		TimHandle.Init.Prescaler = Prescaler;
 		TimHandle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -92,16 +69,17 @@ private:
 		}
 
 		/* Set Interrupt Group Priority */
-		HAL_NVIC_SetPriority(TIMx_IRQn, 4, 0);
+		HAL_NVIC_SetPriority((IRQn_Type) TIM3_IRQn, 4, 0);
 
 		/* Enable the TIMx global Interrupt */
-		HAL_NVIC_EnableIRQ(TIMx_IRQn);
+		HAL_NVIC_EnableIRQ((IRQn_Type) TIM3_IRQn);
 		/* Start Channel1 */
 		if (HAL_TIM_Base_Start_IT(&TimHandle) != HAL_OK) {
 			/* Starting Error */
 			while (1) {
 			};
 		}
+		__HAL_TIM_DISABLE(&TimHandle);
 	}
 
 public:
@@ -125,6 +103,9 @@ public:
 	void timerAction();
 	void computeAngles();
 
+	void startTimerUpdate() {
+		__HAL_TIM_ENABLE(&TimHandle);
+	}
 	uint8_t sendViaVirtualCom();
 	void setConnected() {
 		connected = 1;

@@ -71,7 +71,7 @@ static int8_t TEMPLATE_Receive(uint8_t* pbuf, uint32_t *Len);
 USBD_CDC_ItfTypeDef USBD_CDC_Template_fops = { TEMPLATE_Init, TEMPLATE_DeInit,
 		TEMPLATE_Control, TEMPLATE_Receive };
 
-USBD_CDC_LineCodingTypeDef linecoding = { 115200, /* baud rate*/
+USBD_CDC_LineCodingTypeDef linecoding = { 460800, /* baud rate*/	//115200
 0x00, /* stop bits-1*/
 0x00, /* parity - none*/
 0x08 /* nb. of bits 8*/
@@ -228,7 +228,7 @@ int VCP_read(void *pBuffer, int size) {
 int VCP_write(const void *pBuffer, int size) {
 	if (size > CDC_DATA_HS_OUT_PACKET_SIZE) {
 		int offset;
-		for (offset = 0; offset < size; offset++) {
+		for (offset = 0; offset < size; offset+=CDC_DATA_HS_OUT_PACKET_SIZE) {
 			int todo = MIN(CDC_DATA_HS_OUT_PACKET_SIZE, size - offset);
 			int done = VCP_write(((char *) pBuffer) + offset, todo);
 			if (done != todo)

@@ -7,13 +7,12 @@
 
 #include <stdio.h>
 #include "diag/Trace.h"
-
+#include "main.h"
 #include "Delay/Delay.h"
-#include "BlinkLed.h"
 #include "NokiaLCD/nokiaLCD.h"
 #include "GPIO/gpio.h"
 #include "10DOF/IMU.h"
-
+#include "SpeedTester/speedTester.h"
 #include "SDCard/tm_stm32f4_fatfs.h"
 
 //#include "Accelerometer/stm32f4_discovery_lis3dsh.h"
@@ -57,48 +56,6 @@ static void SystemClock_Config(void) {
 	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 }
 
-
-void testSD();
-FRESULT TM_FATFS_DriveSize2(uint32_t* total, uint32_t* free) {
-	FATFS *fs;
-    DWORD fre_clust;
-	FRESULT res;
-
-    /* Get volume information and free clusters of drive */
-    res = f_getfree("0:", &fre_clust, &fs);
-    if (res != FR_OK) {
-		return res;
-	}
-
-    /* Get total sectors and free sectors */
-    *total = (fs->n_fatent - 2) * fs->csize / 2;
-    *free = fre_clust * fs->csize / 2;
-
-	/* Return OK */
-	return FR_OK;
-}
-// ----------------------------------------------------------------------------
-//
-// STM32F4 led blink sample (trace via ITM).
-//
-// In debug configurations, demonstrate how to print a greeting message
-// on the trace device. In release configurations the message is
-// simply discarded.
-//
-// To demonstrate POSIX retargetting, reroute the STDOUT and STDERR to the
-// trace device and display messages on both of them.
-//
-// Then demonstrates how to blink a led with 1Hz, using a
-// continuous loop and SysTick delays.
-//
-// On DEBUG, the uptime in seconds is also displayed on the trace device.
-//
-// Trace support is enabled by adding the TRACE macro definition.
-// By default the trace messages are forwarded to the ITM output,
-// but can be rerouted to any device or completely suppressed, by
-// changing the definitions required in system/src/diag/trace_impl.c
-// (currently OS_USE_TRACE_ITM, OS_USE_TRACE_SEMIHOSTING_DEBUG/_STDOUT).
-
 // Definitions visible only within this translation unit.
 namespace {
 // ----- Timing definitions -------------------------------------------------
@@ -113,17 +70,23 @@ constexpr uint32_t BLINK_OFF_TICKS = 500;
 // Sample pragmas to cope with warnings. Please note the related line at
 // the end of this function, used to pop the compiler diagnostics status.
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wmissing-declarations"
-#pragma GCC diagnostic ignored "-Wreturn-type"
+//#pragma GCC diagnostic ignored "-Wunused-parameter"
+//#pragma GCC diagnostic ignored "-Wmissing-declarations"
+//#pragma GCC diagnostic ignored "-Wreturn-type"
 
 
+/*
+ * Using:
+ * TIM3 -> IMU
+ * TIM2 -> SpeedTester
+ * TIM3 -> GPIO
+ * SYSTIC -> GPIO,I2C,SPI(SDCard)
+ */
 
 int main(int argc, char* argv[]) {
 	HAL_Init();
 	SystemClock_Config();
 	USBD_Init(&USBD_Device, &VCP_Desc, 0);
-
 
 	USBD_RegisterClass(&USBD_Device, &USBD_CDC);
 	USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_Template_fops);
@@ -131,29 +94,22 @@ int main(int argc, char* argv[]) {
 
 	Delay::initialize();	//Create, and initialize
 	NokiaLCD nokiaLCD;	//Create, and initialize
-	BlinkLed blinkLed;
 	GPIO buttons;
-
 	buttons.InitButtons();
-
-	nokiaLCD.Clear();
-
+	//nokiaLCD.Clear();
 	imu10DOF.initialize();
+	//imu10DOF.startTimerUpdate();
 
-
-	uint8_t buf[10];
-
-	// Perform all necessary initializations for the LED.
-	blinkLed.powerUp();
 	uint16_t counter = 0;
 	Kalman test;
+	uint8_t buf[50] = {0};
+	uint32_t cnt[5] = {0};
 
-	testSD();
 
 	while (1) {
 		buttons.mainBegginingUpdate();
-
-		if((VCP_read(buf,1) == 1)) {
+		*cnt = VCP_read(buf,10);
+		if(*cnt >= 1) {
 			switch(buf[0]) {
 			case 'S':
 				imu10DOF.setConnected();
@@ -168,11 +124,32 @@ int main(int argc, char* argv[]) {
 				imu10DOF.calibrateAllSensors();
 				break;
 			case 'T':
-				imu10DOF.computeAngles();
-				imu10DOF.kalmanStepAction();
+				if(*cnt >1) {
+					*cnt = atol((char *)buf+1);
+
+					*cnt = speedTester.testTimeOfSending(*cnt);
+
+					*cnt = sprintf((char *)buf,"\ntime:\n%lu\n%lu\n%lu\n%lu\n", *cnt);
+					VCP_write(buf,*cnt);
+					memset(buf,0,50);
+				}
+				break;
+			case 'I':
+				speedTester.tic();
+				imu10DOF.timerAction();
+				cnt[0] = speedTester.delta();
+				imu10DOF.timerAction();
+				cnt[1] = speedTester.delta();
+				imu10DOF.timerAction();
+				cnt[2] = speedTester.delta();
+				imu10DOF.timerAction();
+				cnt[3] = speedTester.toc();
+
+				cnt[4] = sprintf((char *)buf,"\ntime:\n%lu\n%lu\n%lu\n%lu\n", cnt[0],cnt[1],cnt[2],cnt[3]);
+				VCP_write(buf,cnt[4]);
+				memset(buf,0,15);
 				break;
 			case 'Z':
-				testSD();
 				break;
 			default:
 
@@ -196,10 +173,9 @@ int main(int argc, char* argv[]) {
 		}
 
 		if (buttons.getButtonStateChange(1, GPIO::shortPush)) {
-			blinkLed.turnOn();
 			nokiaLCD.WriteTextXY((char*) "1", 5, 5);
 			Delay::delay_ms(BLINK_ON_TICKS);
-			blinkLed.turnOff();
+
 			nokiaLCD.WriteTextXY((char*) "0", 5, 5);
 			Delay::delay_ms(BLINK_OFF_TICKS);
 		}
@@ -209,61 +185,6 @@ int main(int argc, char* argv[]) {
 		buttons.mainEndUpdate();
 	}
 }
-
-void testSD() {
-	FATFS FatFs;
-	//File object
-	FIL fil;
-	//Free and total space
-	uint32_t total, free;
-	volatile uint8_t state = 0;
-	//Mount drive
-	state = f_mount(&FatFs, "", 0);
-	if (state == FR_OK) {
-		//Mounted OK, turn on RED LED
-
-		//Try to open file
-		state = f_open(&fil, "1stfile", FA_OPEN_ALWAYS | FA_READ | FA_WRITE);
-		if (state == FR_OK) {
-			//File opened, turn off RED and turn on GREEN led
-
-			//If we put more than 0 characters (everything OK)
-			state = f_puts("First string in my file\n", &fil);
-			if (state > 0) {
-				state = TM_FATFS_DriveSize2(&total, &free) ;
-				if (state == FR_OK) {
-					//Data for drive size are valid
-				}
-
-				//Turn on both leds
-			}
-
-			//Close file, don't forget this!
-			f_close(&fil);
-		}
-
-		//Try to open file
-		if (f_open(&fil, "2ndfile.txt", FA_OPEN_ALWAYS | FA_READ | FA_WRITE) == FR_OK) {
-			//File opened, turn off RED and turn on GREEN led
-
-			//If we put more than 0 characters (everything OK)
-			if (f_puts("First string in my file\n", &fil) > 0) {
-				if (TM_FATFS_DriveSize2(&total, &free) == FR_OK) {
-					//Data for drive size are valid
-				}
-
-				//Turn on both leds
-			}
-
-			//Close file, don't forget this!
-			f_close(&fil);
-		}
-
-		//Unmount drive, don't forget this!
-		f_mount(0, "", 1);
-	}
-}
-
 
 #pragma GCC diagnostic pop
 

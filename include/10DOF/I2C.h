@@ -82,9 +82,18 @@ private:
 
 public:
 	I2C() { };
-	static inline void __attribute__((always_inline)) initialize(
-			I2C_HandleTypeDef *phi2c) {
-		hi2c = *phi2c;
+	static inline void __attribute__((always_inline)) initialize( ) {
+
+		volatile HAL_StatusTypeDef state;
+		hi2c.Instance = I2C1;
+		hi2c.Init.ClockSpeed = 400000;
+		hi2c.Init.DutyCycle = I2C_DUTYCYCLE_2;
+		hi2c.Init.OwnAddress1 = 0x10;
+		hi2c.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+		hi2c.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
+		hi2c.Init.OwnAddress2 = 0x10;
+		hi2c.Init.GeneralCallMode = I2C_GENERALCALL_DISABLED;
+		hi2c.Init.NoStretchMode = I2C_NOSTRETCH_DISABLED;
 
 		I2C_MspInit();
 
@@ -95,7 +104,7 @@ public:
 		__I2C1_FORCE_RESET();
 		__I2C1_RELEASE_RESET();
 
-		HAL_I2C_Init(&hi2c);
+		state = HAL_I2C_Init(&hi2c);
 		Delay::delay_ms(2);
 		initialized = 1;
 	}

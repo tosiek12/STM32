@@ -2,7 +2,7 @@
 #define DELAY_H_
 
 #include "cmsis_device.h"
-#include "../src/SDCard/fatfs/drivers_fatfs_sd.h"
+#include "SDCard/fatfs/drivers_fatfs_sd.h"
 
 class Delay {
 private:

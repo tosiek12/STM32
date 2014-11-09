@@ -5,7 +5,7 @@
 
 #include <stdlib.h>		/* ANSI memory controls */
 
-#include "../ff.h"
+#include "SDCard/fatfs/ff.h"
 
 
 #if _FS_REENTRANT

@@ -4,7 +4,7 @@
  *  Created on: 2 lip 2014
  *      Author: Antonio
  */
-#include "IMU.h"
+#include "10DOF/IMU.h"
 extern "C" {
 #include <usbd_cdc_if_template.h>
 }
@@ -18,7 +18,7 @@ void IMU::timerAction() {
 	gyro.update();
 	magnetometer.update();
 
-//	computeAngles();
+	computeAngles();
 //	kalmanStepAction();
 
 	sendDataTriger = 1;
@@ -31,7 +31,7 @@ void IMU::timerAction() {
 // ----- TIM_IRQHandler() ----------------------------------------------------
 extern "C" void TIM3_IRQHandler(void) {
 	if (__HAL_TIM_GET_ITSTATUS(&imu10DOF.TimHandle, TIM_IT_UPDATE ) != RESET) {
-		imu10DOF.timerAction();
+		//imu10DOF.timerAction();
 		__HAL_TIM_CLEAR_IT(&imu10DOF.TimHandle, TIM_IT_UPDATE);
 	}
 }
@@ -87,7 +87,7 @@ IMU::IMU() :
 }
 
 void IMU::initialize() {
-	initializeI2C();
+	I2C::initialize();
 	gyro.initialize();
 	accelerometer.initialize();
 	magnetometer.initialize();
@@ -143,10 +143,10 @@ void IMU::kalmanStepAction() {
 	compAngleY = (0.93 * (compAngleY + gyroYrate * dt_inSec))
 			+ (0.07 * YPitchAngle);
 	// Kalman filter
-	kalmanX.stepNewVersion(XRollAngle, gyroXrate, dt_inSec);
-	kalmanY.stepNewVersion(YPitchAngle, gyroYrate, dt_inSec);
-//	kalmanX.stepOldVersion(XRollAngle, gyroXrate, dt_inSec);
-//	kalmanY.stepOldVersion(YPitchAngle, gyroYrate, dt_inSec);
+//	kalmanX.stepNewVersion(XRollAngle, gyroXrate, dt_inSec);
+//	kalmanY.stepNewVersion(YPitchAngle, gyroYrate, dt_inSec);
+	kalmanX.stepOldVersion(XRollAngle, gyroXrate, dt_inSec);
+	kalmanY.stepOldVersion(YPitchAngle, gyroYrate, dt_inSec);
 }
 
 void IMU::showAnglesKalman(NokiaLCD& nokiaLCD) {

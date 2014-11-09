@@ -30,8 +30,8 @@ THE SOFTWARE.
 ===============================================
 */
 
-#include "BMP085.h"
-#include "IMU.h"
+#include "10DOF/BMP085.h"
+#include "10DOF/IMU.h"
 /**
  * Default constructor, uses default I2C device address.
  * @see BMP085_DEFAULT_ADDRESS

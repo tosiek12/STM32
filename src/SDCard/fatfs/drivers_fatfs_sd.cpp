@@ -2,10 +2,10 @@
 /* SPI controls (Platform dependent)                                     */
 /*-----------------------------------------------------------------------*/
 
-#include "drivers_fatfs_sd.h"
+#include "SDCard/fatfs/drivers_fatfs_sd.h"
 
-#include "diskio.h"
-#include "../src/SDCard/SPI.h"
+#include "SDCard/fatfs/diskio.h"
+#include "SDCard/SPI.h"
 
 /* MMC/SD command */
 #define CMD0	(0)			/* GO_IDLE_STATE */

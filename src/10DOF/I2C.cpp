@@ -5,7 +5,7 @@
  *      Author: Antonio
  */
 
-#include "I2C.h"
+#include "10DOF/I2C.h"
 
 // Create static fields	//
 uint8_t I2C::initialized = 0;

@@ -1,4 +1,4 @@
-#include "itg3200.h"
+#include "10DOF/itg3200.h"
 extern "C" {
 #include <usbd_cdc_if_template.h>
 }

@@ -1,4 +1,4 @@
-#include "algorithms.h"
+#include "Algorithms/algorithms.h"
 
 //funkcja dla ktorej obliczamy calke
 float32_t func(float32_t x) {

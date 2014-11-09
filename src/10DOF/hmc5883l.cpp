@@ -32,8 +32,8 @@
  ===============================================
  */
 
-#include "hmc5883l.h"
-#include "IMU.h"
+#include "10DOF/hmc5883l.h"
+#include "10DOF/IMU.h"
 
 uint8_t HMC5883L::selfTest(NokiaLCD &nokia) {
 	/*

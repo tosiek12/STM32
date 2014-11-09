@@ -1,14 +1,14 @@
 src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
- ../src/Delay/Delay.h ../system/include/cmsis/cmsis_device.h \
+ ../include/main.h ../include/Delay/Delay.h \
+ ../system/include/cmsis/cmsis_device.h \
  ../system/include/cmsis/stm32f4xx.h \
  ../system/include/cmsis/stm32f407xx.h ../system/include/cmsis/core_cm4.h \
  ../system/include/cmsis/core_cmInstr.h \
  ../system/include/cmsis/core_cmFunc.h \
  ../system/include/cmsis/core_cm4_simd.h \
  ../system/include/cmsis/system_stm32f4xx.h \
- ../include/../src/SDCard/fatfs/drivers_fatfs_sd.h \
- ../include/../src/SDCard/fatfs/diskio.h \
- ../include/../src/SDCard/fatfs/integer.h \
+ ../include/SDCard/fatfs/drivers_fatfs_sd.h \
+ ../include/SDCard/fatfs/diskio.h ../include/SDCard/fatfs/integer.h \
  ../system/include/cmsis/stm32f4xx.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal.h \
  ../include/stm32f4xx_hal_conf.h \
@@ -32,16 +32,18 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_uart.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_usart.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_pcd.h \
- ../system/include/stm32f4-hal/stm32f4xx_ll_usb.h ../include/BlinkLed.h \
- ../src/NokiaLCD/nokiaLCD.h ../src/NokiaLCD/../Delay/delay.h \
- ../src/NokiaLCD/english_6x8_pixel.h ../src/NokiaLCD/bmp_pixel.h \
- ../src/GPIO/gpio.h ../src/10DOF/IMU.h ../system/include/cmsis/arm_math.h \
- ../src/10DOF/../NokiaLCD/nokiaLCD.h ../src/10DOF/../Delay/delay.h \
- ../src/10DOF/I2C.h ../src/10DOF/itg3200.h ../src/10DOF/adxl345.h \
- ../src/10DOF/hmc5883l.h ../src/10DOF/bmp085.h \
- ../src/10DOF/Filters/Kalman.h ../src/SDCard/tm_stm32f4_fatfs.h \
- ../src/SDCard/fatfs/ff.h ../src/SDCard/fatfs/integer.h \
- ../src/SDCard/fatfs/ffconf.h \
+ ../system/include/stm32f4-hal/stm32f4xx_ll_usb.h \
+ ../include/NokiaLCD/nokiaLCD.h ../include/NokiaLCD/../Delay/delay.h \
+ ../include/NokiaLCD/english_6x8_pixel.h ../include/NokiaLCD/bmp_pixel.h \
+ ../include/GPIO/gpio.h ../include/10DOF/IMU.h \
+ ../system/include/cmsis/arm_math.h \
+ ../include/10DOF/../NokiaLCD/nokiaLCD.h \
+ ../include/10DOF/../Delay/delay.h ../include/10DOF/I2C.h \
+ ../include/10DOF/itg3200.h ../include/10DOF/adxl345.h \
+ ../include/10DOF/hmc5883l.h ../include/10DOF/bmp085.h \
+ ../include/10DOF/Filters/Kalman.h ../include/SpeedTester/speedTester.h \
+ ../include/SDCard/tm_stm32f4_fatfs.h ../include/SDCard/fatfs/ff.h \
+ ../include/SDCard/fatfs/ffconf.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../include/usbd_conf.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
@@ -57,7 +59,9 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../system/include/diag/Trace.h:
 
-../src/Delay/Delay.h:
+../include/main.h:
+
+../include/Delay/Delay.h:
 
 ../system/include/cmsis/cmsis_device.h:
 
@@ -75,11 +79,11 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../system/include/cmsis/system_stm32f4xx.h:
 
-../include/../src/SDCard/fatfs/drivers_fatfs_sd.h:
+../include/SDCard/fatfs/drivers_fatfs_sd.h:
 
-../include/../src/SDCard/fatfs/diskio.h:
+../include/SDCard/fatfs/diskio.h:
 
-../include/../src/SDCard/fatfs/integer.h:
+../include/SDCard/fatfs/integer.h:
 
 ../system/include/cmsis/stm32f4xx.h:
 
@@ -129,45 +133,43 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../system/include/stm32f4-hal/stm32f4xx_ll_usb.h:
 
-../include/BlinkLed.h:
+../include/NokiaLCD/nokiaLCD.h:
 
-../src/NokiaLCD/nokiaLCD.h:
+../include/NokiaLCD/../Delay/delay.h:
 
-../src/NokiaLCD/../Delay/delay.h:
+../include/NokiaLCD/english_6x8_pixel.h:
 
-../src/NokiaLCD/english_6x8_pixel.h:
+../include/NokiaLCD/bmp_pixel.h:
 
-../src/NokiaLCD/bmp_pixel.h:
+../include/GPIO/gpio.h:
 
-../src/GPIO/gpio.h:
-
-../src/10DOF/IMU.h:
+../include/10DOF/IMU.h:
 
 ../system/include/cmsis/arm_math.h:
 
-../src/10DOF/../NokiaLCD/nokiaLCD.h:
+../include/10DOF/../NokiaLCD/nokiaLCD.h:
 
-../src/10DOF/../Delay/delay.h:
+../include/10DOF/../Delay/delay.h:
 
-../src/10DOF/I2C.h:
+../include/10DOF/I2C.h:
 
-../src/10DOF/itg3200.h:
+../include/10DOF/itg3200.h:
 
-../src/10DOF/adxl345.h:
+../include/10DOF/adxl345.h:
 
-../src/10DOF/hmc5883l.h:
+../include/10DOF/hmc5883l.h:
 
-../src/10DOF/bmp085.h:
+../include/10DOF/bmp085.h:
 
-../src/10DOF/Filters/Kalman.h:
+../include/10DOF/Filters/Kalman.h:
 
-../src/SDCard/tm_stm32f4_fatfs.h:
+../include/SpeedTester/speedTester.h:
 
-../src/SDCard/fatfs/ff.h:
+../include/SDCard/tm_stm32f4_fatfs.h:
 
-../src/SDCard/fatfs/integer.h:
+../include/SDCard/fatfs/ff.h:
 
-../src/SDCard/fatfs/ffconf.h:
+../include/SDCard/fatfs/ffconf.h:
 
 ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h:
 

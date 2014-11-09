@@ -285,5 +285,7 @@ FRESULT TM_FATFS_DriveSize(uint32_t* total, uint32_t* free);
  */
 FRESULT TM_FATFS_USBDriveSize(uint32_t* total, uint32_t* free);
 
+void testSD();
+
 #endif
 

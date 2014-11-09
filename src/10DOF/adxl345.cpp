@@ -1,7 +1,8 @@
-#include "adxl345.h"
+#include "10DOF/adxl345.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
-#include "../Delay/delay.h"
+#include "Delay/delay.h"
+
 #include "arm_math.h"
 extern "C" {
 #include <usbd_cdc_if_template.h>
@@ -11,9 +12,10 @@ extern "C" {
  */
 void ADXL345::initialize() {
 	//Need to set power control bit to wake up the adxl345
-	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_DATA_FORMAT,
+	volatile HAL_StatusTypeDef status;
+	status = I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_DATA_FORMAT,
 	ADXL345_DATA_RANGE_4G);
-	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL,
+	status = I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL,
 	ADXL345_MEASURE_ENABLE);
 	WriteBWRate(ADXL345_NormalPower, ADXL345_BW_1600_HZ);
 

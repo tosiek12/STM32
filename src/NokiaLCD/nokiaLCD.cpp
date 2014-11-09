@@ -1,8 +1,8 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 
-#include "nokiaLCD.h"
-#include "../Delay/delay.h"
+#include "NokiaLCD/nokiaLCD.h"
+#include "Delay/delay.h"
 
 void NokiaLCD::WriteData(uint8_t c) {
 	uint8_t line;

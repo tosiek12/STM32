@@ -9,12 +9,10 @@ C_SRCS += \
 ../src/usbd_desc.c 
 
 CPP_SRCS += \
-../src/BlinkLed.cpp \
 ../src/CommonException_handlers.cpp \
 ../src/main.cpp 
 
 OBJS += \
-./src/BlinkLed.o \
 ./src/CommonException_handlers.o \
 ./src/_initialize_hardware.o \
 ./src/main.o \
@@ -27,7 +25,6 @@ C_DEPS += \
 ./src/usbd_desc.d 
 
 CPP_DEPS += \
-./src/BlinkLed.d \
 ./src/CommonException_handlers.d \
 ./src/main.d 
 

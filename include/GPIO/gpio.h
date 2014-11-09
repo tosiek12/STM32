@@ -204,11 +204,11 @@ private:
 		//ARR(TIM_Period) = (TIM3 counter clock / TIM3 output clock) - 1
 		const uint32_t Period = ((CounterClk / OutputClk) - 1);
 
-		/* TIM2 Periph clock enable */
-		__TIM2_CLK_ENABLE();
+		/* TIM4 Periph clock enable */
+		__TIM4_CLK_ENABLE();
 
 		/* Time base configuration */
-		TIM_TimeBaseStructure.Instance = TIM2;
+		TIM_TimeBaseStructure.Instance = TIM4;
 		TIM_TimeBaseStructure.Init.Period = Period;
 		TIM_TimeBaseStructure.Init.Prescaler = Prescaler;
 		TIM_TimeBaseStructure.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -216,8 +216,8 @@ private:
 		TIM_TimeBaseStructure.Init.RepetitionCounter = 0;
 		HAL_TIM_Base_Init(&TIM_TimeBaseStructure);
 
-		HAL_NVIC_SetPriority((IRQn_Type) TIM2_IRQn, 0, 5);
-		HAL_NVIC_EnableIRQ((IRQn_Type) TIM2_IRQn);
+		HAL_NVIC_SetPriority((IRQn_Type) TIM4_IRQn, 0, 5);
+		HAL_NVIC_EnableIRQ((IRQn_Type) TIM4_IRQn);
 
 		HAL_TIM_Base_Start_IT(&TIM_TimeBaseStructure);
 	}
