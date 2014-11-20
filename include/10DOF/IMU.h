@@ -18,16 +18,19 @@ class IMU {
 public:
 
 private:
+/* Sensors */
 	ITG3200 gyro;
 	ADXL345 accelerometer;
 	HMC5883L magnetometer;
 	BMP085 pressure;
 	const uint8_t I2C_ID_BMP085 = 0x77 << 1;		//Barometr?
+/* Status */
 	volatile uint8_t sendDataTriger;
 	volatile uint8_t showDataTriger;
 	uint8_t connected;
 	uint8_t request;
-
+	uint8_t error;
+/*	Filter */
 	Kalman kalmanX;
 	Kalman kalmanY;
 	float32_t XRollAngle;	//Range -180,180
@@ -35,14 +38,17 @@ private:
 	float32_t YPitchAngle_2;
 	float32_t TiltAngle;		//Range 0,180	//odchylenie od pionu (grawitacji)
 	float32_t ZYawAngle;	//Range -180,180
-
 //	float64_t zeroValue[5] = { -200, 44, 660, 52.3, -18.5 }; // Found by experimenting
 	/* All the angles start at 180 degrees */
 	float64_t gyroXangle = 180;
 	float64_t gyroYangle = 180;
-
 	float64_t compAngleX = 180;
 	float64_t compAngleY = 180;
+
+	/* Temporary buffers */
+	volatile int16_t measurements[6000][9];
+	volatile uint16_t numberOfGatheredSamples;
+	uint16_t numberOfSamplesToGather;
 
 	inline void __attribute__((always_inline)) initializeTimerForUpdate() {
 		/* TIMx Peripheral clock enable */
@@ -106,6 +112,9 @@ public:
 	void startTimerUpdate() {
 		__HAL_TIM_ENABLE(&TimHandle);
 	}
+	void stopTimerUpdate() {
+		__HAL_TIM_DISABLE(&TimHandle);
+	}
 	uint8_t sendViaVirtualCom();
 	void setConnected() {
 		connected = 1;
@@ -117,6 +126,15 @@ public:
 	}
 	void setRequestOfData() {
 		request = 1;
+	}
+
+	void startDataGathering() {
+		numberOfGatheredSamples = 0;
+	}
+	void sendGatheredDataViaVCOM();
+	void requestDataGathering(uint16_t numberOfSamples);
+	uint8_t isDataGatheringComplete() {
+		return (numberOfGatheredSamples >= numberOfSamplesToGather);
 	}
 
 	void kalmanStepAction();

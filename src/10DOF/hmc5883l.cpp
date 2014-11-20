@@ -202,11 +202,21 @@ void HMC5883L::update() {
 	}
 }
 
+void HMC5883L::updateRaw() {
+	getHeading(&axis[0], &axis[1], &axis[2]);
+}
+
 /** Default constructor, uses default I2C address.
  * @see HMC5883L_DEFAULT_ADDRESS
  */
 HMC5883L::HMC5883L() {
 	devAddr = HMC5883L_DEFAULT_ADDRESS;
+    offset[3] = {0};
+    scalingFactor = 0;
+    declinationInDeg = 0;
+    buffer[6] = {};
+    mode = 0;
+    heading = 0;
 }
 
 /** Specific address constructor.
@@ -214,7 +224,7 @@ HMC5883L::HMC5883L() {
  * @see HMC5883L_DEFAULT_ADDRESS
  * @see HMC5883L_ADDRESS
  */
-HMC5883L::HMC5883L(uint8_t address) {
+HMC5883L::HMC5883L(uint8_t address) : HMC5883L() {
 	devAddr = address;
 }
 
@@ -232,7 +242,7 @@ void HMC5883L::initialize() {
 			(HMC5883L_AVERAGING_8
 					<< (HMC5883L_CRA_AVERAGE_BIT - HMC5883L_CRA_AVERAGE_LENGTH
 							+ 1))
-					| (HMC5883L_RATE_30
+					| (HMC5883L_RATE_75
 							<< (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH
 									+ 1))
 					| (HMC5883L_BIAS_NORMAL
@@ -243,30 +253,7 @@ void HMC5883L::initialize() {
 	setGain(HMC5883L_GAIN_1090);
 
 	// write MODE register
-	setMode(HMC5883L_MODE_SINGLE);
-
-	volatile float64_t x_max,x_min,y_min,y_max,z_min, z_max;
-
-	while(false) {
-		getHeading(&axis[0], &axis[1], &axis[2]);
-		if(axis[0]> x_max) {
-			x_max = axis[0];
-		} else if(axis[0] < x_min) {
-			x_min = axis[0];
-		}
-
-		if(axis[1]> y_max) {
-			y_max = axis[1];
-		} else if(axis[1] <y_min) {
-			y_min = axis[1];
-		}
-
-		if(axis[2]> z_max) {
-			z_max = axis[2];
-		} else if(axis[2] <z_min) {
-			z_min = axis[2];
-		}
-	}
+	setMode(HMC5883L_MODE_CONTINUOUS);
 }
 
 /** Verify the I2C connection.

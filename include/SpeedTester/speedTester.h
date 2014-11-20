@@ -6,16 +6,12 @@
 
 class SpeedTester {
 private:
-
-	char buf[15];
 	uint32_t res;
-	uint8_t cnt;
 	uint8_t isUsed;
 public:
 	TIM_HandleTypeDef TimHandle;
 	SpeedTester() {
 		isUsed = 0;
-		cnt = 0;
 		res = 0;
 		/* TIMx Peripheral clock enable */
 		__TIM5_CLK_ENABLE();

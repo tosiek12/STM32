@@ -37,6 +37,27 @@ THE SOFTWARE.
  * @see BMP085_DEFAULT_ADDRESS
  */
 BMP085::BMP085() {
+    devAddr = 0;
+    buffer[10] = {0};
+
+    calibrationLoaded = false;
+    ac1 = 0;
+    ac2 = 0;
+    ac3 = 0;
+    b1 = 0;
+    b2 = 0;
+    mb = 0;
+    mc = 0;
+    md = 0;
+    ac4 = 0;
+    ac5 = 0;
+    ac6 = 0;
+    b5 = 0;
+    measureMode = 0;
+
+    altitude = 0;
+    pressure = 0;
+    temperature = 0;
     devAddr = BMP085_DEFAULT_ADDRESS;
     pressure = 220;
 }
@@ -46,7 +67,7 @@ BMP085::BMP085() {
  * @param address Specific device address
  * @see BMP085_DEFAULT_ADDRESS
  */
-BMP085::BMP085(uint8_t address) {
+BMP085::BMP085(uint8_t address) : BMP085() {
     devAddr = address;
 }
 
@@ -305,6 +326,6 @@ float32_t BMP085::getPressure() {
     return p + ((x1 + x2 + (int32_t)3791) >> 4);
 }
 
-float32_t BMP085::getAltitude(float32_t pressure, float32_t seaLevelPressure) {
-    return 44330.8 * (1.0 - pow(pressure / seaLevelPressure, 0.190295));
+float32_t BMP085::getAltitude(float32_t givenPressure, float32_t seaLevelPressure) {
+    return 44330.8 * (1.0 - pow(givenPressure / seaLevelPressure, 0.190295));
 }

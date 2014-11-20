@@ -5,6 +5,7 @@
  *      Author: Antonio
  */
 #include "10DOF/IMU.h"
+#include "SpeedTester/speedTester.h"
 extern "C" {
 #include <usbd_cdc_if_template.h>
 }
@@ -14,12 +15,30 @@ IMU imu10DOF;
 
 void IMU::timerAction() {
 	static uint16_t counter = 0;
+	if(sendDataTriger == 1) {
+		error = 1;
+		//return;
+	}
 	accelerometer.update();
 	gyro.update();
-	magnetometer.update();
+	magnetometer.updateRaw();
 
-	computeAngles();
+//	computeAngles();
 //	kalmanStepAction();
+
+	/* Save data to temporary buffer */
+	if(numberOfGatheredSamples  < numberOfSamplesToGather ) {
+		measurements[numberOfGatheredSamples][0] = accelerometer.axis[0];
+		measurements[numberOfGatheredSamples][1] = accelerometer.axis[1];
+		measurements[numberOfGatheredSamples][2] = accelerometer.axis[2];
+		measurements[numberOfGatheredSamples][3] = gyro.axis[0];
+		measurements[numberOfGatheredSamples][4] = gyro.axis[1];
+		measurements[numberOfGatheredSamples][5] = gyro.axis[2];
+		measurements[numberOfGatheredSamples][6] = magnetometer.axis[0];
+		measurements[numberOfGatheredSamples][7] = magnetometer.axis[1];
+		measurements[numberOfGatheredSamples][8] = magnetometer.axis[2];
+		++numberOfGatheredSamples;
+	}
 
 	sendDataTriger = 1;
 	if (++counter == 200) {	//update LCD after x ms.
@@ -31,24 +50,40 @@ void IMU::timerAction() {
 // ----- TIM_IRQHandler() ----------------------------------------------------
 extern "C" void TIM3_IRQHandler(void) {
 	if (__HAL_TIM_GET_ITSTATUS(&imu10DOF.TimHandle, TIM_IT_UPDATE ) != RESET) {
-		//imu10DOF.timerAction();
+		imu10DOF.timerAction();
+
 		__HAL_TIM_CLEAR_IT(&imu10DOF.TimHandle, TIM_IT_UPDATE);
 	}
 }
 
 uint8_t IMU::sendViaVirtualCom() {
-	const uint8_t frameSize = 6;
-	uint16_t temp;
+	const uint8_t frameSize = 2*3;
+	int16_t temp;
+	uint32_t timeDelta = 0;
+	if(error == 1) {
+		//VCP_write("OVERWRITTEN!!", 13);
+		error = 0;
+		return 0;
+	}
+
 	if ((request == 1) && (connected == 1) && (sendDataTriger == 1)) {
 		//VCP_write("D", 1);
-
-		//Stop updateTimer()
+		timeDelta = speedTester.delta();
+		/*	Frame:
+		 * [
+		 *  timeDelta, 4BYTES
+		 *  accelerometer, 3x2BYTES
+		 *  gyroscope,	3x2BYTES
+		 *  magnetometer,	3x2BYTES
+		 *  heading,	2BYTES
+		 *  ]
+		 */
+		VCP_write(&timeDelta, 4);
 		VCP_write(accelerometer.axis, frameSize);
 		VCP_write(gyro.axis, frameSize);
 		VCP_write(magnetometer.axis, frameSize);
-		temp = (uint16_t) magnetometer.heading;
+		temp = (int16_t) magnetometer.heading;
 		VCP_write(&temp, 2);
-		//Start updateTimer()
 
 		//VCP_write("\n", 1);
 
@@ -58,6 +93,26 @@ uint8_t IMU::sendViaVirtualCom() {
 		return 3 * frameSize;
 	}
 	return 0;
+}
+
+void IMU::requestDataGathering(uint16_t numberOfSamples) {
+	numberOfSamplesToGather = MIN(numberOfSamples,6000);
+	numberOfGatheredSamples = 0;
+}
+
+void IMU::sendGatheredDataViaVCOM() {
+	stopTimerUpdate();
+	uint16_t it = 0, size;
+	uint8_t buff[50];
+	volatile int16_t *pTemp;
+	for(it = 0; it < numberOfSamplesToGather; it++) {
+		pTemp = measurements[it];
+		size = sprintf((char*) buff, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", pTemp[0],pTemp[1],pTemp[2],pTemp[3],pTemp[4],pTemp[5],pTemp[6],pTemp[7],pTemp[8]);
+		VCP_write((void *) buff, size);
+	}
+	numberOfGatheredSamples = 0;
+	numberOfSamplesToGather = 0;
+	startTimerUpdate();
 }
 
 void IMU::showMeasurment(NokiaLCD& nokiaLCD) {
@@ -84,6 +139,8 @@ IMU::IMU() :
 	sendDataTriger = 0;
 	connected = 0;
 	request = 0;
+	error = 0;
+
 }
 
 void IMU::initialize() {
@@ -108,7 +165,7 @@ void IMU::computeAngles() {
 	const int16_t MaxB = 123;	//TODO: uzupelnic wartos max do skalowania.
 
 
-	XRollAngle = atan2f((float32_t)(yActual), (float32_t)(zActual))*180/PI;	//zgodne z teori¹
+	XRollAngle = atan2f((float32_t)(yActual), (float32_t)(zActual))*180/PI;	//zgodne z teoriï¿½
 
 	arg1 = 0;
 	arg1 +=(float32_t)(zActual)*(float32_t)(zActual);
@@ -143,8 +200,6 @@ void IMU::kalmanStepAction() {
 	compAngleY = (0.93 * (compAngleY + gyroYrate * dt_inSec))
 			+ (0.07 * YPitchAngle);
 	// Kalman filter
-//	kalmanX.stepNewVersion(XRollAngle, gyroXrate, dt_inSec);
-//	kalmanY.stepNewVersion(YPitchAngle, gyroYrate, dt_inSec);
 	kalmanX.stepOldVersion(XRollAngle, gyroXrate, dt_inSec);
 	kalmanY.stepOldVersion(YPitchAngle, gyroYrate, dt_inSec);
 }

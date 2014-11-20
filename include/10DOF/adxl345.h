@@ -319,6 +319,7 @@ public:
 	void initialize();
 	uint8_t testConnection();
 	void update();
+	void updateRaw();
 	void calibrate(bool doFullCalibartion, const uint16_t numberOfSamples);
 
 	// WHO_AM_I register

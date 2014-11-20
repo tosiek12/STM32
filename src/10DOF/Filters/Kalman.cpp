@@ -23,7 +23,6 @@ Kalman::Kalman() {
 	P[1][0] = 0;
 	P[1][1] = 0;
 
-
 	arm_mat_init_f32(&xMatrix, 2, 1, xSource);
 	xSource[0] = 0;
 	xSource[1] = 0;	//Zero initial bias, zero initial angle.
@@ -40,12 +39,14 @@ Kalman::Kalman() {
 	qSource[1] = 0;
 	qSource[2] = 0;
 	qSource[3] = Q_bias;
+
+	S = 0;
+	y = 0;
 }
 
 // The angle in degrees and the rate in degrees per second and the dt in seconds
 void Kalman::stepOldVersion(float32_t newAngle, float32_t newRate, float32_t dt) {
 	// KasBot V2  -  Kalman filter module - http://www.x-firm.com/?page_id=145
-	// Modified by Kristian Lauszus
 	// See my blog post for more information: http://blog.tkjelectronics.dk/2012/09/a-practical-approach-to-kalman-filter-and-how-to-implement-it
 
 	// Stage 1: Predict
@@ -230,4 +231,5 @@ int32_t Kalman::testExample(void) {
 	/* calculation ((Inverse((Transpose(A) * A)) *  Transpose(A)) * B) */
 	status = arm_mat_mult_f32(&At_m_A, &B, &X);
 	sendMatrixViaCom(&X);
+	return 0;
 }

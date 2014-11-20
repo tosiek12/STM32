@@ -14,7 +14,7 @@ void ADXL345::initialize() {
 	//Need to set power control bit to wake up the adxl345
 	volatile HAL_StatusTypeDef status;
 	status = I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_DATA_FORMAT,
-	ADXL345_DATA_RANGE_4G);
+	ADXL345_DATA_RANGE_2G);
 	status = I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL,
 	ADXL345_MEASURE_ENABLE);
 	WriteBWRate(ADXL345_NormalPower, ADXL345_BW_1600_HZ);
@@ -117,14 +117,18 @@ void ADXL345::calibrate(bool doFullCalibartion,
 void ADXL345::update() {
 	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, (uint8_t *) &axis);
 
-	//TODO: implement scaling factor!
-	axis[0] = (int16_t) (axis[0] * ADXL345_2G_CALIBRATED_FACTOR);
-	axis[1] = (int16_t) (axis[1] * ADXL345_2G_CALIBRATED_FACTOR);
-	axis[2] = (int16_t) (axis[2] * ADXL345_2G_CALIBRATED_FACTOR);
+//	//TODO: implement scaling factor!
+//	axis[0] = (int16_t) (axis[0] * ADXL345_2G_CALIBRATED_FACTOR);
+//	axis[1] = (int16_t) (axis[1] * ADXL345_2G_CALIBRATED_FACTOR);
+//	axis[2] = (int16_t) (axis[2] * ADXL345_2G_CALIBRATED_FACTOR);
+//
+//	axis[0] += offset[0];
+//	axis[1] += offset[1];
+//	axis[2] += offset[2];
+}
 
-	axis[0] += offset[0];
-	axis[1] += offset[1];
-	axis[2] += offset[2];
+void ADXL345::updateRaw() {
+	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, (uint8_t *) &axis);
 }
 
 /*

@@ -157,6 +157,9 @@
 #define	SS(fs)	((fs)->ssize)	/* Variable sector size */
 #endif
 
+#ifndef EOF
+#define EOF (-1)
+#endif
 
 /* File access control feature */
 #if _FS_LOCK

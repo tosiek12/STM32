@@ -28,7 +28,6 @@ uint32_t SpeedTester::delta() {
 }
 
 uint32_t SpeedTester::testTimeOfSending(uint32_t cnt) {
-	uint32_t res = 0;
 #define BUF_SIZE 100000
 	char buf[BUF_SIZE];
 	if(cnt < BUF_SIZE) {

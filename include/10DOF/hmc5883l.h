@@ -129,6 +129,7 @@ class HMC5883L {
 
         void calibrate(bool doFullCalibartion);
         void update();
+        void updateRaw();
 
         // CONFIG_A register
         uint8_t getSampleAveraging();

@@ -12,7 +12,7 @@
 #define ITG3200_ADDRESS_AD0_HIGH    0x69 // address pin high (VCC), default for SparkFun ITG-3200 Breakout board
 #define ITG3200_DEFAULT_ADDRESS     ITG3200_ADDRESS_AD0_LOW
 
-/*	Rejestr DEVID --------- Register 0 – Who Am I ------------------------------------------------
+/*	Rejestr DEVID --------- Register 0 ï¿½ Who Am I ------------------------------------------------
 *	Default value: x110100x
 *	Read/Write register
 */
@@ -21,7 +21,7 @@
 #define ITG3200_DEVID_LENGTH        6
 #define ITG3200_I_AM				0b110100	//52
 
-/*	Rejestr SMPLRT_DIV --------- Register 21 – Sample Rate Divider ------------------------------------------------
+/*	Rejestr SMPLRT_DIV --------- Register 21 ï¿½ Sample Rate Divider ------------------------------------------------
 *	Default value: 00000000
 *	Read/Write register
 *
@@ -29,7 +29,7 @@
 */
 #define ITG3200_RA_SMPLRT_DIV       0x15
 
-/*	Rejestr DLPF_FS --------- Register 22 – DLPF, Full Scale ------------------------------------------------
+/*	Rejestr DLPF_FS --------- Register 22 ï¿½ DLPF, Full Scale ------------------------------------------------
 *	Default value: 00000000
 *	Read/Write register
 */
@@ -51,7 +51,7 @@
 #define ITG3200_DLPF_BW_10          0x05
 #define ITG3200_DLPF_BW_5           0x06
 
-/*	Rejestr INT_CFG --------- Register 23 – Interrupt Configuration ------------------------------------------------
+/*	Rejestr INT_CFG --------- Register 23 ï¿½ Interrupt Configuration ------------------------------------------------
 *	Default value: 00000000
 *	Read/Write register
 */
@@ -75,7 +75,7 @@
 #define ITG3200_INTCLEAR_STATUSREAD 0x00
 #define ITG3200_INTCLEAR_ANYREAD    0x01
 
-/*	Rejestr INT_STATUS --------- Register 26 – Interrupt Status ------------------------------------------------
+/*	Rejestr INT_STATUS --------- Register 26 ï¿½ Interrupt Status ------------------------------------------------
 *	Default value: 00000000
 *	Read register
 */
@@ -83,13 +83,13 @@
 #define ITG3200_INTSTAT_ITG_RDY_BIT         2
 #define ITG3200_INTSTAT_RAW_DATA_READY_BIT  0
 
-/*	Rejestr  --------- Registers 27 to 34 – Sensor Registers ------------------------------------------------
+/*	Rejestr  --------- Registers 27 to 34 ï¿½ Sensor Registers ------------------------------------------------
 *	Default value: 00000000
 *	Read register
-*	TEMP_OUT_H/L 16-bit temperature data (2’s complement format)
-*	GYRO_XOUT_H/L 16-bit X gyro output data (2’s complement format)
-*	GYRO_YOUT_H/L 16-bit Y gyro output data (2’s complement format)
-*	GYRO_ZOUT_H/L 16-bit Y gyro output data (2’s complement format)
+*	TEMP_OUT_H/L 16-bit temperature data (2ï¿½s complement format)
+*	GYRO_XOUT_H/L 16-bit X gyro output data (2ï¿½s complement format)
+*	GYRO_YOUT_H/L 16-bit Y gyro output data (2ï¿½s complement format)
+*	GYRO_ZOUT_H/L 16-bit Y gyro output data (2ï¿½s complement format)
 *
 */
 #define ITG3200_RA_TEMP_OUT_H       0x1B
@@ -101,7 +101,7 @@
 #define ITG3200_RA_GYRO_ZOUT_H      0x21
 #define ITG3200_RA_GYRO_ZOUT_L      0x22
 
-/*	Rejestr PWR_MGM --------- Register 62 – Power Management ------------------------------------------------
+/*	Rejestr PWR_MGM --------- Register 62 ï¿½ Power Management ------------------------------------------------
 *	Default value: 00000000
 *	Read/Write register
 */
@@ -137,6 +137,7 @@ class ITG3200 {
         uint8_t testConnection();
         void test(NokiaLCD & nokia);
         void update();
+        void updateRaw();
         void calibrate(bool doFullCalibartion, const uint16_t numberOfSamples);
         void getOversampledValueAndSendViaCOM(const uint8_t numberOfSamples);
 

@@ -107,7 +107,7 @@ void ITG3200::calibrate(bool doFullCalibartion,
 		offset[2] = -61;
 	}
 
-//{x = 474, y = -277, z = 62} -> przed przemno¿eniem
+//{x = 474, y = -277, z = 62} -> przed przemnoï¿½eniem
 //{x = 471, y = -279, z = 62}
 //{x = 470, y = -279, z = 64}
 //{x = 475, y = -279, z = 64}
@@ -615,4 +615,12 @@ void ITG3200::update() {
 	axis[0] *= ITG3200_2000G_FACTOR;
 	axis[1] *= ITG3200_2000G_FACTOR;
 	axis[2] *= ITG3200_2000G_FACTOR;
+}
+
+void ITG3200::updateRaw() {
+	I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer);
+	axis[0] = (((int16_t) buffer[0]) << 8) | buffer[1];
+	axis[1] = (((int16_t) buffer[2]) << 8) | buffer[3];
+	axis[2] = (((int16_t) buffer[4]) << 8) | buffer[5];
+
 }

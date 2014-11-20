@@ -83,6 +83,8 @@ constexpr uint32_t BLINK_OFF_TICKS = 500;
  * SYSTIC -> GPIO,I2C,SPI(SDCard)
  */
 
+
+
 int main(int argc, char* argv[]) {
 	HAL_Init();
 	SystemClock_Config();
@@ -98,12 +100,16 @@ int main(int argc, char* argv[]) {
 	buttons.InitButtons();
 	//nokiaLCD.Clear();
 	imu10DOF.initialize();
-	//imu10DOF.startTimerUpdate();
+	imu10DOF.startTimerUpdate();
 
 	uint16_t counter = 0;
 	Kalman test;
 	uint8_t buf[50] = {0};
 	uint32_t cnt[5] = {0};
+
+	//imitate connection state
+	imu10DOF.setConnected();
+	speedTester.tic();
 
 
 	while (1) {
@@ -113,9 +119,11 @@ int main(int argc, char* argv[]) {
 			switch(buf[0]) {
 			case 'S':
 				imu10DOF.setConnected();
+				speedTester.tic();
 				break;
 			case 'E':
 				imu10DOF.setDisconnected();
+				speedTester.toc();
 				break;
 			case 'R':
 				imu10DOF.setRequestOfData();
@@ -129,7 +137,7 @@ int main(int argc, char* argv[]) {
 
 					*cnt = speedTester.testTimeOfSending(*cnt);
 
-					*cnt = sprintf((char *)buf,"\ntime:\n%lu\n%lu\n%lu\n%lu\n", *cnt);
+					*cnt = sprintf((char *)buf,"\ntime:\n%lu\n", *cnt);
 					VCP_write(buf,*cnt);
 					memset(buf,0,50);
 				}
@@ -147,14 +155,19 @@ int main(int argc, char* argv[]) {
 
 				cnt[4] = sprintf((char *)buf,"\ntime:\n%lu\n%lu\n%lu\n%lu\n", cnt[0],cnt[1],cnt[2],cnt[3]);
 				VCP_write(buf,cnt[4]);
-				memset(buf,0,15);
 				break;
 			case 'Z':
 				break;
+			case 'G':
+				if(*cnt > 1) {
+					*cnt = atol((char *)buf+1);
+					imu10DOF.requestDataGathering(*cnt);
+				}
+				break;
 			default:
-
 				break;
 			}
+			memset(buf,0,15);
 		}
 		if(imu10DOF.getShowDataTriger() == 1) {
 			//imu10DOF.showAnglesKalman(nokiaLCD);
@@ -167,6 +180,12 @@ int main(int argc, char* argv[]) {
 				 counter = 0;
 			 }
 		 }
+
+		 if(imu10DOF.isDataGatheringComplete()) {
+			 imu10DOF.sendGatheredDataViaVCOM();
+		 }
+
+
 
 		if (buttons.getButtonState(0) == GPIO::longPush) {
 			nokiaLCD.WriteTextXY((char*) "longPush const", 0, 0);
