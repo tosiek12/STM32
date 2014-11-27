@@ -211,10 +211,12 @@ void HMC5883L::updateRaw() {
  */
 HMC5883L::HMC5883L() {
 	devAddr = HMC5883L_DEFAULT_ADDRESS;
-    offset[3] = {0};
+	offset[0] = 0;
+	offset[1] = 0;
+	offset[2] = 0;
     scalingFactor = 0;
     declinationInDeg = 0;
-    buffer[6] = {};
+    buffer[0] = 0;
     mode = 0;
     heading = 0;
 }
@@ -242,7 +244,7 @@ void HMC5883L::initialize() {
 			(HMC5883L_AVERAGING_8
 					<< (HMC5883L_CRA_AVERAGE_BIT - HMC5883L_CRA_AVERAGE_LENGTH
 							+ 1))
-					| (HMC5883L_RATE_75
+					| (HMC5883L_RATE_30
 							<< (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH
 									+ 1))
 					| (HMC5883L_BIAS_NORMAL

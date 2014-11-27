@@ -43,7 +43,7 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../include/10DOF/hmc5883l.h ../include/10DOF/bmp085.h \
  ../include/10DOF/Filters/Kalman.h ../include/SpeedTester/speedTester.h \
  ../include/SDCard/tm_stm32f4_fatfs.h ../include/SDCard/fatfs/ff.h \
- ../include/SDCard/fatfs/ffconf.h \
+ ../include/SDCard/fatfs/ffconf.h ../include/PWM/pwm.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../include/usbd_conf.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
@@ -170,6 +170,8 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 ../include/SDCard/fatfs/ff.h:
 
 ../include/SDCard/fatfs/ffconf.h:
+
+../include/PWM/pwm.h:
 
 ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h:
 

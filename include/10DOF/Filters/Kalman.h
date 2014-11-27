@@ -26,45 +26,11 @@ private:
 	float32_t K[2]; // Kalman gain - This is a 2x1 vector
 	float32_t y; // Angle difference
 	float32_t S; // Estimate error
-
-	/* NEW APPROACH - USING ARM_MATRIX OPERATIONS */
-	//State: x = [angle; bias];
-	arm_matrix_instance_f32 xMatrix;
-	float32_t xSource[2*1];
-
-	//Control: u = omega; //angular velocity on given axis
-	//ProcessErros = [angleNoise; biasNoise];
-
-	//a = F = [1, -dt; 0, 1]
-	arm_matrix_instance_f32 aMatrix;
-	float32_t aSource[2*2];
-
-	//b = [1;0]
-	arm_matrix_instance_f32 bMatrix;
-	float32_t bSource[2*1];
-
-	//c= [1, 0]
-	arm_matrix_instance_f32 cMatrix;
-	float32_t cSource[2*1];
-
-	//p = [0, 0; 0, 0]
-	arm_matrix_instance_f32 pMatrix;
-	float32_t pSource[2*2];
-
-	//q = [angleNoise, 0; 0, biasNoise]
-	arm_matrix_instance_f32 qMatrix;
-	float32_t qSource[2*2];
-
-	//r = [measurment noise];
-	arm_matrix_instance_f32 rMatrix;
-	float32_t rSource[1*1];
-
 public:
 	Kalman();
 
 	// The angle in degrees and the rate in degrees per second and the dt in seconds
 	void stepOldVersion(float32_t newAngle, float32_t newRate, float32_t dt);
-	void stepNewVersion(float32_t newAngle, float32_t newRate, float32_t dt);
 
 	float32_t getAngle() {
 		return angle;
@@ -101,9 +67,7 @@ public:
 	}
 
 	void testMatrixOperations();
-	void ble();
 	void sendMatrixViaCom(arm_matrix_instance_f32* matrix);
-	void sendStateViaCom();
 	/* ----------------------------------------------------------------------
 	 * Max magnitude FFT Bin test
 	 * ------------------------------------------------------------------- */

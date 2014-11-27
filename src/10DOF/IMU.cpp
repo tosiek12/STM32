@@ -19,8 +19,8 @@ void IMU::timerAction() {
 		error = 1;
 		//return;
 	}
-	accelerometer.update();
-	gyro.update();
+	accelerometer.updateRaw();
+	gyro.updateRaw();
 	magnetometer.updateRaw();
 
 //	computeAngles();
@@ -165,7 +165,7 @@ void IMU::computeAngles() {
 	const int16_t MaxB = 123;	//TODO: uzupelnic wartos max do skalowania.
 
 
-	XRollAngle = atan2f((float32_t)(yActual), (float32_t)(zActual))*180/PI;	//zgodne z teori�
+	XRollAngle = atan2f((float32_t)(yActual), (float32_t)(zActual))*180/PI;	//zgodne z teoria
 
 	arg1 = 0;
 	arg1 +=(float32_t)(zActual)*(float32_t)(zActual);

@@ -39,6 +39,7 @@ src/STM32_USB_Device_Library/Class/CDC/Src \
 src/SDCard \
 src/SDCard/fatfs/option \
 src/SDCard/fatfs \
+src/PWM \
 src/NokiaLCD \
 src/GPIO \
 src/Delay \

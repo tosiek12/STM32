@@ -14,6 +14,7 @@
 #include "10DOF/IMU.h"
 #include "SpeedTester/speedTester.h"
 #include "SDCard/tm_stm32f4_fatfs.h"
+#include "PWM/pwm.h"
 
 //#include "Accelerometer/stm32f4_discovery_lis3dsh.h"
 //#include "Accelerometer/accelerometer.h"
@@ -74,7 +75,6 @@ constexpr uint32_t BLINK_OFF_TICKS = 500;
 //#pragma GCC diagnostic ignored "-Wmissing-declarations"
 //#pragma GCC diagnostic ignored "-Wreturn-type"
 
-
 /*
  * Using:
  * TIM3 -> IMU
@@ -82,8 +82,6 @@ constexpr uint32_t BLINK_OFF_TICKS = 500;
  * TIM3 -> GPIO
  * SYSTIC -> GPIO,I2C,SPI(SDCard)
  */
-
-
 
 int main(int argc, char* argv[]) {
 	HAL_Init();
@@ -104,19 +102,20 @@ int main(int argc, char* argv[]) {
 
 	uint16_t counter = 0;
 	Kalman test;
-	uint8_t buf[50] = {0};
-	uint32_t cnt[5] = {0};
+	uint8_t buf[50] = { 0 };
+	uint32_t cnt[5] = { 0 };
 
 	//imitate connection state
 	imu10DOF.setConnected();
 	speedTester.tic();
 
+	pwm.startPwmTimer();
 
 	while (1) {
 		buttons.mainBegginingUpdate();
-		*cnt = VCP_read(buf,10);
-		if(*cnt >= 1) {
-			switch(buf[0]) {
+		*cnt = VCP_read(buf, 10);
+		if (*cnt >= 1) {
+			switch (buf[0]) {
 			case 'S':
 				imu10DOF.setConnected();
 				speedTester.tic();
@@ -132,14 +131,14 @@ int main(int argc, char* argv[]) {
 				imu10DOF.calibrateAllSensors();
 				break;
 			case 'T':
-				if(*cnt >1) {
-					*cnt = atol((char *)buf+1);
+				if (*cnt > 1) {
+					*cnt = atol((char *) buf + 1);
 
 					*cnt = speedTester.testTimeOfSending(*cnt);
 
-					*cnt = sprintf((char *)buf,"\ntime:\n%lu\n", *cnt);
-					VCP_write(buf,*cnt);
-					memset(buf,0,50);
+					*cnt = sprintf((char *) buf, "\ntime:\n%lu\n", *cnt);
+					VCP_write(buf, *cnt);
+					memset(buf, 0, 50);
 				}
 				break;
 			case 'I':
@@ -153,50 +152,45 @@ int main(int argc, char* argv[]) {
 				imu10DOF.timerAction();
 				cnt[3] = speedTester.toc();
 
-				cnt[4] = sprintf((char *)buf,"\ntime:\n%lu\n%lu\n%lu\n%lu\n", cnt[0],cnt[1],cnt[2],cnt[3]);
-				VCP_write(buf,cnt[4]);
+				cnt[4] = sprintf((char *) buf, "\ntime:\n%lu\n%lu\n%lu\n%lu\n",
+						cnt[0], cnt[1], cnt[2], cnt[3]);
+				VCP_write(buf, cnt[4]);
 				break;
 			case 'Z':
 				break;
 			case 'G':
-				if(*cnt > 1) {
-					*cnt = atol((char *)buf+1);
+				if (*cnt > 1) {
+					*cnt = atol((char *) buf + 1);
 					imu10DOF.requestDataGathering(*cnt);
 				}
 				break;
 			default:
 				break;
 			}
-			memset(buf,0,15);
+			memset(buf, 0, 15);
 		}
-		if(imu10DOF.getShowDataTriger() == 1) {
+		if (imu10DOF.getShowDataTriger() == 1) {
 			//imu10DOF.showAnglesKalman(nokiaLCD);
 			//imu10DOF.showMeasurment(nokiaLCD);
 			imu10DOF.clearShowDataTriger();
 		}
 
-		 if(imu10DOF.sendViaVirtualCom()) {
-			 if(++counter == 10000) {
-				 counter = 0;
-			 }
-		 }
+		if (imu10DOF.sendViaVirtualCom()) {
+			if (++counter == 10000) {
+				counter = 0;
+			}
+		}
 
-		 if(imu10DOF.isDataGatheringComplete()) {
-			 imu10DOF.sendGatheredDataViaVCOM();
-		 }
-
-
+		if (imu10DOF.isDataGatheringComplete()) {
+			imu10DOF.sendGatheredDataViaVCOM();
+		}
 
 		if (buttons.getButtonState(0) == GPIO::longPush) {
 			nokiaLCD.WriteTextXY((char*) "longPush const", 0, 0);
 		}
 
 		if (buttons.getButtonStateChange(1, GPIO::shortPush)) {
-			nokiaLCD.WriteTextXY((char*) "1", 5, 5);
-			Delay::delay_ms(BLINK_ON_TICKS);
-
-			nokiaLCD.WriteTextXY((char*) "0", 5, 5);
-			Delay::delay_ms(BLINK_OFF_TICKS);
+			pwm.setChannelRawValue(1,700);
 		}
 		if (buttons.getButtonState(0) == GPIO::longPush) {
 		}

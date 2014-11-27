@@ -19,6 +19,7 @@ RM := rm -rf
 -include src/SDCard/fatfs/option/subdir.mk
 -include src/SDCard/fatfs/subdir.mk
 -include src/SDCard/subdir.mk
+-include src/PWM/subdir.mk
 -include src/NokiaLCD/subdir.mk
 -include src/GPIO/subdir.mk
 -include src/Delay/subdir.mk
