@@ -1,3 +1,4 @@
 Release/**
 Debug/**
 *.[o]
+/Debug/

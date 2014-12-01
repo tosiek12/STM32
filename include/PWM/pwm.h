@@ -5,26 +5,34 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 #include "arm_math.h"
+#include "main.h"
 
 class PWM {
 private:
 public:
 	TIM_HandleTypeDef TimHandle;
+	uint32_t uwPulse1;
+	uint32_t uwPulse2;
+	uint32_t uwPulse3;
+	uint32_t uwPulse4;
 	PWM() {
-
+		uwPulse1 = 0;
+		uwPulse2 = 0;
+		uwPulse3 = 0;
+		uwPulse4 = 0;
 	}
-	void PWMInit() {
-		TIM_MasterConfigTypeDef sMasterConfig;
-		TIM_ClockConfigTypeDef sClockSourceConfig;
-		TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig;
-		TIM_OC_InitTypeDef sConfig;
+
+	void PWM_HWInit() {
+		GPIO_InitTypeDef GPIO_InitStruct;
 
 		/* GPIO Ports Clock Enable */
 		__GPIOE_CLK_ENABLE();
-		GPIO_InitTypeDef GPIO_InitStruct;
 
 		/**TIM1 GPIO Configuration
 		 PE9     ------> TIM1_CH1
+		 PE11    ------> TIM1_CH2
+		 PE13    ------> TIM1_CH3
+		 PE14    ------> TIM1_CH4
 		 */
 		GPIO_InitStruct.Pin = GPIO_PIN_9;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -32,7 +40,15 @@ public:
 		GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
 		GPIO_InitStruct.Alternate = GPIO_AF1_TIM1;
 		HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+	}
 
+	void PWMInit() {
+		TIM_MasterConfigTypeDef sMasterConfig;
+		TIM_ClockConfigTypeDef sClockSourceConfig;
+		TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig;
+		TIM_OC_InitTypeDef sConfig;
+
+		PWM_HWInit();
 
 		/* TIMx Peripheral clock enable */
 		__TIM1_CLK_ENABLE();
@@ -43,7 +59,7 @@ public:
 		//Prescaler = ((SystemCoreClock) / TIM1 counter clock) - 1
 		const uint16_t Prescaler = (((SystemCoreClock) / CounterClk) - 1);
 		//ARR(TIM_Period) = (TIM3 counter clock / TIM3 output clock) - 1
-		const uint16_t OutputClk = 100;	//Hz
+		const uint16_t OutputClk = 54;	//Hz
 		const uint32_t Period = ((CounterClk / OutputClk) - 1);
 
 		/* Set TIMx instance */
@@ -54,9 +70,7 @@ public:
 		TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
 		TimHandle.Init.RepetitionCounter = 0;
 		if (HAL_TIM_PWM_Init(&TimHandle) != HAL_OK) {
-			/* Initialization Error */
-			while (1) {
-			};
+			Error_Handler();
 		}
 
 		sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
@@ -79,25 +93,46 @@ public:
 		sConfig.Pulse = 500;
 		sConfig.OCPolarity = TIM_OCPOLARITY_HIGH;
 		sConfig.OCFastMode = TIM_OCFAST_DISABLE;
-		if(HAL_TIM_PWM_ConfigChannel(&TimHandle, &sConfig, TIM_CHANNEL_1) != HAL_OK)
-		{
-			/* Initialization Error */
-			while (1) {
-			};
+		if (HAL_TIM_PWM_ConfigChannel(&TimHandle, &sConfig, TIM_CHANNEL_1) != HAL_OK) {
+			Error_Handler();
+		}
+
+		sConfig.Pulse = 0;
+		if (HAL_TIM_PWM_ConfigChannel(&TimHandle, &sConfig, TIM_CHANNEL_2) != HAL_OK) {
+			Error_Handler();
+		}
+		if (HAL_TIM_PWM_ConfigChannel(&TimHandle, &sConfig, TIM_CHANNEL_3) != HAL_OK) {
+			Error_Handler();
+		}
+		if (HAL_TIM_PWM_ConfigChannel(&TimHandle, &sConfig, TIM_CHANNEL_4) != HAL_OK) {
+			Error_Handler();
 		}
 	}
 
-	void startPwmTimer() {
-		if(HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_1) != HAL_OK)
-		{
-			/* Initialization Error */
-			while (1) {
-			};
+	void startPwmChannel(uint32_t channel) {
+		if (HAL_TIM_PWM_Start(&TimHandle, channel) != HAL_OK) {
+				Error_Handler();
+			}
+	}
+	void startAllPwmChannels() {
+		if (HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_1) != HAL_OK) {
+			Error_Handler();
+		}
+		if (HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_2) != HAL_OK) {
+			Error_Handler();
+		}
+		if (HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_3) != HAL_OK) {
+			Error_Handler();
+		}
+		if (HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_4) != HAL_OK) {
+			Error_Handler();
 		}
 	}
+
 	void setChannelRawValue(uint8_t chanelNumber, uint32_t pulseValue) {
-		if(chanelNumber == 1) {
-			  /* Set the Capture Compare Register value */
+
+		if (chanelNumber == TIM_CHANNEL_1) {
+			/* Set the Capture Compare Register value */
 			TimHandle.Instance->CCR1 = pulseValue;
 		}
 	}
@@ -105,8 +140,6 @@ public:
 };
 
 extern PWM pwm;
-
-
 
 #endif
 
