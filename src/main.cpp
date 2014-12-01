@@ -108,8 +108,10 @@ int main(int argc, char* argv[]) {
 	//imitate connection state
 	imu10DOF.setConnected();
 	speedTester.tic();
-
+	uint32_t wypelnienie = 813;
+	pwm.PWMInit();
 	pwm.startPwmTimer();
+	//pwm.setChannelRawValue(1, 1000);
 
 	while (1) {
 		buttons.mainBegginingUpdate();
@@ -129,6 +131,9 @@ int main(int argc, char* argv[]) {
 				break;
 			case 'C':
 				imu10DOF.calibrateAllSensors();
+				break;
+			case 'W':
+				pwm.setChannelRawValue(1, wypelnienie);
 				break;
 			case 'T':
 				if (*cnt > 1) {
@@ -190,7 +195,6 @@ int main(int argc, char* argv[]) {
 		}
 
 		if (buttons.getButtonStateChange(1, GPIO::shortPush)) {
-			pwm.setChannelRawValue(1,700);
 		}
 		if (buttons.getButtonState(0) == GPIO::longPush) {
 		}

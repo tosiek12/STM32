@@ -46,9 +46,6 @@ public:
 		sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
 		sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 		HAL_TIMEx_MasterConfigSynchronization(&TimHandle, &sMasterConfig);
-
-
-
 	}
 	void tic();
 	uint32_t toc();

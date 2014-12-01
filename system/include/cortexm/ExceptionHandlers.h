@@ -46,6 +46,7 @@ SysTick_Handler(void);
 
 extern void EXTI9_5_IRQHandler(void);
 extern void TIM2_IRQHandler(void);
+extern void TIM1_CC_IRQHandler(void);
 #if defined(__cplusplus)
 }
 #endif

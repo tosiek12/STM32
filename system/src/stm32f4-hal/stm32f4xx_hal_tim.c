@@ -2923,13 +2923,13 @@ void HAL_TIM_IRQHandler(TIM_HandleTypeDef *htim)
 HAL_StatusTypeDef HAL_TIM_OC_ConfigChannel(TIM_HandleTypeDef *htim, TIM_OC_InitTypeDef* sConfig, uint32_t Channel)
 {
   /* Check the parameters */ 
-  assert_param(IS_TIM_CHANNELS(Channel)); 
-  assert_param(IS_TIM_OC_MODE(sConfig->OCMode));
-  assert_param(IS_TIM_OC_POLARITY(sConfig->OCPolarity));
-  assert_param(IS_TIM_OCN_POLARITY(sConfig->OCNPolarity));
-  assert_param(IS_TIM_FAST_STATE(sConfig->OCFastMode));
-  assert_param(IS_TIM_OCNIDLE_STATE(sConfig->OCNIdleState));
-  assert_param(IS_TIM_OCIDLE_STATE(sConfig->OCIdleState));
+//  assert_param(IS_TIM_CHANNELS(Channel));
+//  assert_param(IS_TIM_OC_MODE(sConfig->OCMode));
+//  assert_param(IS_TIM_OC_POLARITY(sConfig->OCPolarity));
+//  assert_param(IS_TIM_OCN_POLARITY(sConfig->OCNPolarity));
+//  assert_param(IS_TIM_FAST_STATE(sConfig->OCFastMode));
+//  assert_param(IS_TIM_OCNIDLE_STATE(sConfig->OCNIdleState));
+//  assert_param(IS_TIM_OCIDLE_STATE(sConfig->OCIdleState));
   
   /* Check input state */
   __HAL_LOCK(htim); 

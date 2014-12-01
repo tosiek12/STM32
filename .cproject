@@ -68,7 +68,6 @@
 									<listOptionValue builtIn="false" value="FATFS_USE_SDIO=0"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
 									<listOptionValue builtIn="false" value="USE_USB_FS"/>
-									<listOptionValue builtIn="false" value="USE_FULL_ASSERT"/>
 									<listOptionValue builtIn="false" value="TRACE"/>
 									<listOptionValue builtIn="false" value="OS_USE_TRACE_ITM"/>
 									<listOptionValue builtIn="false" value="STM32F407xx"/>
@@ -94,7 +93,6 @@
 									<listOptionValue builtIn="false" value="FATFS_USE_SDIO=0"/>
 									<listOptionValue builtIn="false" value="USE_USB_FS"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
-									<listOptionValue builtIn="false" value="USE_FULL_ASSERT"/>
 									<listOptionValue builtIn="false" value="TRACE"/>
 									<listOptionValue builtIn="false" value="OS_USE_TRACE_ITM"/>
 									<listOptionValue builtIn="false" value="STM32F407xx"/>
@@ -127,7 +125,6 @@
 									<listOptionValue builtIn="false" value="FATFS_USE_SDIO=0"/>
 									<listOptionValue builtIn="false" value="USE_USB_FS"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
-									<listOptionValue builtIn="false" value="USE_FULL_ASSERT"/>
 									<listOptionValue builtIn="false" value="TRACE"/>
 									<listOptionValue builtIn="false" value="OS_USE_TRACE_ITM"/>
 									<listOptionValue builtIn="false" value="STM32F407xx"/>
