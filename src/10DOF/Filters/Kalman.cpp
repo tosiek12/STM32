@@ -17,6 +17,8 @@ Kalman::Kalman() {
 	R_measure = 0.3;
 	angle = 0; // Reset the angle
 	bias = 0; // Reset bias
+	S = 0;
+	y = 0;
 
 	P[0][0] = 0; // Since we assume that the bias is 0 and we know the starting angle (use setAngle), the error covariance matrix is set like so - see: http://en.wikipedia.org/wiki/Kalman_filter#Example_application.2C_technical
 	P[0][1] = 0;
@@ -60,8 +62,8 @@ void Kalman::stepOldVersion(float32_t newAngle, float32_t newRate, float32_t dt)
 
 void Kalman::testMatrixOperations() {
 	arm_matrix_instance_f32 matrix1, vector, result;
-	float32_t matrixArray[2 * 2] = { 1, 0, 0, 1 },
-			vectorArray[2 * 1] = { 1, 2 }, resultArray[1 * 2] = { 0, 0 };
+	float32_t matrixArray[2 * 2] = { 1, 0, 0, 1 }, vectorArray[2 * 1] = { 1, 2 },
+			resultArray[1 * 2] = { 0, 0 };
 	volatile arm_status status = ARM_MATH_TEST_FAILURE;
 
 	arm_mat_init_f32(&matrix1, 2, 2, (float32_t*) matrixArray);
@@ -91,8 +93,7 @@ void Kalman::sendMatrixViaCom(arm_matrix_instance_f32* matrix) {
 	for (i = 0; i < matrix->numRows; i++) {
 		for (j = 0; j < matrix->numCols; j++) {
 			number = *(matrix->pData + matrix->numCols * i + j);
-			numberOfCharsInBuffer = sprintf(buf, "%ld,",
-					(int32_t) (100 * number));
+			numberOfCharsInBuffer = sprintf(buf, "%ld,", (int32_t) (100 * number));
 			VCP_write(buf, numberOfCharsInBuffer);
 		}
 		numberOfCharsInBuffer = sprintf(buf, "\n");
@@ -112,8 +113,7 @@ int32_t Kalman::testExample(void) {
 	 * Formula to fit is  C1 + C2 * numTaps + C3 * blockSize + C4 * numTaps * blockSize
 	 * -------------------------------------------------------------------------------- */
 	const float32_t A_f32[16] = {/* Const,       numTaps,        blockSize,      numTaps*blockSize */
-	1.0, 32.0, 4.0, 128.0, 1.0, 32.0, 64.0, 2048.0, 1.0, 16.0, 4.0, 64.0, 1.0,
-			16.0, 64.0, 1024.0 };
+	1.0, 32.0, 4.0, 128.0, 1.0, 32.0, 64.0, 2048.0, 1.0, 16.0, 4.0, 64.0, 1.0, 16.0, 64.0, 1024.0 };
 	/* ----------------------------------------------------------------------
 	 * Temporary buffers  for storing intermediate values
 	 * ------------------------------------------------------------------- */

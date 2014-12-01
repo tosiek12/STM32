@@ -15,7 +15,7 @@ IMU imu10DOF;
 
 void IMU::timerAction() {
 	static uint16_t counter = 0;
-	if(sendDataTriger == 1) {
+	if (sendDataTriger == 1) {
 		error = 1;
 		//return;
 	}
@@ -27,7 +27,7 @@ void IMU::timerAction() {
 //	kalmanStepAction();
 
 	/* Save data to temporary buffer */
-	if(numberOfGatheredSamples  < numberOfSamplesToGather ) {
+	if (numberOfGatheredSamples < numberOfSamplesToGather) {
 		measurements[numberOfGatheredSamples][0] = accelerometer.axis[0];
 		measurements[numberOfGatheredSamples][1] = accelerometer.axis[1];
 		measurements[numberOfGatheredSamples][2] = accelerometer.axis[2];
@@ -57,10 +57,10 @@ extern "C" void TIM3_IRQHandler(void) {
 }
 
 uint8_t IMU::sendViaVirtualCom() {
-	const uint8_t frameSize = 2*3;
+	const uint8_t frameSize = 2 * 3;
 	int16_t temp;
 	uint32_t timeDelta = 0;
-	if(error == 1) {
+	if (error == 1) {
 		//VCP_write("OVERWRITTEN!!", 13);
 		error = 0;
 		return 0;
@@ -96,7 +96,7 @@ uint8_t IMU::sendViaVirtualCom() {
 }
 
 void IMU::requestDataGathering(uint16_t numberOfSamples) {
-	numberOfSamplesToGather = MIN(numberOfSamples,6000);
+	numberOfSamplesToGather = MIN(numberOfSamples, 6000);
 	numberOfGatheredSamples = 0;
 }
 
@@ -105,9 +105,10 @@ void IMU::sendGatheredDataViaVCOM() {
 	uint16_t it = 0, size;
 	uint8_t buff[50];
 	volatile int16_t *pTemp;
-	for(it = 0; it < numberOfSamplesToGather; it++) {
+	for (it = 0; it < numberOfSamplesToGather; it++) {
 		pTemp = measurements[it];
-		size = sprintf((char*) buff, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", pTemp[0],pTemp[1],pTemp[2],pTemp[3],pTemp[4],pTemp[5],pTemp[6],pTemp[7],pTemp[8]);
+		size = sprintf((char*) buff, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", pTemp[0], pTemp[1], pTemp[2],
+				pTemp[3], pTemp[4], pTemp[5], pTemp[6], pTemp[7], pTemp[8]);
 		VCP_write((void *) buff, size);
 	}
 	numberOfGatheredSamples = 0;
@@ -149,41 +150,80 @@ void IMU::initialize() {
 	accelerometer.initialize();
 	magnetometer.initialize();
 	pressure.initialize();
-
 	//calibrateAllSensors();
-
 	initializeTimerForUpdate();
 }
 
-void IMU::computeAngles() {
+void IMU::computeYaw() {
+	float32_t sqrt_result, arg1, arg2;
+	float32_t mag[3];
+	mag[0] = magnetometer.axis[0];
+	mag[1] = magnetometer.axis[1];
+	mag[2] = magnetometer.axis[2];
+
+	//Normalise measurement:
+	arg1 = (float32_t) (mag[0]) * (mag[0]) + (mag[1]) * (mag[1]) + (mag[2]) * (mag[2]);
+	arm_sqrt_f32(arg1, &sqrt_result);
+	mag[0] /= sqrt_result;
+	mag[1] /= sqrt_result;
+	mag[2] /= sqrt_result;
+
+	arg1 = arm_sin_f32(XRollAngle) * mag[2] - arm_cos_f32(XRollAngle) * mag[1];
+	arg2 = arm_cos_f32(YPitchAngle) * mag[0]
+			+ arm_sin_f32(XRollAngle) * arm_sin_f32(YPitchAngle) * mag[1]
+			+ arm_cos_f32(XRollAngle) * arm_sin_f32(YPitchAngle) * mag[2];
+	ZYawAngle = atan2f(arg1, arg2);
+
+	//Correct declination
+	//ZYawAngle += (5.0 + (16.0 / 60.0))*PI/180.0; //Positive declination.
+	if (ZYawAngle < 0) {
+		ZYawAngle += 2 * PI;
+	} else if (ZYawAngle > 2 * PI) {
+		ZYawAngle -= 2 * PI;
+	}
+}
+
+void IMU::computePitchRollTilt() {
 	float32_t arg1, arg2;
 	float32_t sqrt_result;
-	const int16_t xActual= accelerometer.axis[0], yActual = accelerometer.axis[1], zActual = accelerometer.axis[2];
-	const int16_t g = 435;	//TODO: uzupelnic wartosc g.
+	float32_t acc[3];
+	acc[0] = accelerometer.axis[0];
+	acc[1] = accelerometer.axis[1];
+	acc[2] = accelerometer.axis[2];
 
-	const int16_t xMActual= magnetometer.axis[0], yMActual = magnetometer.axis[1], zMActual = magnetometer.axis[2];
-	const int16_t MaxB = 123;	//TODO: uzupelnic wartos max do skalowania.
+	//Normalise measurement:
+	arg1 = (float32_t) (acc[0]) * (acc[0]) + (acc[1]) * (acc[1]) + (acc[2]) * (acc[2]);
+	arm_sqrt_f32(arg1, &sqrt_result);
+	acc[0] /= sqrt_result;
+	acc[1] /= sqrt_result;
+	acc[2] /= sqrt_result;
+	int8_t signZ;
+	const float32_t mi = 0.01;
 
-
-	XRollAngle = atan2f((float32_t)(yActual), (float32_t)(zActual))*180/PI;	//zgodne z teoria
+	//Compute angles:
+	//wzor jest nieprawdziwy, gdy z=0 i y=0. nie ma jednego dobreg rozwiazania. Mozna np. aproksymowac w ten sposob:
+	if (acc[2] > 0) {
+		signZ = 1;
+	} else {
+		signZ = -1;
+	}
+	arg1 = (acc[2]) * (acc[2]) + mi * (acc[0]) * (acc[0]);
+	arm_sqrt_f32(arg1, &sqrt_result);
+	XRollAngle = atan2(acc[1], signZ * sqrt_result);
 
 	arg1 = 0;
-	arg1 +=(float32_t)(zActual)*(float32_t)(zActual);
-	arg1 +=(float32_t)(yActual)*(float32_t)(yActual);
-	arm_sqrt_f32(arg1,&sqrt_result);
-	YPitchAngle = atan2f(-(xActual),sqrt_result)*180/PI;
-	YPitchAngle_2 = asinf((float32_t)(-xActual)/(float32_t)(g))*180/PI;
+	arg1 += (float32_t) (acc[2]) * (float32_t) (acc[2]);
+	arg1 += (float32_t) (acc[1]) * (float32_t) (acc[1]);
+	arm_sqrt_f32(arg1, &sqrt_result);
+	YPitchAngle = atan2f(-(acc[0]), sqrt_result);
+	//YPitchAngle_2 = arm_sin_f32((float32_t)(-acc[0])/(float32_t)(g));
 
 	arg1 = 0;
-	arg1 +=(float32_t)(zActual)*(float32_t)(zActual);
-	arg1 +=(float32_t)(xActual)*(float32_t)(xActual);
-	arg1 +=(float32_t)(yActual)*(float32_t)(yActual);
-	arm_sqrt_f32(arg1,&sqrt_result);
-	TiltAngle = acosf((zActual)/sqrt_result)*180/PI;
-
-	arg1 = sinf(XRollAngle)*zMActual - cosf(XRollAngle)*yMActual;
-	arg2 = cosf(YPitchAngle)*xMActual + sinf(XRollAngle)*sinf(YPitchAngle)* yMActual + cosf(XRollAngle)*sinf(YPitchAngle)*zMActual;
-	ZYawAngle = atan2f(arg1,arg2);
+	arg1 += (float32_t) (acc[0]) * (float32_t) (acc[0]);
+	arg1 += (float32_t) (acc[1]) * (float32_t) (acc[1]);
+	arg1 += (float32_t) (acc[2]) * (float32_t) (acc[2]);
+	arm_sqrt_f32(arg1, &sqrt_result);
+	TiltAngle = arm_cos_f32((acc[2]) / sqrt_result);
 }
 
 void IMU::kalmanStepAction() {
@@ -195,10 +235,8 @@ void IMU::kalmanStepAction() {
 	gyroYangle += gyroYrate * dt_inSec; // Without any filter
 
 	// Complementary filter
-	compAngleX = (0.93 * (compAngleX + gyroYrate * dt_inSec))
-			+ (0.07 * XRollAngle);
-	compAngleY = (0.93 * (compAngleY + gyroYrate * dt_inSec))
-			+ (0.07 * YPitchAngle);
+	compAngleX = (0.93 * (compAngleX + gyroYrate * dt_inSec)) + (0.07 * XRollAngle);
+	compAngleY = (0.93 * (compAngleY + gyroYrate * dt_inSec)) + (0.07 * YPitchAngle);
 	// Kalman filter
 	kalmanX.stepOldVersion(XRollAngle, gyroXrate, dt_inSec);
 	kalmanY.stepOldVersion(YPitchAngle, gyroYrate, dt_inSec);

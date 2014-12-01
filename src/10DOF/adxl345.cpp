@@ -33,8 +33,7 @@ void ADXL345::initialize() {
 //	}
 }
 
-void ADXL345::calibrate(bool doFullCalibartion,
-		const uint16_t numberOfSamples) {
+void ADXL345::calibrate(bool doFullCalibartion, const uint16_t numberOfSamples) {
 	char buf[50];
 	uint8_t numberOfCharsInBuffer;
 	int32_t sum[3] = { 0 };
@@ -45,10 +44,8 @@ void ADXL345::calibrate(bool doFullCalibartion,
 	const uint8_t DECIMAL = 100;
 	int16_t it = 0;
 
-	int32_t average[3] = {0};
-	int16_t max[3] = {-1000,-1000,-1000},
-			min[3] = {1000,1000,1000},
-			temp[3];
+	int32_t average[3] = { 0 };
+	int16_t max[3] = { -1000, -1000, -1000 }, min[3] = { 1000, 1000, 1000 }, temp[3];
 
 	if (doFullCalibartion) {
 		numberOfCharsInBuffer = sprintf(buf, "Accelerometer calibration Start\n");
@@ -56,8 +53,7 @@ void ADXL345::calibrate(bool doFullCalibartion,
 
 		while ((++it) <= numberOfSamples) {
 			for (uint8_t i = 0; i <= OVERSAMPLING; ++i) {
-				I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6,
-						(uint8_t *) &temp);
+				I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, (uint8_t *) &temp);
 				Delay::delay_ms(1);
 				axis[0] += temp[0];
 				axis[1] += temp[1];
@@ -88,18 +84,16 @@ void ADXL345::calibrate(bool doFullCalibartion,
 			stdDev[axisNumber] = DECIMAL / ((float32_t) (numberOfSamples - 1))
 					* (sumOfSqueres[axisNumber]
 							- (int64_t) (sum[axisNumber])
-									* (sum[axisNumber]
-											/ (float32_t) (numberOfSamples)));
-			average[axisNumber] = sum[axisNumber] * DECIMAL
-					/ (float32_t) (numberOfSamples);
+									* (sum[axisNumber] / (float32_t) (numberOfSamples)));
+			average[axisNumber] = sum[axisNumber] * DECIMAL / (float32_t) (numberOfSamples);
 		}
 
 		//Send it via VCom
-		numberOfCharsInBuffer = sprintf(buf, "%ld,%ld,%ld,%lu,%lu,%lu\n", average[0],
-				average[1], average[2], stdDev[0], stdDev[1], stdDev[2]);
+		numberOfCharsInBuffer = sprintf(buf, "%ld,%ld,%ld,%lu,%lu,%lu\n", average[0], average[1],
+				average[2], stdDev[0], stdDev[1], stdDev[2]);
 		VCP_write(buf, numberOfCharsInBuffer);
-		numberOfCharsInBuffer = sprintf(buf, "%d,%d,%d,%d,%d,%d\r\n", min[0], min[1],
-				min[2], max[0], max[1], max[2]);
+		numberOfCharsInBuffer = sprintf(buf, "%d,%d,%d,%d,%d,%d\r\n", min[0], min[1], min[2],
+				max[0], max[1], max[2]);
 		VCP_write(buf, numberOfCharsInBuffer);
 		numberOfCharsInBuffer = sprintf(buf, "Accelerometer calibration End\n");
 		VCP_write(buf, numberOfCharsInBuffer);
@@ -313,8 +307,7 @@ void ADXL345::WriteAct(uint8_t act) {
  * @param[out]: none
  */
 void ADXL345::ReadThreshInact(int8_t *inact) {
-	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_INACT,
-			(uint8_t *) inact);
+	I2C::i2c_ReadByte(I2C_ID_ADXL345, ADXL345_RA_THRESH_INACT, (uint8_t *) inact);
 }
 
 /*
@@ -364,8 +357,8 @@ void ADXL345::WriteTimeInact(uint8_t timinact) {
  * 			   		ADXL345_INACTZ_ENABLE, ADXL345_INACTZ_DISABLE
  * @param[out]: none
  */
-void ADXL345::WriteACDC(uint8_t ActEN, uint8_t ActX, uint8_t ActY, uint8_t ActZ,
-		uint8_t InActEN, uint8_t InActX, uint8_t InActY, uint8_t InActZ) {
+void ADXL345::WriteACDC(uint8_t ActEN, uint8_t ActX, uint8_t ActY, uint8_t ActZ, uint8_t InActEN,
+		uint8_t InActX, uint8_t InActY, uint8_t InActZ) {
 	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_ACT_INACT_CTL,
 			ActEN | ActX | ActY | ActZ | InActEN | InActX | InActY | InActZ);
 }
@@ -436,10 +429,8 @@ void ADXL345::ReadTapAxes(uint8_t *tap_axes) {
  * 			   	ADXL345_TAPAXES_TAPZ_ENABLE, ADXL345_TAPAXES_TAPZ_DISABLE
  *
  */
-void ADXL345::WriteTapAxes(uint8_t sup, uint8_t tapx, uint8_t tapy,
-		uint8_t tapz) {
-	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_TAP_AXES,
-			sup | tapx | tapy | tapz);
+void ADXL345::WriteTapAxes(uint8_t sup, uint8_t tapx, uint8_t tapy, uint8_t tapz) {
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_TAP_AXES, sup | tapx | tapy | tapz);
 }
 
 /*
@@ -513,8 +504,8 @@ void ADXL345::ReadPWRCtl(uint8_t *pwrctl) {
  * 			   	ADXL345_WAKE_1HZ;
  * @param[out]: none
  */
-void ADXL345::WritePWRCtl(uint8_t link, uint8_t autosleep, uint8_t measure,
-		uint8_t sleep, uint8_t wake) {
+void ADXL345::WritePWRCtl(uint8_t link, uint8_t autosleep, uint8_t measure, uint8_t sleep,
+		uint8_t wake) {
 	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL,
 			link | autosleep | measure | sleep | wake);
 //	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL, 0x00<<5|0x01<<4|0x01<<3|0x01<<2|0x00);
@@ -541,12 +532,10 @@ void ADXL345::WritePWRCtl(uint8_t link, uint8_t autosleep, uint8_t measure,
  * 			   	ADXL345_INT_OVERRUN_ENABLE, ADXL345_INT_OVERRUN_DISABLE
  * @param[out]: none
  */
-void ADXL345::WriteINTEnable(uint8_t DataRDY, uint8_t singletap,
-		uint8_t doubletap, uint8_t act, uint8_t inact, uint8_t ff,
-		uint8_t watermrk, uint8_t overrun) {
+void ADXL345::WriteINTEnable(uint8_t DataRDY, uint8_t singletap, uint8_t doubletap, uint8_t act,
+		uint8_t inact, uint8_t ff, uint8_t watermrk, uint8_t overrun) {
 	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_INT_ENABLE,
-			DataRDY | singletap | doubletap | act | inact | ff | watermrk
-					| overrun);
+			DataRDY | singletap | doubletap | act | inact | ff | watermrk | overrun);
 }
 
 /*
@@ -597,8 +586,8 @@ void ADXL345::ReadDataFormat(uint8_t *data) {
  * 			   	ADXL345_DATA_RANGE_18G
  * @param[out]: none
  */
-void ADXL345::WriteDataFormat(uint8_t selftest, uint8_t spi, uint8_t intinv,
-		uint8_t fullres, uint8_t justify, uint8_t range) {
+void ADXL345::WriteDataFormat(uint8_t selftest, uint8_t spi, uint8_t intinv, uint8_t fullres,
+		uint8_t justify, uint8_t range) {
 	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_DATA_FORMAT,
 			selftest | spi | intinv | 0x00 | fullres | justify | range);
 }
@@ -639,8 +628,7 @@ void ADXL345::ReadFIFOCtl(uint8_t *fifo) {
  * 	@param[out]: none
  */
 void ADXL345::WriteFIFOCtl(uint8_t fifo, uint8_t trigger, uint8_t sample) {
-	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_CTL,
-			fifo | trigger | sample);
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_CTL, fifo | trigger | sample);
 }
 
 /*

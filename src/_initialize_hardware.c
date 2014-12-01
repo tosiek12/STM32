@@ -114,7 +114,7 @@ void configure_system_clock(void) {
 
 	// This assumes the HSE_VALUE is a multiple of 1MHz. If this is not
 	// your case, you have to recompute these PLL constants.
-	RCC_OscInitStruct.PLL.PLLM = (HSE_VALUE / 1000000u);
+	RCC_OscInitStruct.PLL.PLLM = (HSE_VALUE / 1000000u);	//8
 	RCC_OscInitStruct.PLL.PLLN = 336;
 	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
 	RCC_OscInitStruct.PLL.PLLQ = 7;
@@ -122,8 +122,8 @@ void configure_system_clock(void) {
 
 	// Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2
 	// clocks dividers
-	RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK
-			| RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+	RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1
+			| RCC_CLOCKTYPE_PCLK2);
 	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
 	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
 	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;

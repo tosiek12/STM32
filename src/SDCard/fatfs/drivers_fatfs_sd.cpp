@@ -69,16 +69,15 @@ UINT btx /* Number of bytes to send (even number) */
 /* Wait for card ready                                                   */
 /*-----------------------------------------------------------------------*/
 
-static int wait_ready (	/* 1:Ready, 0:Timeout */
-	UINT wt			/* Timeout [ms] */
-)
-{
+static int wait_ready( /* 1:Ready, 0:Timeout */
+UINT wt /* Timeout [ms] */
+) {
 	BYTE d;
 
-	TimeSPI  = wt;
+	TimeSPI = wt;
 	do {
 		d = xchg_spi(0xFF);
-	} while (d != 0xFF && (TimeSPI != 0));	/* Wait for card goes ready or timeout */
+	} while (d != 0xFF && (TimeSPI != 0)); /* Wait for card goes ready or timeout */
 
 	return (d == 0xFF) ? 1 : 0;
 }
@@ -120,7 +119,7 @@ UINT btr /* Data block length (byte) */
 	BYTE token;
 
 	FATFS_DEBUG_SEND_USART("rcvr_datablock: inside");
-	TimeSPI  = (200);
+	TimeSPI = (200);
 	do {							// Wait for DataStart token in timeout of 200ms
 		token = xchg_spi(0xFF);
 		// This loop will take a time. Insert rot_rdq() here for multitask envilonment. 
@@ -131,7 +130,8 @@ UINT btr /* Data block length (byte) */
 	}
 
 	rcvr_spi_multi(buff, btr);		// Store trailing data to the buffer 
-	xchg_spi(0xFF); xchg_spi(0xFF);			// Discard CRC
+	xchg_spi(0xFF);
+	xchg_spi(0xFF);			// Discard CRC
 	FATFS_DEBUG_SEND_USART("rcvr_datablock: return = 1");
 	return 1;						// Function succeeded 
 }
@@ -151,17 +151,17 @@ BYTE token /* Token */
 
 	if (!wait_ready(500)) {
 		FATFS_DEBUG_SEND_USART("xmit_datablock: not ready");
-		return 0;		/* Wait for card ready */
-	}
-	FATFS_DEBUG_SEND_USART("xmit_datablock: ready");
+		return 0; /* Wait for card ready */
+	} FATFS_DEBUG_SEND_USART("xmit_datablock: ready");
 
-	xchg_spi(token);					/* Send token */
-	if (token != 0xFD) {				/* Send data if token is other than StopTran */
-		xmit_spi_multi(buff, 512);		/* Data */
-		xchg_spi(0xFF); xchg_spi(0xFF);	/* Dummy CRC */
+	xchg_spi(token); /* Send token */
+	if (token != 0xFD) { /* Send data if token is other than StopTran */
+		xmit_spi_multi(buff, 512); /* Data */
+		xchg_spi(0xFF);
+		xchg_spi(0xFF); /* Dummy CRC */
 
-		resp = xchg_spi(0xFF);				/* Receive data resp */
-		if ((resp & 0x1F) != 0x05)		/* Function fails if the data packet was not accepted */
+		resp = xchg_spi(0xFF); /* Receive data resp */
+		if ((resp & 0x1F) != 0x05) /* Function fails if the data packet was not accepted */
 			return 0;
 	}
 	return 1;
@@ -180,44 +180,47 @@ DWORD arg /* Argument */
 
 	FATFS_DEBUG_SEND_USART("send_cmd: inside");
 
-	if (cmd & 0x80) {	/* Send a CMD55 prior to ACMD<n> */
+	if (cmd & 0x80) { /* Send a CMD55 prior to ACMD<n> */
 		FATFS_DEBUG_SEND_USART("send_cmd: 0x80 bit set");
 		cmd &= 0x7F;
 		res = send_cmd(CMD55, 0);
-		if (res > 1) return res;
+		if (res > 1)
+			return res;
 	}
 
 	/* Select the card and wait for ready except to stop multiple block read */
 	if (cmd != CMD12) {
 		FATFS_DEBUG_SEND_USART("send_cmd: cmd != CMD12");
 		deselect();
-		if (!select()) return 0xFF;
+		if (!select())
+			return 0xFF;
 	}
 
 	/* Send command packet */
-	xchg_spi(0x40 | cmd);				/* Start + command index */
-	xchg_spi((BYTE)(arg >> 24));		/* Argument[31..24] */
-	xchg_spi((BYTE)(arg >> 16));		/* Argument[23..16] */
-	xchg_spi((BYTE)(arg >> 8));			/* Argument[15..8] */
-	xchg_spi((BYTE)arg);				/* Argument[7..0] */
-	n = 0x01;							/* Dummy CRC + Stop */
-	if (cmd == CMD0) n = 0x95;			/* Valid CRC for CMD0(0) */
-	if (cmd == CMD8) n = 0x87;			/* Valid CRC for CMD8(0x1AA) */
+	xchg_spi(0x40 | cmd); /* Start + command index */
+	xchg_spi((BYTE) (arg >> 24)); /* Argument[31..24] */
+	xchg_spi((BYTE) (arg >> 16)); /* Argument[23..16] */
+	xchg_spi((BYTE) (arg >> 8)); /* Argument[15..8] */
+	xchg_spi((BYTE) arg); /* Argument[7..0] */
+	n = 0x01; /* Dummy CRC + Stop */
+	if (cmd == CMD0)
+		n = 0x95; /* Valid CRC for CMD0(0) */
+	if (cmd == CMD8)
+		n = 0x87; /* Valid CRC for CMD8(0x1AA) */
 	xchg_spi(n);
 
 	/* Receive command resp */
 	if (cmd == CMD12) {
 		FATFS_DEBUG_SEND_USART("send_cmd: CMD12, receive command resp");
-		xchg_spi(0xFF);					/* Diacard following one byte when CMD12 */
+		xchg_spi(0xFF); /* Diacard following one byte when CMD12 */
 	}
-	n = 10;								/* Wait for response (10 bytes max) */
+	n = 10; /* Wait for response (10 bytes max) */
 	do
 		res = xchg_spi(0xFF);
 	while ((res & 0x80) && --n);
 
-	return res;							/* Return received response */
+	return res; /* Return received response */
 }
-
 
 void TM_FATFS_InitPins(void) {
 	GPIO_InitTypeDef GPIO_InitStruct;
@@ -285,37 +288,35 @@ void testInit() {
 	//send the CMD0 to reset the card:
 	volatile uint8_t i;
 
-	 FATFS_CS_LOW;	// CS low (MMC-Enabled)
-	 xchg_spi(0x40);    // cmd0
-	 xchg_spi(0x00);
-	 xchg_spi(0x00);
-	 xchg_spi(0x00);
-	 xchg_spi(0x00);
-	 xchg_spi(0x95);    // precalculated checksum as we are still in MMC mode
+	FATFS_CS_LOW;	// CS low (MMC-Enabled)
+	xchg_spi(0x40);    // cmd0
+	xchg_spi(0x00);
+	xchg_spi(0x00);
+	xchg_spi(0x00);
+	xchg_spi(0x00);
+	xchg_spi(0x95);    // precalculated checksum as we are still in MMC mode
 
 //	 xchg_spi(0xFF);	//multiple of dummy clk
-	 xchg_spi(0xFF);	//multiple of dummy clk
+	xchg_spi(0xFF);	//multiple of dummy clk
 
+	// wait for the repsonse (response[7] == 0)
+	for (n = 0; n < 200; n++) {	//czeka na 0x01
+		i = xchg_spi(0xFF);
+		if (!(i & 0x80)) {
+			FATFS_CS_HIGH;
+			xchg_spi(0xFF);
 
-	 // wait for the repsonse (response[7] == 0)
-	 for(n=0; n<200; n++) {	//czeka na 0x01
-		 i = xchg_spi(0xFF);
-		 if(!(i & 0x80)) {
-			 FATFS_CS_HIGH;
-			 xchg_spi(0xFF);
+			break;
+		}
+	}
 
-			 break;
-		 }
-	 }
-
-	 if ( i == 1 ) {
-		 // MMC found, continue
-		 i = 100;
-	 } else {
-		 // no response from MMC, abort
-		 i = 0;
-	 }
-
+	if (i == 1) {
+		// MMC found, continue
+		i = 100;
+	} else {
+		// no response from MMC, abort
+		i = 0;
+	}
 
 }
 
@@ -339,39 +340,44 @@ DSTATUS TM_FATFS_SD_disk_initialize(void) {
 		xchg_spi(0xFF);	 // send 10*8=80 clock pulses
 	}
 	ty = 0;
-	if (send_cmd(CMD0, 0) == 1) {				/* Put the card SPI/Idle state */
+	if (send_cmd(CMD0, 0) == 1) { /* Put the card SPI/Idle state */
 		FATFS_DEBUG_SEND_USART("disk_initialize: CMD0 = 1");
-		TimeSPI  = (1000);	/* Initialization timeout = 1 sec */
-		if (send_cmd(CMD8, 0x1AA) == 1) {	/* SDv2? */
-			for (n = 0; n < 4; n++) ocr[n] = xchg_spi(0xFF);	/* Get 32 bit return value of R7 resp */
-			if (ocr[2] == 0x01 && ocr[3] == 0xAA) {				/* Is the card supports vcc of 2.7-3.6V? */
-				while ((TimeSPI != 0) && send_cmd(ACMD41, 1UL << 30)) ;	/* Wait for end of initialization with ACMD41(HCS) */
-				if ((TimeSPI != 0) && send_cmd(CMD58, 0) == 0) {		/* Check CCS bit in the OCR */
+		TimeSPI = (1000); /* Initialization timeout = 1 sec */
+		if (send_cmd(CMD8, 0x1AA) == 1) { /* SDv2? */
+			for (n = 0; n < 4; n++)
+				ocr[n] = xchg_spi(0xFF); /* Get 32 bit return value of R7 resp */
+			if (ocr[2] == 0x01 && ocr[3] == 0xAA) { /* Is the card supports vcc of 2.7-3.6V? */
+				while ((TimeSPI != 0) && send_cmd(ACMD41, 1UL << 30))
+					; /* Wait for end of initialization with ACMD41(HCS) */
+				if ((TimeSPI != 0) && send_cmd(CMD58, 0) == 0) { /* Check CCS bit in the OCR */
 					for (n = 0; n < 4; n++) {
 						ocr[n] = xchg_spi(0xFF);
 					}
-					ty = (ocr[0] & 0x40) ? CT_SD2 | CT_BLOCK : CT_SD2;	/* Card id SDv2 */
+					ty = (ocr[0] & 0x40) ? CT_SD2 | CT_BLOCK : CT_SD2; /* Card id SDv2 */
 				}
 			}
-		} else {	/* Not SDv2 card */
-			if (send_cmd(ACMD41, 0) <= 1) 	{	/* SDv1 or MMC? */
-				ty = CT_SD1; cmd = ACMD41;	/* SDv1 (ACMD41(0)) */
+		} else { /* Not SDv2 card */
+			if (send_cmd(ACMD41, 0) <= 1) { /* SDv1 or MMC? */
+				ty = CT_SD1;
+				cmd = ACMD41; /* SDv1 (ACMD41(0)) */
 			} else {
-				ty = CT_MMC; cmd = CMD1;	/* MMCv3 (CMD1(0)) */
+				ty = CT_MMC;
+				cmd = CMD1; /* MMCv3 (CMD1(0)) */
 			}
-			while ((TimeSPI != 0) && send_cmd(cmd, 0));			/* Wait for end of initialization */
-			if ((TimeSPI != 0) || send_cmd(CMD16, 512) != 0) {	/* Set block length: 512 */
+			while ((TimeSPI != 0) && send_cmd(cmd, 0))
+				; /* Wait for end of initialization */
+			if ((TimeSPI != 0) || send_cmd(CMD16, 512) != 0) { /* Set block length: 512 */
 				ty = 0;
 			}
 		}
 	}
-	TM_FATFS_SD_CardType = ty;	/* Card type */
+	TM_FATFS_SD_CardType = ty; /* Card type */
 	FATFS_DEBUG_SEND_USART("disk_initialize: deselecting");
 	deselect();
 
-	if (ty) {			/* OK */
-		TM_FATFS_SD_Stat &= ~STA_NOINIT;	/* Clear STA_NOINIT flag */
-	} else {			/* Failed */
+	if (ty) { /* OK */
+		TM_FATFS_SD_Stat &= ~STA_NOINIT; /* Clear STA_NOINIT flag */
+	} else { /* Failed */
 		TM_FATFS_SD_Stat = STA_NOINIT;
 	}
 
@@ -525,14 +531,11 @@ void *buff /* Buffer to send/receive control data */
 	case GET_SECTOR_COUNT: /* Get drive capacity in unit of sector (DWORD) */
 		if ((send_cmd(CMD9, 0) == 0) && rcvr_datablock(csd, 16)) {
 			if ((csd[0] >> 6) == 1) { /* SDC ver 2.00 */
-				csize = csd[9] + ((WORD) csd[8] << 8)
-						+ ((DWORD) (csd[7] & 63) << 16) + 1;
+				csize = csd[9] + ((WORD) csd[8] << 8) + ((DWORD) (csd[7] & 63) << 16) + 1;
 				*(DWORD*) buff = csize << 10;
 			} else { /* SDC ver 1.XX or MMC ver 3 */
-				n = (csd[5] & 15) + ((csd[10] & 128) >> 7) + ((csd[9] & 3) << 1)
-						+ 2;
-				csize = (csd[8] >> 6) + ((WORD) csd[7] << 2)
-						+ ((WORD) (csd[6] & 3) << 10) + 1;
+				n = (csd[5] & 15) + ((csd[10] & 128) >> 7) + ((csd[9] & 3) << 1) + 2;
+				csize = (csd[8] >> 6) + ((WORD) csd[7] << 2) + ((WORD) (csd[6] & 3) << 10) + 1;
 				*(DWORD*) buff = csize << (n - 9);
 			}
 			res = RES_OK;
@@ -553,14 +556,11 @@ void *buff /* Buffer to send/receive control data */
 		} else { /* SDC ver 1.XX or MMC */
 			if ((send_cmd(CMD9, 0) == 0) && rcvr_datablock(csd, 16)) { /* Read CSD */
 				if (TM_FATFS_SD_CardType & CT_SD1) { /* SDC ver 1.XX */
-					*(DWORD*) buff = (((csd[10] & 63) << 1)
-							+ ((WORD) (csd[11] & 128) >> 7) + 1)
+					*(DWORD*) buff = (((csd[10] & 63) << 1) + ((WORD) (csd[11] & 128) >> 7) + 1)
 							<< ((csd[13] >> 6) - 1);
 				} else { /* MMC */
-					*(DWORD*) buff =
-							((WORD) ((csd[10] & 124) >> 2) + 1)
-									* (((csd[11] & 3) << 3)
-											+ ((csd[11] & 224) >> 5) + 1);
+					*(DWORD*) buff = ((WORD) ((csd[10] & 124) >> 2) + 1)
+							* (((csd[11] & 3) << 3) + ((csd[11] & 224) >> 5) + 1);
 				}
 				res = RES_OK;
 			}
@@ -581,8 +581,8 @@ void *buff /* Buffer to send/receive control data */
 			st *= 512;
 			ed *= 512;
 		}
-		if (send_cmd(CMD32, st) == 0 && send_cmd(CMD33, ed) == 0
-				&& send_cmd(CMD38, 0) == 0 && wait_ready(30)) /* Erase sector block */
+		if (send_cmd(CMD32, st) == 0 && send_cmd(CMD33, ed) == 0 && send_cmd(CMD38, 0) == 0
+				&& wait_ready(30)) /* Erase sector block */
 			res = RES_OK; /* FatFs does not check result of this command */
 		break;
 

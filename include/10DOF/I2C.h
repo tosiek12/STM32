@@ -10,6 +10,7 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 #include "../Delay/delay.h"
+#include "main.h"
 
 #define TIMEOUT 400
 
@@ -84,7 +85,15 @@ public:
 	I2C() { };
 	static inline void __attribute__((always_inline)) initialize( ) {
 
-		volatile HAL_StatusTypeDef state;
+		I2C_MspInit();
+
+		resetBus();
+
+		__I2C1_CLK_ENABLE();
+
+		__I2C1_FORCE_RESET();
+		__I2C1_RELEASE_RESET();
+
 		hi2c.Instance = I2C1;
 		hi2c.Init.ClockSpeed = 400000;
 		hi2c.Init.DutyCycle = I2C_DUTYCYCLE_2;
@@ -95,16 +104,9 @@ public:
 		hi2c.Init.GeneralCallMode = I2C_GENERALCALL_DISABLED;
 		hi2c.Init.NoStretchMode = I2C_NOSTRETCH_DISABLED;
 
-		I2C_MspInit();
-
-		resetBus();
-
-		__I2C1_CLK_ENABLE();
-
-		__I2C1_FORCE_RESET();
-		__I2C1_RELEASE_RESET();
-
-		state = HAL_I2C_Init(&hi2c);
+		if(HAL_I2C_Init(&hi2c)!= HAL_OK) {
+			Error_Handler();
+		}
 		Delay::delay_ms(2);
 		initialized = 1;
 	}
@@ -114,8 +116,6 @@ public:
 		if (initialized == 0) {
 			return HAL_ERROR;
 		}
-		HAL_I2C_Mem_Read_IT(&hi2c, devAddr, regAddr, I2C_MEMADD_SIZE_8BIT,
-				(uint8_t*) &pBuf, 1);
 		return HAL_I2C_Mem_Read(&hi2c, devAddr, regAddr, I2C_MEMADD_SIZE_8BIT,
 				(uint8_t*) &pBuf, 1, TIMEOUT);
 	}

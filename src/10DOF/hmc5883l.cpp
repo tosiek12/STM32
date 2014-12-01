@@ -43,25 +43,22 @@ uint8_t HMC5883L::selfTest(NokiaLCD &nokia) {
 	 * X & Y & Z Axes (GN = 100) 510LSb
 	 */
 	I2C::i2c_WriteByte(devAddr, HMC5883L_RA_CONFIG_A,
-			(HMC5883L_RATE_15
-					<< (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH + 1)
+			(HMC5883L_RATE_15 << (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH + 1)
 					| HMC5883L_BIAS_POSITIVE
-							<< (HMC5883L_CRA_BIAS_BIT - HMC5883L_CRA_BIAS_LENGTH
-									+ 1)));
+							<< (HMC5883L_CRA_BIAS_BIT - HMC5883L_CRA_BIAS_LENGTH + 1)));
 
 	// write CONFIG_B register
 	setGain(HMC5883L_GAIN_660);
-
 
 	// write MODE register
 	setMode(HMC5883L_MODE_SINGLE);
 
 	// 720/706/688
-	getHeading(&axis[0],&axis[1], &axis[2]);
+	getHeading(&axis[0], &axis[1], &axis[2]);
 
-	getHeading(&axis[0],&axis[1], &axis[2]);
+	getHeading(&axis[0], &axis[1], &axis[2]);
 
-	getHeading(&axis[0],&axis[1], &axis[2]);
+	getHeading(&axis[0], &axis[1], &axis[2]);
 
 	return 1;
 }
@@ -128,25 +125,25 @@ void HMC5883L::calibrate(bool doFullCalibartion) {
 	int16_t Max_x = 0, Max_y = 0, Max_z = 0;
 	int16_t Min_x = 0, Min_y = 0, Min_z = 0;
 	if (doFullCalibartion) {
-		while(true) {
+		while (true) {
 			getHeading(&axis[0], &axis[1], &axis[2]);
-			if(axis[0] > Max_x) {
+			if (axis[0] > Max_x) {
 				Max_x = axis[0];
 			}
-			if(axis[1] > Max_y) {
+			if (axis[1] > Max_y) {
 				Max_y = axis[1];
 			}
-			if(axis[2] > Max_z) {
+			if (axis[2] > Max_z) {
 				Max_z = axis[2];
 			}
 
-			if(axis[0] < Min_x) {
+			if (axis[0] < Min_x) {
 				Min_x = axis[0];
 			}
-			if(axis[1] < Min_y) {
+			if (axis[1] < Min_y) {
 				Min_y = axis[1];
 			}
-			if(axis[2] < Min_z) {
+			if (axis[2] < Min_z) {
 				Min_z = axis[2];
 			}
 		}
@@ -164,9 +161,6 @@ void HMC5883L::calibrate(bool doFullCalibartion) {
 		//http://magnetic-declination.com/
 		declinationInDeg = 5.0 + (16.0 / 60.0); //Positive declination
 	}
-
-
-
 
 }
 
@@ -214,11 +208,11 @@ HMC5883L::HMC5883L() {
 	offset[0] = 0;
 	offset[1] = 0;
 	offset[2] = 0;
-    scalingFactor = 0;
-    declinationInDeg = 0;
-    buffer[0] = 0;
-    mode = 0;
-    heading = 0;
+	scalingFactor = 0;
+	declinationInDeg = 0;
+	buffer[0] = 0;
+	mode = 0;
+	heading = 0;
 }
 
 /** Specific address constructor.
@@ -226,7 +220,8 @@ HMC5883L::HMC5883L() {
  * @see HMC5883L_DEFAULT_ADDRESS
  * @see HMC5883L_ADDRESS
  */
-HMC5883L::HMC5883L(uint8_t address) : HMC5883L() {
+HMC5883L::HMC5883L(uint8_t address) :
+		HMC5883L() {
 	devAddr = address;
 }
 
@@ -241,15 +236,10 @@ HMC5883L::HMC5883L(uint8_t address) : HMC5883L() {
 void HMC5883L::initialize() {
 	// write CONFIG_A register
 	I2C::i2c_WriteByte(devAddr, HMC5883L_RA_CONFIG_A,
-			(HMC5883L_AVERAGING_8
-					<< (HMC5883L_CRA_AVERAGE_BIT - HMC5883L_CRA_AVERAGE_LENGTH
-							+ 1))
-					| (HMC5883L_RATE_30
-							<< (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH
-									+ 1))
+			(HMC5883L_AVERAGING_8 << (HMC5883L_CRA_AVERAGE_BIT - HMC5883L_CRA_AVERAGE_LENGTH + 1))
+					| (HMC5883L_RATE_30 << (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH + 1))
 					| (HMC5883L_BIAS_NORMAL
-							<< (HMC5883L_CRA_BIAS_BIT - HMC5883L_CRA_BIAS_LENGTH
-									+ 1)));
+							<< (HMC5883L_CRA_BIAS_BIT - HMC5883L_CRA_BIAS_LENGTH + 1)));
 
 	// write CONFIG_B register
 	setGain(HMC5883L_GAIN_1090);
@@ -494,8 +484,7 @@ void HMC5883L::getHeading(int16_t *x, int16_t *y, int16_t *z) {
 	I2C::i2c_ReadBuf(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
 	if (mode == HMC5883L_MODE_SINGLE)
 		I2C::i2c_WriteByte(devAddr, HMC5883L_RA_MODE,
-				HMC5883L_MODE_SINGLE
-						<< (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
+		HMC5883L_MODE_SINGLE << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
 	*x = (((int16_t) buffer[0]) << 8) | buffer[1];
 	*y = (((int16_t) buffer[4]) << 8) | buffer[5];
 	*z = (((int16_t) buffer[2]) << 8) | buffer[3];
@@ -519,8 +508,7 @@ int16_t HMC5883L::getHeadingX() {
 	I2C::i2c_ReadBuf(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
 	if (mode == HMC5883L_MODE_SINGLE)
 		I2C::i2c_WriteByte(devAddr, HMC5883L_RA_MODE,
-				HMC5883L_MODE_SINGLE
-						<< (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
+		HMC5883L_MODE_SINGLE << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
 	return (((int16_t) buffer[0]) << 8) | buffer[1];
 }
 /** Get Y-axis heading measurement.
@@ -533,8 +521,7 @@ int16_t HMC5883L::getHeadingY() {
 	I2C::i2c_ReadBuf(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
 	if (mode == HMC5883L_MODE_SINGLE)
 		I2C::i2c_WriteByte(devAddr, HMC5883L_RA_MODE,
-				HMC5883L_MODE_SINGLE
-						<< (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
+		HMC5883L_MODE_SINGLE << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
 	return (((int16_t) buffer[4]) << 8) | buffer[5];
 }
 /** Get Z-axis heading measurement.
@@ -547,8 +534,7 @@ int16_t HMC5883L::getHeadingZ() {
 	I2C::i2c_ReadBuf(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
 	if (mode == HMC5883L_MODE_SINGLE)
 		I2C::i2c_WriteByte(devAddr, HMC5883L_RA_MODE,
-				HMC5883L_MODE_SINGLE
-						<< (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
+		HMC5883L_MODE_SINGLE << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
 	return (((int16_t) buffer[2]) << 8) | buffer[3];
 }
 
@@ -566,8 +552,7 @@ int16_t HMC5883L::getHeadingZ() {
  * @see HMC5883L_STATUS_LOCK_BIT
  */
 bool HMC5883L::getLockStatus() {
-	I2C::i2c_ReadBit(devAddr, HMC5883L_RA_STATUS, HMC5883L_STATUS_LOCK_BIT,
-			buffer);
+	I2C::i2c_ReadBit(devAddr, HMC5883L_RA_STATUS, HMC5883L_STATUS_LOCK_BIT, buffer);
 	return buffer[0];
 }
 /** Get data ready status.
@@ -581,8 +566,7 @@ bool HMC5883L::getLockStatus() {
  * @see HMC5883L_STATUS_READY_BIT
  */
 bool HMC5883L::getReadyStatus() {
-	I2C::i2c_ReadBit(devAddr, HMC5883L_RA_STATUS, HMC5883L_STATUS_READY_BIT,
-			buffer);
+	I2C::i2c_ReadBit(devAddr, HMC5883L_RA_STATUS, HMC5883L_STATUS_READY_BIT, buffer);
 	return buffer[0];
 }
 

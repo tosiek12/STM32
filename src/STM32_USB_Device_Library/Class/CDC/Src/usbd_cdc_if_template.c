@@ -68,13 +68,13 @@ static int8_t TEMPLATE_DeInit(void);
 static int8_t TEMPLATE_Control(uint8_t cmd, uint8_t* pbuf, uint16_t length);
 static int8_t TEMPLATE_Receive(uint8_t* pbuf, uint32_t *Len);
 
-USBD_CDC_ItfTypeDef USBD_CDC_Template_fops = { TEMPLATE_Init, TEMPLATE_DeInit,
-		TEMPLATE_Control, TEMPLATE_Receive };
+USBD_CDC_ItfTypeDef USBD_CDC_Template_fops = { TEMPLATE_Init, TEMPLATE_DeInit, TEMPLATE_Control,
+		TEMPLATE_Receive };
 
 USBD_CDC_LineCodingTypeDef linecoding = { 460800, /* baud rate*/	//115200
-0x00, /* stop bits-1*/
-0x00, /* parity - none*/
-0x08 /* nb. of bits 8*/
+		0x00, /* stop bits-1*/
+		0x00, /* parity - none*/
+		0x08 /* nb. of bits 8*/
 };
 
 /* Private functions ---------------------------------------------------------*/
@@ -147,9 +147,9 @@ static int8_t TEMPLATE_Control(uint8_t cmd, uint8_t* pbuf, uint16_t length) {
 		break;
 
 	case CDC_SET_LINE_CODING:
-		linecoding.bitrate = (uint32_t) (pbuf[0] | (pbuf[1] << 8)
-				|\
- (pbuf[2] << 16) | (pbuf[3] << 24));
+		linecoding.bitrate = (uint32_t) (pbuf[0] | (pbuf[1] << 8) |\
+ (pbuf[2] << 16)
+				| (pbuf[3] << 24));
 		linecoding.format = pbuf[4];
 		linecoding.paritytype = pbuf[5];
 		linecoding.datatype = pbuf[6];
@@ -228,7 +228,7 @@ int VCP_read(void *pBuffer, int size) {
 int VCP_write(const void *pBuffer, int size) {
 	if (size > CDC_DATA_HS_OUT_PACKET_SIZE) {
 		int offset;
-		for (offset = 0; offset < size; offset+=CDC_DATA_HS_OUT_PACKET_SIZE) {
+		for (offset = 0; offset < size; offset += CDC_DATA_HS_OUT_PACKET_SIZE) {
 			int todo = MIN(CDC_DATA_HS_OUT_PACKET_SIZE, size - offset);
 			int done = VCP_write(((char *) pBuffer) + offset, todo);
 			if (done != todo)
@@ -238,10 +238,9 @@ int VCP_write(const void *pBuffer, int size) {
 		return size;
 	}
 
-	USBD_CDC_HandleTypeDef *pCDC =
-			(USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;
+	USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;
 
-	if(pCDC == NULL) {	//device not connected.
+	if (pCDC == NULL) {	//device not connected.
 		return 0;
 	}
 

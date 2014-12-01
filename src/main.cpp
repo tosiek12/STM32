@@ -28,7 +28,6 @@ extern "C" {
 USBD_HandleTypeDef USBD_Device;
 }
 
-
 void SystemClock_Config(void);
 
 // Definitions visible only within this translation unit.
@@ -53,11 +52,9 @@ constexpr uint32_t BLINK_ON_TICKS = 1000;
  * SYSTIC -> GPIO,I2C,SPI(SDCard)
  */
 
-int main(int argc, char* argv[]) {
-	HAL_Init();
-	SystemClock_Config();
-	USBD_Init(&USBD_Device, &VCP_Desc, 0);
+int main() {
 
+	USBD_Init(&USBD_Device, &VCP_Desc, 0);
 	USBD_RegisterClass(&USBD_Device, &USBD_CDC);
 	USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_Template_fops);
 	USBD_Start(&USBD_Device);
@@ -66,27 +63,27 @@ int main(int argc, char* argv[]) {
 	NokiaLCD nokiaLCD;	//Create, and initialize
 	GPIO buttons;
 	buttons.InitButtons();
-	//nokiaLCD.Clear();
+
 	imu10DOF.initialize();
 	imu10DOF.startTimerUpdate();
 
-	uint16_t counter = 0;
-	Kalman test;
 	uint8_t buf[50] = { 0 };
 	uint32_t cnt[5] = { 0 };
+	uint32_t numberOfChars;
+	uint8_t * pEnd;
 
 	//imitate connection state
 	imu10DOF.setConnected();
 	speedTester.tic();
-	uint32_t wypelnienie = 813;
+
 	pwm.PWMInit();
 	pwm.startPwmChannel(TIM_CHANNEL_1);
 	//pwm.setChannelRawValue(1, 1000);
 
 	while (1) {
 		buttons.mainBegginingUpdate();
-		*cnt = VCP_read(buf, 10);
-		if (*cnt >= 1) {
+		numberOfChars = VCP_read(buf, 10);
+		if (numberOfChars >= 1) {
 			switch (buf[0]) {
 			case 'S':
 				imu10DOF.setConnected();
@@ -102,17 +99,18 @@ int main(int argc, char* argv[]) {
 			case 'C':
 				imu10DOF.calibrateAllSensors();
 				break;
-			case 'W':
-				pwm.setChannelRawValue(1, wypelnienie);
+			case 'X':
+				*cnt = strtol((char *) buf + 1, (char **) &(pEnd), 10);
+				numberOfChars = sprintf((char *) buf, "\nX:\n%lu\n", *cnt);
+				VCP_write(buf, numberOfChars);
 				break;
 			case 'T':
 				if (*cnt > 1) {
-					*cnt = atol((char *) buf + 1);
-
+					//*cnt = atol((char *) buf + 1);
+					*cnt = strtol((char *) buf + 1, (char **) &(pEnd), 10);
 					*cnt = speedTester.testTimeOfSending(*cnt);
-
-					*cnt = sprintf((char *) buf, "\ntime:\n%lu\n", *cnt);
-					VCP_write(buf, *cnt);
+					numberOfChars = sprintf((char *) buf, "\ntime:\n%lu\n", *cnt);
+					VCP_write(buf, numberOfChars);
 					memset(buf, 0, 50);
 				}
 				break;
@@ -127,14 +125,14 @@ int main(int argc, char* argv[]) {
 				imu10DOF.timerAction();
 				cnt[3] = speedTester.toc();
 
-				cnt[4] = sprintf((char *) buf, "\ntime:\n%lu\n%lu\n%lu\n%lu\n",
-						cnt[0], cnt[1], cnt[2], cnt[3]);
-				VCP_write(buf, cnt[4]);
+				numberOfChars = sprintf((char *) buf, "\ntime:\n%lu\n%lu\n%lu\n%lu\n", cnt[0],
+						cnt[1], cnt[2], cnt[3]);
+				VCP_write(buf, numberOfChars);
 				break;
 			case 'Z':
 				break;
 			case 'G':
-				if (*cnt > 1) {
+				if (numberOfChars > 1) {
 					*cnt = atol((char *) buf + 1);
 					imu10DOF.requestDataGathering(*cnt);
 				}
@@ -151,9 +149,6 @@ int main(int argc, char* argv[]) {
 		}
 
 		if (imu10DOF.sendViaVirtualCom()) {
-			if (++counter == 10000) {
-				counter = 0;
-			}
 		}
 
 		if (imu10DOF.isDataGatheringComplete()) {
@@ -204,7 +199,7 @@ void SystemClock_Config(void) {
 
 void Error_Handler() {
 
-	while(1) {
+	while (1) {
 	}
 }
 #pragma GCC diagnostic pop

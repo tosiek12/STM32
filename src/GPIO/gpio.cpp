@@ -18,12 +18,11 @@ TIM_HandleTypeDef GPIO::TIM_TimeBaseStructure;
  * tempButtons[2] = buttons[2];
  * To do proper action:
  * if (tempButtons[0] == shortPush) {
-		//short push action
-	} else if (tempButtons[0] == longPush) {
-		//Long push action
-	}
+ //short push action
+ } else if (tempButtons[0] == longPush) {
+ //Long push action
+ }
  */
-
 
 /* LED5 - PD14,
  * LED6 - PD15
@@ -72,12 +71,11 @@ extern "C" void TIM4_IRQHandler(void) {
 	if (__HAL_TIM_GET_ITSTATUS(&GPIO::TIM_TimeBaseStructure, TIM_IT_UPDATE ) != RESET) {
 		GPIO::Timer_ButtonAction();
 
-		__HAL_TIM_CLEAR_IT(&GPIO::TIM_TimeBaseStructure, TIM_IT_UPDATE );
+		__HAL_TIM_CLEAR_IT(&GPIO::TIM_TimeBaseStructure, TIM_IT_UPDATE);
 	}
 
 }
 
 // ----------------------------------------------------------------------------
-
 
 //**end**//

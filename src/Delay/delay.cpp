@@ -2,9 +2,7 @@
 #include "cortexm/ExceptionHandlers.h"
 #include "stm32f4xx_hal.h"
 
-
 volatile uint32_t Delay::delayCount;	//Create static value (default value is 0)
-
 
 // ----- SysTick_Handler() ----------------------------------------------------
 

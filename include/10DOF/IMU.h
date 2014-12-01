@@ -35,7 +35,6 @@ private:
 	Kalman kalmanY;
 	float32_t XRollAngle;	//Range -180,180
 	float32_t YPitchAngle;	//Range -90,90
-	float32_t YPitchAngle_2;
 	float32_t TiltAngle;		//Range 0,180	//odchylenie od pionu (grawitacji)
 	float32_t ZYawAngle;	//Range -180,180
 //	float64_t zeroValue[5] = { -200, 44, 660, 52.3, -18.5 }; // Found by experimenting
@@ -107,7 +106,9 @@ public:
 	void calibrateAllSensors();
 	void calibrateGyroProcedure();
 	void timerAction();
-	void computeAngles();
+
+	void computePitchRollTilt();
+	void computeYaw();
 
 	void startTimerUpdate() {
 		__HAL_TIM_ENABLE(&TimHandle);

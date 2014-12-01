@@ -1,4 +1,5 @@
-Release/**
-Debug/**
-*.[o]
+# Release/**
+# Debug/**
+# *.[o]
+# /Debug/
 /Debug/

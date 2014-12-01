@@ -22,7 +22,7 @@ public:
 		uwPulse4 = 0;
 	}
 
-	void PWM_HWInit() {
+	void PWM_MspInit() {
 		GPIO_InitTypeDef GPIO_InitStruct;
 
 		/* GPIO Ports Clock Enable */
@@ -48,7 +48,7 @@ public:
 		TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig;
 		TIM_OC_InitTypeDef sConfig;
 
-		PWM_HWInit();
+		PWM_MspInit();
 
 		/* TIMx Peripheral clock enable */
 		__TIM1_CLK_ENABLE();
