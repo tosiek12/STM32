@@ -15,6 +15,7 @@
 #include "SpeedTester/speedTester.h"
 #include "SDCard/tm_stm32f4_fatfs.h"
 #include "PWM/pwm.h"
+#include "GPS/gps.h"
 
 //#include "Accelerometer/stm32f4_discovery_lis3dsh.h"
 //#include "Accelerometer/accelerometer.h"
@@ -27,8 +28,6 @@ extern "C" {
 
 USBD_HandleTypeDef USBD_Device;
 }
-
-void SystemClock_Config(void);
 
 // Definitions visible only within this translation unit.
 namespace {
@@ -47,13 +46,12 @@ constexpr uint32_t BLINK_ON_TICKS = 1000;
  * Using:
  * TIM1 -> PWM_generator
  * TIM3 -> IMU
- * TIM2 -> SpeedTester
- * TIM3 -> GPIO
+ * TIM4 -> GPIO
+ * TIM5 -> SpeedTester
  * SYSTIC -> GPIO,I2C,SPI(SDCard)
  */
 
 int main() {
-
 	USBD_Init(&USBD_Device, &VCP_Desc, 0);
 	USBD_RegisterClass(&USBD_Device, &USBD_CDC);
 	USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_Template_fops);
@@ -76,14 +74,19 @@ int main() {
 	imu10DOF.setConnected();
 	speedTester.tic();
 
-	pwm.PWMInit();
-	pwm.startPwmChannel(TIM_CHANNEL_1);
+	//pwm.PWMInit();
+	//pwm.startPwmChannel(TIM_CHANNEL_1);
 	//pwm.setChannelRawValue(1, 1000);
+
+	GPS_Init();
+
 
 	while (1) {
 		buttons.mainBegginingUpdate();
-		numberOfChars = VCP_read(buf, 10);
-		if (numberOfChars >= 1) {
+
+		//GPS_Send();
+		//Format ramki: [$kod,wartosc*]
+		if ((numberOfChars = VCP_read(buf, 10)) >= 1) {
 			switch (buf[0]) {
 			case 'S':
 				imu10DOF.setConnected();
@@ -100,13 +103,9 @@ int main() {
 				imu10DOF.calibrateAllSensors();
 				break;
 			case 'X':
-				*cnt = strtol((char *) buf + 1, (char **) &(pEnd), 10);
-				numberOfChars = sprintf((char *) buf, "\nX:\n%lu\n", *cnt);
-				VCP_write(buf, numberOfChars);
 				break;
 			case 'T':
 				if (*cnt > 1) {
-					//*cnt = atol((char *) buf + 1);
 					*cnt = strtol((char *) buf + 1, (char **) &(pEnd), 10);
 					*cnt = speedTester.testTimeOfSending(*cnt);
 					numberOfChars = sprintf((char *) buf, "\ntime:\n%lu\n", *cnt);
@@ -130,6 +129,7 @@ int main() {
 				VCP_write(buf, numberOfChars);
 				break;
 			case 'Z':
+				VCP_write("Connected", 9);
 				break;
 			case 'G':
 				if (numberOfChars > 1) {
@@ -142,59 +142,23 @@ int main() {
 			}
 			memset(buf, 0, 15);
 		}
-		if (imu10DOF.getShowDataTriger() == 1) {
-			//imu10DOF.showAnglesKalman(nokiaLCD);
-			//imu10DOF.showMeasurment(nokiaLCD);
-			imu10DOF.clearShowDataTriger();
-		}
 
-		if (imu10DOF.sendViaVirtualCom()) {
-		}
-
+		//Sprawdz cy trzeba i wykonaj akcje:
+		imu10DOF.sendViaVirtualCom();
 		if (imu10DOF.isDataGatheringComplete()) {
 			imu10DOF.sendGatheredDataViaVCOM();
 		}
 
+		//Obsluga przyciskow:
 		if (buttons.getButtonState(0) == GPIO::longPush) {
 			nokiaLCD.WriteTextXY((char*) "longPush const", 0, 0);
 		}
-
 		if (buttons.getButtonStateChange(1, GPIO::shortPush)) {
 		}
 		if (buttons.getButtonState(0) == GPIO::longPush) {
 		}
-
 		buttons.mainEndUpdate();
 	}
-}
-
-void SystemClock_Config(void) {
-	RCC_ClkInitTypeDef RCC_ClkInitStruct;
-	RCC_OscInitTypeDef RCC_OscInitStruct;
-
-	__PWR_CLK_ENABLE();
-	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-	RCC_OscInitStruct.PLL.PLLM = 8;
-	RCC_OscInitStruct.PLL.PLLN = 336;
-	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-	RCC_OscInitStruct.PLL.PLLQ = 7;
-	HAL_RCC_OscConfig(&RCC_OscInitStruct);
-
-	RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK |
-	RCC_CLOCKTYPE_HCLK |
-	RCC_CLOCKTYPE_PCLK1 |
-	RCC_CLOCKTYPE_PCLK2);
-
-	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
-	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 }
 
 void Error_Handler() {

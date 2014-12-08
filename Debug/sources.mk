@@ -41,6 +41,7 @@ src/SDCard/fatfs/option \
 src/SDCard/fatfs \
 src/PWM \
 src/NokiaLCD \
+src/GPS \
 src/GPIO \
 src/Delay \
 src/Algorithms \

@@ -23,6 +23,7 @@ private:
 	ADXL345 accelerometer;
 	HMC5883L magnetometer;
 	BMP085 pressure;
+	uint16_t samplingFrequency;
 	const uint8_t I2C_ID_BMP085 = 0x77 << 1;		//Barometr?
 /* Status */
 	volatile uint8_t sendDataTriger;
@@ -54,7 +55,8 @@ private:
 		__TIM3_CLK_ENABLE();
 
 		const uint32_t CounterClk = 10000;	//Hz
-		const uint16_t OutputClk = 100;	//Hz
+		const uint16_t OutputClk = 400;	//Hz
+		samplingFrequency = OutputClk;
 		//Prescaler = ((SystemCoreClock/2) / TIM3 counter clock) - 1
 		const uint16_t Prescaler = (((SystemCoreClock / 2) / CounterClk) - 1);
 		//ARR(TIM_Period) = (TIM3 counter clock / TIM3 output clock) - 1

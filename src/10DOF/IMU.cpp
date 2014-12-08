@@ -95,8 +95,8 @@ uint8_t IMU::sendViaVirtualCom() {
 	return 0;
 }
 
-void IMU::requestDataGathering(uint16_t numberOfSamples) {
-	numberOfSamplesToGather = MIN(numberOfSamples, 6000);
+void IMU::requestDataGathering(uint16_t timeToSampleInSec) {
+	numberOfSamplesToGather = MIN(samplingFrequency*timeToSampleInSec, 6000);
 	numberOfGatheredSamples = 0;
 }
 
@@ -240,20 +240,4 @@ void IMU::kalmanStepAction() {
 	// Kalman filter
 	kalmanX.stepOldVersion(XRollAngle, gyroXrate, dt_inSec);
 	kalmanY.stepOldVersion(YPitchAngle, gyroYrate, dt_inSec);
-}
-
-void IMU::showAnglesKalman(NokiaLCD& nokiaLCD) {
-	uint8_t buf[10];
-	nokiaLCD.ClearLine(0);
-	sprintf((char*) ((buf)), "X=%d", (int16_t) ((compAngleX)));
-	nokiaLCD.WriteTextXY((char*) ((buf)), 0, 0);
-	nokiaLCD.ClearLine(1);
-	sprintf((char*) ((buf)), "Y=%d", (int16_t) ((compAngleY)));
-	nokiaLCD.WriteTextXY((char*) ((buf)), 0, 1);
-	nokiaLCD.ClearLine(2);
-	sprintf((char*) ((buf)), "X_K=%d", (int16_t) ((kalmanX.getAngle())));
-	nokiaLCD.WriteTextXY((char*) ((buf)), 0, 2);
-	nokiaLCD.ClearLine(3);
-	sprintf((char*) ((buf)), "Y_K=%d", (int16_t) ((kalmanY.getAngle())));
-	nokiaLCD.WriteTextXY((char*) ((buf)), 0, 3);
 }

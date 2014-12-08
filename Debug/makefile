@@ -21,6 +21,7 @@ RM := rm -rf
 -include src/SDCard/subdir.mk
 -include src/PWM/subdir.mk
 -include src/NokiaLCD/subdir.mk
+-include src/GPS/subdir.mk
 -include src/GPIO/subdir.mk
 -include src/Delay/subdir.mk
 -include src/Algorithms/subdir.mk
