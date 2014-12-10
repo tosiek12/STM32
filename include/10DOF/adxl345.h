@@ -4,8 +4,8 @@
 #include "stm32f4xx_hal.h"
 #include "arm_math.h"
 
-#include "../NokiaLCD/nokiaLCD.h"
-#include "../Delay/delay.h"
+#include "NokiaLCD/nokiaLCD.h"
+#include "Delay/delay.h"
 #include "I2C.h"
 
 #define I2C_ID_ADXL345								 0xA6	//(0x53<<1)
@@ -309,6 +309,8 @@
 class ADXL345 {
 public:
 	int16_t axis[3];
+	float32_t axis_f[3];
+
 	ADXL345(uint8_t address = ADXL345_DEFAULT_ADDRESS) {
 		devAddr = address;
 		axis[0] = 0;
@@ -396,10 +398,9 @@ public:
 
 	void ReadFIFOStatus(uint8_t *fifost);
 private:
-	int16_t offset[3];
-	float32_t scalingFactor[3];
+    int16_t offset[3];
+    float32_t gain[3];
 	uint8_t devAddr;
-	uint8_t buffer[6];
 };
 
 #endif /* ADXL345_H_ */

@@ -63,64 +63,6 @@ uint8_t HMC5883L::selfTest(NokiaLCD &nokia) {
 	return 1;
 }
 
-void HMC5883L::test(NokiaLCD & nokia, uint8_t height) {
-	float64_t Out_x = 0, Out_y = 0, Out_z = 0;
-	float64_t Sum_x = 0, Sum_y = 0, Sum_z = 0;
-
-	for (uint16_t i = 0; i < 100; i++) {
-		getHeading(&axis[0], &axis[1], &axis[2]);
-		Sum_x += axis[0];
-		Sum_y += axis[1];
-		Sum_z += axis[2];
-	}
-	Out_x = Sum_x / 100;
-	Out_y = Sum_y / 100;
-	Out_z = Sum_z / 100;
-
-	//Remove offset
-	Out_x += offset[0];
-	Out_y += offset[1];
-	Out_z += offset[2];
-
-	//Change to mili Gauss [mG]
-	Out_x *= scalingFactor;
-	Out_y *= scalingFactor;
-	Out_z *= scalingFactor;
-
-	heading = atan2(Out_y, Out_x);	//[-PI,PI]
-	heading *= 180.0 / PI; //Change to degree
-
-	heading += declinationInDeg;
-	if (heading < 0) {
-		heading += 360;
-	} else if (heading > 360) {
-		heading -= 360;
-	}
-
-	// Poprawka nierownomiernosci pomiarow HMC5883L
-	if (heading >= 1 && heading < 240) {
-//		fixedHeadingDegrees = map(headingDegrees, 0, 239, 0, 179);
-		heading = (heading / 239.0) * 179.0;
-	} else if (heading >= 240) {
-//		fixedHeadingDegrees = map(headingDegrees, 240, 360, 180, 360);
-		heading = ((heading - 240) / 120) * 180 + 180;
-	}
-
-	uint8_t buf[20];
-
-	nokia.ClearLine(height * 3);
-	sprintf((char*) buf, "X=%3dY=%3d", (int16_t) (Out_x), (int16_t) (Out_y));
-	nokia.WriteTextXY((char*) buf, 0, height * 3);
-
-	nokia.ClearLine(height * 3 + 1);
-	sprintf((char*) buf, "Z=%3d", (int16_t) (Out_z));
-	nokia.WriteTextXY((char*) buf, 0, height * 3 + 1);
-
-	nokia.ClearLine(height * 3 + 2);
-	sprintf((char*) buf, "head=%d", (int16_t) (heading));
-	nokia.WriteTextXY((char*) buf, 0, height * 3 + 2);
-}
-
 void HMC5883L::calibrate(bool doFullCalibartion) {
 	int16_t Max_x = 0, Max_y = 0, Max_z = 0;
 	int16_t Min_x = 0, Min_y = 0, Min_z = 0;
@@ -149,51 +91,35 @@ void HMC5883L::calibrate(bool doFullCalibartion) {
 		}
 	} else {
 		//Set offset - z wielu serii
-		offset[0] = 205;
-		offset[1] = -91;
-		offset[2] = -125;
+		offset[0] = 120;
+		offset[1] = 118;
+		offset[2] = 31;
 
-		//	//Set offset - stary, z jednego pomiaru.
-		//	offset[0] = 256;
-		//	offset[1] = -53;
-		//	offset[2] = -117;
+		gain[0][0] = 0.9670;
+		gain[0][1] =-0.0091;
+		gain[0][2] = 0.0265;
 
-		//http://magnetic-declination.com/
-		declinationInDeg = 5.0 + (16.0 / 60.0); //Positive declination
+		gain[1][0] =-0.0091;
+		gain[1][1] = 0.9517;
+		gain[1][2] = 0.0071;
+
+		gain[2][0] = 0.0265;
+		gain[2][1] = 0.0071;
+		gain[2][2] = 1.0875;
 	}
-
 }
 
 void HMC5883L::update() {
-	getHeading(&axis[0], &axis[1], &axis[2]);
+	updateRaw();
 	//Remove offset
-	axis[0] += offset[0];
-	axis[1] += offset[1];
-	axis[2] += offset[2];
+	axis_f[0] = axis[0] + offset[0];
+	axis_f[1] = axis[1] + offset[1];
+	axis_f[2] = axis[2] + offset[2];
 
 	//Change to mili Gauss [mG]
-	axis[0] *= scalingFactor;
-	axis[1] *= scalingFactor;
-	axis[2] *= scalingFactor;
-
-	heading = atan2(axis[1], axis[0]);	//[-PI,PI]
-	heading *= 180.0 / PI; //Change to degree
-
-	heading += declinationInDeg;
-	if (heading < 0) {
-		heading += 360;
-	} else if (heading > 360) {
-		heading -= 360;
-	}
-
-	// Poprawka nierownomiernosci pomiarow HMC5883L
-	if (heading >= 1 && heading < 240) {
-//		fixedHeadingDegrees = map(headingDegrees, 0, 239, 0, 179);
-		heading = (heading / 239.0) * 179.0;
-	} else if (heading >= 240) {
-//		fixedHeadingDegrees = map(headingDegrees, 240, 360, 180, 360);
-		heading = ((heading - 240) / 120) * 180 + 180;
-	}
+	axis_f[0] = axis_f[0] * gain[0][0] + axis_f[1] * gain[0][1] + axis_f[2] * gain[0][2];
+	axis_f[1] = axis_f[0] * gain[1][0] + axis_f[1] * gain[1][1] + axis_f[2] * gain[1][2];
+	axis_f[2] = axis_f[0] * gain[2][0] + axis_f[1] * gain[2][1] + axis_f[2] * gain[2][2];
 }
 
 void HMC5883L::updateRaw() {
@@ -209,8 +135,6 @@ HMC5883L::HMC5883L() {
 	offset[1] = 0;
 	offset[2] = 0;
 	scalingFactor = 0;
-	declinationInDeg = 0;
-	buffer[0] = 0;
 	mode = 0;
 	heading = 0;
 }
@@ -384,14 +308,13 @@ uint8_t HMC5883L::getGain() {
  * @see HMC5883L_CRB_GAIN_BIT
  * @see HMC5883L_CRB_GAIN_LENGTH
  */
-void HMC5883L::setGain(uint8_t gain) {
+void HMC5883L::setGain(uint8_t gain_) {
 	// use this method to guarantee that bits 4-0 are set to zero, which is a
 	// requirement specified in the datasheet; it's actually more efficient than
 	// using the I2Cdev.writeBits method
-	switch (gain) {
+	switch (gain_) {
 	case HMC5883L_GAIN_1370:
 		scalingFactor = 0.73;	//(1000.0/HMC5883L_COEF_GAIN_1370)
-		break;
 	case HMC5883L_GAIN_1090:
 		scalingFactor = 0.92;
 		break;
@@ -416,7 +339,7 @@ void HMC5883L::setGain(uint8_t gain) {
 	}
 
 	I2C::i2c_WriteByte(devAddr, HMC5883L_RA_CONFIG_B,
-			gain << (HMC5883L_CRB_GAIN_BIT - HMC5883L_CRB_GAIN_LENGTH + 1));
+			gain_ << (HMC5883L_CRB_GAIN_BIT - HMC5883L_CRB_GAIN_LENGTH + 1));
 }
 
 // MODE register

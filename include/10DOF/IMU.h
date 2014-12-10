@@ -25,12 +25,15 @@ private:
 	BMP085 pressure;
 	uint16_t samplingFrequency;
 	const uint8_t I2C_ID_BMP085 = 0x77 << 1;		//Barometr?
+
 /* Status */
-	volatile uint8_t sendDataTriger;
+	volatile uint8_t newDataAvailable;
 	volatile uint8_t showDataTriger;
 	uint8_t connected;
 	uint8_t request;
 	uint8_t error;
+	volatile uint8_t computationInProgress;
+
 /*	Filter */
 	Kalman kalmanX;
 	Kalman kalmanY;
@@ -38,7 +41,8 @@ private:
 	float32_t YPitchAngle;	//Range -90,90
 	float32_t TiltAngle;		//Range 0,180	//odchylenie od pionu (grawitacji)
 	float32_t ZYawAngle;	//Range -180,180
-//	float64_t zeroValue[5] = { -200, 44, 660, 52.3, -18.5 }; // Found by experimenting
+	float32_t eulerAnglesInRadMahony[3];
+
 	/* All the angles start at 180 degrees */
 	float64_t gyroXangle = 180;
 	float64_t gyroYangle = 180;
@@ -75,17 +79,17 @@ private:
 			};
 		}
 
-		/* Set Interrupt Group Priority */
-		HAL_NVIC_SetPriority((IRQn_Type) TIM3_IRQn, 4, 0);
-
 		/* Enable the TIMx global Interrupt */
 		HAL_NVIC_EnableIRQ((IRQn_Type) TIM3_IRQn);
+		/* Set Interrupt Group Priority */
+		HAL_NVIC_SetPriority((IRQn_Type) TIM3_IRQn, 1, 2);
 		/* Start Channel1 */
 		if (HAL_TIM_Base_Start_IT(&TimHandle) != HAL_OK) {
 			/* Starting Error */
 			while (1) {
 			};
 		}
+
 		__HAL_TIM_DISABLE(&TimHandle);
 	}
 
@@ -111,6 +115,7 @@ public:
 
 	void computePitchRollTilt();
 	void computeYaw();
+	void doAllComputation();
 
 	void startTimerUpdate() {
 		__HAL_TIM_ENABLE(&TimHandle);
@@ -119,6 +124,9 @@ public:
 		__HAL_TIM_DISABLE(&TimHandle);
 	}
 	uint8_t sendViaVirtualCom();
+	void sendAngleViaVirtualCom();
+	void sendMahonyViaVirtualCom();
+
 	void setConnected() {
 		connected = 1;
 		request = 0;
@@ -135,11 +143,12 @@ public:
 		numberOfGatheredSamples = 0;
 	}
 	void sendGatheredDataViaVCOM();
-	void requestDataGathering(uint16_t numberOfSamples);
+		void requestDataGathering(uint16_t numberOfSamples);
 	uint8_t isDataGatheringComplete() {
 		return (numberOfGatheredSamples >= numberOfSamplesToGather);
 	}
 
+	void mahonyStepAction();
 	void kalmanStepAction();
 	void showAnglesKalman(NokiaLCD& nokiaLCD);
 };

@@ -98,9 +98,12 @@ void ADXL345::calibrate(bool doFullCalibartion, const uint16_t numberOfSamples) 
 		numberOfCharsInBuffer = sprintf(buf, "Accelerometer calibration End\n");
 		VCP_write(buf, numberOfCharsInBuffer);
 	} else {
-		offset[0] = 22;
-		offset[1] = 31;
-		offset[2] = 14;
+		offset[0] = 5;
+		offset[1] = 10;
+		offset[2] = 0;
+		gain[0] = 3.92;
+		gain[1] = 3.92;
+		gain[2] = 3.92;
 //		//Dla 4g
 //		offset[0] = 24;
 //		offset[1] = 30;
@@ -109,21 +112,27 @@ void ADXL345::calibrate(bool doFullCalibartion, const uint16_t numberOfSamples) 
 }
 
 void ADXL345::update() {
-	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, (uint8_t *) &axis);
-
+	updateRaw();
 //	//TODO: implement scaling factor!
 //	axis[0] = (int16_t) (axis[0] * ADXL345_2G_CALIBRATED_FACTOR);
 //	axis[1] = (int16_t) (axis[1] * ADXL345_2G_CALIBRATED_FACTOR);
 //	axis[2] = (int16_t) (axis[2] * ADXL345_2G_CALIBRATED_FACTOR);
-//
-//	axis[0] += offset[0];
-//	axis[1] += offset[1];
-//	axis[2] += offset[2];
+
+	axis_f[0] = axis[0] + offset[0];
+	axis_f[1] = axis[1] + offset[1];
+	axis_f[2] = axis[2] + offset[2];
+
+	axis_f[0] = axis_f[0] * gain[0];
+	axis_f[1] = axis_f[1] * gain[1];
+	axis_f[2] = axis_f[2] * gain[2];
 }
 
 void ADXL345::updateRaw() {
+
 	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, (uint8_t *) &axis);
+
 }
+
 
 /*
  * @brief: Test ADXL345 module address
@@ -598,6 +607,7 @@ void ADXL345::WriteDataFormat(uint8_t selftest, uint8_t spi, uint8_t intinv, uin
  * @param[out]: none
  */
 void ADXL345::ReadXYZ(int16_t *xdata, int16_t *ydata, int16_t *zdata) {
+	uint8_t buffer[6];
 	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, buffer);
 	*xdata = (int16_t) ((uint16_t) buffer[0] << 8 | (uint16_t) buffer[1]);
 	*ydata = (int16_t) ((uint16_t) buffer[2] << 8 | (uint16_t) buffer[3]);

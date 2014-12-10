@@ -79,7 +79,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd) {
 		;
 
 		/* Set USBFS Interrupt priority to 6 */
-		HAL_NVIC_SetPriority(OTG_FS_IRQn, 6, 0);
+		HAL_NVIC_SetPriority(OTG_FS_IRQn, 2, 0);
 
 		/* Enable USBFS Interrupt */
 		HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
@@ -169,7 +169,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd) {
 		__USB_OTG_HS_CLK_ENABLE();
 
 		/* Set USBHS Interrupt priority to 6 */
-		HAL_NVIC_SetPriority(OTG_HS_IRQn, 6, 0);
+		HAL_NVIC_SetPriority(OTG_HS_IRQn, 2, 0);
 
 		/* Enable USBHS Interrupt */
 		HAL_NVIC_EnableIRQ(OTG_HS_IRQn);
@@ -330,7 +330,8 @@ void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd) {
  */
 USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev) {
 	/* Change Systick prioity */
-	NVIC_SetPriority(SysTick_IRQn, 0);
+//	HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+	NVIC_SetPriority((IRQn_Type)SysTick_IRQn, 0);
 
 #ifdef USE_USB_FS  
 	/*Set LL Driver parameters */

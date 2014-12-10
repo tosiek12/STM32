@@ -60,33 +60,62 @@ int main() {
 	Delay::initialize();	//Create, and initialize
 	NokiaLCD nokiaLCD;	//Create, and initialize
 	GPIO buttons;
-	buttons.InitButtons();
+	//buttons.InitButtons();
 
 	imu10DOF.initialize();
 	imu10DOF.startTimerUpdate();
 
-	uint8_t buf[50] = { 0 };
+	//Zmienne do ramki
+	char buf[100] = { 0 };
+	char *ptrNextFrame, *ptrRcvFrame, *ptrTemp, *ptrRest;
+	uint8_t lengthOfFrame = 0;
+
+	//inne
 	uint32_t cnt[5] = { 0 };
 	uint32_t numberOfChars;
 	uint8_t * pEnd;
 
 	//imitate connection state
 	imu10DOF.setConnected();
-	speedTester.tic();
+	//speedTester.tic();
 
 	//pwm.PWMInit();
 	//pwm.startPwmChannel(TIM_CHANNEL_1);
 	//pwm.setChannelRawValue(1, 1000);
 
 	GPS_Init();
-
-
 	while (1) {
 		buttons.mainBegginingUpdate();
-
 		//GPS_Send();
+
 		//Format ramki: [$kod,wartosc*]
-		if ((numberOfChars = VCP_read(buf, 10)) >= 1) {
+		if ((numberOfChars = VCP_read(buf, 100)) > 0) {
+			ptrRcvFrame = buf;
+			ptrNextFrame = buf;
+			lengthOfFrame += strlen(ptrNextFrame) + 1;
+			while(strchr(ptrNextFrame, '*') != NULL) {
+				ptrRcvFrame =  strchr(ptrNextFrame,'$');
+				if(ptrRcvFrame != NULL) {
+					//parsuj ramke
+					VCP_write("Parsuj \n", 8);
+					VCP_write(ptrRcvFrame, strlen(ptrRcvFrame));
+				} else {
+					//blad - brak znaku startu.
+					VCP_write("BLAD \n", 5);
+					VCP_write(ptrRcvFrame, strlen(ptrRcvFrame));
+				}
+				//Nastepna ramka
+				if(lengthOfFrame >= numberOfChars) {
+					break;
+				}
+				ptrNextFrame = (buf + lengthOfFrame);
+				lengthOfFrame += strlen(ptrNextFrame)+1;
+
+			}
+			//VCP_write("KONIEC\n", 8);
+			//VCP_write(ptrRcvFrame, strlen(ptrRcvFrame));
+
+
 			switch (buf[0]) {
 			case 'S':
 				imu10DOF.setConnected();
@@ -98,11 +127,15 @@ int main() {
 				break;
 			case 'R':
 				imu10DOF.setRequestOfData();
+				imu10DOF.sendAngleViaVirtualCom();
 				break;
 			case 'C':
 				imu10DOF.calibrateAllSensors();
 				break;
 			case 'X':
+				break;
+			case 'M':
+				imu10DOF.sendMahonyViaVirtualCom();
 				break;
 			case 'T':
 				if (*cnt > 1) {
@@ -140,14 +173,16 @@ int main() {
 			default:
 				break;
 			}
-			memset(buf, 0, 15);
+			memset(buf, 0, 100);
 		}
 
 		//Sprawdz cy trzeba i wykonaj akcje:
-		imu10DOF.sendViaVirtualCom();
+		//imu10DOF.sendViaVirtualCom();
 		if (imu10DOF.isDataGatheringComplete()) {
 			imu10DOF.sendGatheredDataViaVCOM();
 		}
+		imu10DOF.doAllComputation();
+
 
 		//Obsluga przyciskow:
 		if (buttons.getButtonState(0) == GPIO::longPush) {

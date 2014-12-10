@@ -38,7 +38,6 @@
  */
 BMP085::BMP085() {
 	devAddr = 0;
-	buffer[10] = {0};
 
 	calibrationLoaded = false;
 	ac1 = 0;

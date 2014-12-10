@@ -18,12 +18,12 @@ void ITG3200::initialize() {
 	setDLPFBandwidth(ITG3200_DLPF_BW_256);
 //    setRate(0);
 
-//	if (testConnection()) {
-//
-//	} else {
-//		while (1) {
-//		}	//Fail_Handler();
-//	}
+	if (testConnection()) {
+
+	} else {
+		while (1) {
+		}	//Fail_Handler();
+	}
 }
 
 /** Verify the I2C connection.
@@ -101,18 +101,13 @@ void ITG3200::calibrate(bool doFullCalibartion, const uint16_t numberOfSamples) 
 		numberOfChars = sprintf(buf, "Gyro calibration End");
 		VCP_write(buf, numberOfChars);
 	} else {
-		offset[0] = -472;
-		offset[1] = 279;
-		offset[2] = -61;
+		offset[0] = 461;
+		offset[1] = -243;
+		offset[2] = 58;
+		gain[0] = (PI)/20720;
+		gain[1] = (PI)/20720;
+		gain[2] = (PI)/20720;
 	}
-
-//{x = 474, y = -277, z = 62} -> przed przemno�eniem
-//{x = 471, y = -279, z = 62}
-//{x = 470, y = -279, z = 64}
-//{x = 475, y = -279, z = 64}
-//	offset[0] = 32;
-//	offset[1] = -19;
-//	offset[2] = 4;
 }
 
 // WHO_AM_I register
@@ -587,22 +582,22 @@ void ITG3200::setClockSource(uint8_t source) {
 }
 
 void ITG3200::update() {
-	I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer);
-	axis[0] = (((int16_t) buffer[0]) << 8) | buffer[1];
-	axis[1] = (((int16_t) buffer[2]) << 8) | buffer[3];
-	axis[2] = (((int16_t) buffer[4]) << 8) | buffer[5];
+	updateRaw();
+	axis_f[0] = axis[0] + offset[0];
+	axis_f[1] = axis[1] + offset[1];
+	axis_f[2] = axis[2] + offset[2];
 
-	axis[0] += offset[0];
-	axis[1] += offset[1];
-	axis[2] += offset[2];
-
-	axis[0] *= ITG3200_2000G_FACTOR;
-	axis[1] *= ITG3200_2000G_FACTOR;
-	axis[2] *= ITG3200_2000G_FACTOR;
+	axis_f[0] = axis_f[0] * gain[0];
+	axis_f[1] = axis_f[1] * gain[1];
+	axis_f[2] = axis_f[2] * gain[2];
 }
 
 void ITG3200::updateRaw() {
-	I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer);
+	if(I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer) != HAL_OK) {
+		for(uint8_t a = 100;a !=1;) {
+			--a;
+		}
+	}
 	axis[0] = (((int16_t) buffer[0]) << 8) | buffer[1];
 	axis[1] = (((int16_t) buffer[2]) << 8) | buffer[3];
 	axis[2] = (((int16_t) buffer[4]) << 8) | buffer[5];

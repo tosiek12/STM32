@@ -132,6 +132,7 @@ class ITG3200 {
 
 		// Values in (grad/sek)
 		int16_t axis[3];
+		float32_t axis_f[3];
 
         void initialize();
         uint8_t testConnection();
@@ -196,7 +197,8 @@ class ITG3200 {
         void setClockSource(uint8_t source);
 
     private:
-        int32_t offset[3];
+        int16_t offset[3];
+        float32_t gain[3];
         uint8_t devAddr;
         uint8_t buffer[6];
 };

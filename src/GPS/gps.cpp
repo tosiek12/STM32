@@ -287,7 +287,7 @@ void GPS_Init() {
 	HAL_UART_Transmit(&UartHandle,(unsigned char *)"", 5, 4000);
 
 	/* Peripheral interrupt init*/
-	HAL_NVIC_SetPriority(USARTx_IRQn, 0, 1);
+	HAL_NVIC_SetPriority(USARTx_IRQn, 3, 0);
 	HAL_NVIC_EnableIRQ(USARTx_IRQn);
 }
 
@@ -343,7 +343,7 @@ extern "C" void USART1_IRQHandler(void) {
 		data = (uint8_t) (USART1->SR & (uint8_t) 0xFF);  //read status
 		//then read data register ...
 		data = (uint8_t) (USART1->DR & (uint8_t) 0xFF);
-		VCP_write("OVF", 3);
+		//VCP_write("OVF", 3);
 	}
 
 	if (__HAL_UART_GET_FLAG(&UartHandle, UART_FLAG_RXNE) != RESET) {

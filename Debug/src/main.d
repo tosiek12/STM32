@@ -40,8 +40,9 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../include/10DOF/../NokiaLCD/nokiaLCD.h \
  ../include/10DOF/../Delay/delay.h ../include/10DOF/I2C.h \
  ../include/10DOF/itg3200.h ../include/10DOF/adxl345.h \
- ../include/10DOF/hmc5883l.h ../include/10DOF/bmp085.h \
- ../include/10DOF/Filters/Kalman.h ../include/SpeedTester/speedTester.h \
+ ../include/Delay/delay.h ../include/10DOF/hmc5883l.h \
+ ../include/10DOF/bmp085.h ../include/10DOF/Filters/Kalman.h \
+ ../include/SpeedTester/speedTester.h \
  ../include/SDCard/tm_stm32f4_fatfs.h ../include/SDCard/fatfs/ff.h \
  ../include/SDCard/fatfs/ffconf.h ../include/PWM/pwm.h \
  ../include/GPS/gps.h \
@@ -157,6 +158,8 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 ../include/10DOF/itg3200.h:
 
 ../include/10DOF/adxl345.h:
+
+../include/Delay/delay.h:
 
 ../include/10DOF/hmc5883l.h:
 

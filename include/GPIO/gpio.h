@@ -169,8 +169,7 @@ public:
 		HAL_GPIO_Init(BTN3_PORT, &GPIO_InitStructure);
 
 		/*Configure priority levels */
-		HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_1);
-		HAL_NVIC_SetPriority((IRQn_Type) EXTI9_5_IRQn, 0, 4);
+		HAL_NVIC_SetPriority((IRQn_Type) EXTI9_5_IRQn, 2, 1);
 		HAL_NVIC_EnableIRQ((IRQn_Type) EXTI9_5_IRQn);
 	}
 
@@ -216,7 +215,7 @@ private:
 		TIM_TimeBaseStructure.Init.RepetitionCounter = 0;
 		HAL_TIM_Base_Init(&TIM_TimeBaseStructure);
 
-		HAL_NVIC_SetPriority((IRQn_Type) TIM4_IRQn, 0, 5);
+		HAL_NVIC_SetPriority((IRQn_Type) TIM4_IRQn, 1, 1);
 		HAL_NVIC_EnableIRQ((IRQn_Type) TIM4_IRQn);
 
 		HAL_TIM_Base_Start_IT(&TIM_TimeBaseStructure);

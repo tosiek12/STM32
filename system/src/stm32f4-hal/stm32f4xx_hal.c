@@ -157,7 +157,7 @@ HAL_StatusTypeDef HAL_Init(void)
   HAL_SYSTICK_Config(HSI_VALUE/ 1000);
   
   /* Set Interrupt Group Priority */
-  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_2);
   
   /* Init the low level hardware */
   HAL_MspInit();

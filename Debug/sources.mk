@@ -43,6 +43,7 @@ src/PWM \
 src/NokiaLCD \
 src/GPS \
 src/GPIO \
+src/Frame \
 src/Delay \
 src/Algorithms \
 src/10DOF \

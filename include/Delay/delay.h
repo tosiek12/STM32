@@ -19,6 +19,8 @@ public:
 			while (1) {
 			}
 		}
+		NVIC_SetPriority((IRQn_Type)SysTick_IRQn, 0);
+
 	}
 
 	inline static void delay_SysTickAction(void) {

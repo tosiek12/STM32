@@ -120,11 +120,11 @@ class HMC5883L {
         HMC5883L(uint8_t address);
 
 		int16_t axis[3];
+		float32_t axis_f[3];
 		float64_t heading;
 
         void initialize();
         bool testConnection();
-        void test(NokiaLCD & nokia, uint8_t height);
         uint8_t selfTest(NokiaLCD &nokia);
 
         void calibrate(bool doFullCalibartion);
@@ -164,8 +164,8 @@ class HMC5883L {
 
     private:
         int16_t offset[3];
+        float32_t gain[3][3];
         float32_t scalingFactor;
-        float32_t declinationInDeg;
         uint8_t devAddr;
         uint8_t buffer[6];
         uint8_t mode;

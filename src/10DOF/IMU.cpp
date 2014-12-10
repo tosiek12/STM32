@@ -9,22 +9,23 @@
 extern "C" {
 #include <usbd_cdc_if_template.h>
 }
+#include "10DOF/Filters/MahonyAHRS.h"
 
 // Global variable //
 IMU imu10DOF;
 
 void IMU::timerAction() {
-	static uint16_t counter = 0;
-	if (sendDataTriger == 1) {
+	if(computationInProgress == 1) {
 		error = 1;
+	}
+	if (newDataAvailable == 1) {
+
 		//return;
 	}
-	accelerometer.updateRaw();
-	gyro.updateRaw();
-	magnetometer.updateRaw();
+	accelerometer.update();
+	gyro.update();
+	magnetometer.update();
 
-//	computeAngles();
-//	kalmanStepAction();
 
 	/* Save data to temporary buffer */
 	if (numberOfGatheredSamples < numberOfSamplesToGather) {
@@ -39,19 +40,13 @@ void IMU::timerAction() {
 		measurements[numberOfGatheredSamples][8] = magnetometer.axis[2];
 		++numberOfGatheredSamples;
 	}
-
-	sendDataTriger = 1;
-	if (++counter == 200) {	//update LCD after x ms.
-		showDataTriger = 1;
-		counter = 0;
-	}
+	newDataAvailable = 1;
 }
 
 // ----- TIM_IRQHandler() ----------------------------------------------------
 extern "C" void TIM3_IRQHandler(void) {
 	if (__HAL_TIM_GET_ITSTATUS(&imu10DOF.TimHandle, TIM_IT_UPDATE ) != RESET) {
 		imu10DOF.timerAction();
-
 		__HAL_TIM_CLEAR_IT(&imu10DOF.TimHandle, TIM_IT_UPDATE);
 	}
 }
@@ -66,7 +61,7 @@ uint8_t IMU::sendViaVirtualCom() {
 		return 0;
 	}
 
-	if ((request == 1) && (connected == 1) && (sendDataTriger == 1)) {
+	if ((request == 1) && (connected == 1) && (newDataAvailable == 1)) {
 		//VCP_write("D", 1);
 		timeDelta = speedTester.delta();
 		/*	Frame:
@@ -87,12 +82,32 @@ uint8_t IMU::sendViaVirtualCom() {
 
 		//VCP_write("\n", 1);
 
-		sendDataTriger = 0;
+		newDataAvailable = 0;
 		request = 0;
 
 		return 3 * frameSize;
 	}
 	return 0;
+}
+
+void IMU::sendMahonyViaVirtualCom() {
+	uint16_t size;
+	uint8_t buff[50];
+	size = sprintf((char*) buff, "%d,%d,%d,%d\n", (int16_t)(eulerAnglesInRadMahony[0]*1000),(int16_t)(eulerAnglesInRadMahony[1]*1000),(int16_t)(eulerAnglesInRadMahony[2]*1000));
+	VCP_write((void *) buff, size);
+}
+
+void IMU::sendAngleViaVirtualCom() {
+	int16_t temp;
+	uint32_t timeDelta = 0;
+	if ((request == 1) && (connected == 1)) {
+		uint16_t it = 0, size;
+		uint8_t buff[50];
+		size = sprintf((char*) buff, "%d,%d,%d,%d\n", (int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
+		VCP_write((void *) buff, size);
+		//VCP_write("\n", 1);
+		request = 0;
+	}
 }
 
 void IMU::requestDataGathering(uint16_t timeToSampleInSec) {
@@ -101,43 +116,38 @@ void IMU::requestDataGathering(uint16_t timeToSampleInSec) {
 }
 
 void IMU::sendGatheredDataViaVCOM() {
-	stopTimerUpdate();
-	uint16_t it = 0, size;
-	uint8_t buff[50];
-	volatile int16_t *pTemp;
-	for (it = 0; it < numberOfSamplesToGather; it++) {
-		pTemp = measurements[it];
-		size = sprintf((char*) buff, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", pTemp[0], pTemp[1], pTemp[2],
-				pTemp[3], pTemp[4], pTemp[5], pTemp[6], pTemp[7], pTemp[8]);
-		VCP_write((void *) buff, size);
+	if(numberOfSamplesToGather>0) {
+		stopTimerUpdate();
+		uint16_t it = 0, size;
+		uint8_t buff[50];
+		volatile int16_t *pTemp;
+		for (it = 0; it < numberOfSamplesToGather; it++) {
+			pTemp = measurements[it];
+			size = sprintf((char*) buff, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", pTemp[0], pTemp[1], pTemp[2],
+					pTemp[3], pTemp[4], pTemp[5], pTemp[6], pTemp[7], pTemp[8]);
+			VCP_write((void *) buff, size);
+		}
+		numberOfGatheredSamples = 0;
+		numberOfSamplesToGather = 0;
+		startTimerUpdate();
 	}
-	numberOfGatheredSamples = 0;
-	numberOfSamplesToGather = 0;
-	startTimerUpdate();
-}
-
-void IMU::showMeasurment(NokiaLCD& nokiaLCD) {
-	//		accelerometer.test(nokiaLCD);
-	//		gyro.test(nokiaLCD);
-	magnetometer.test(nokiaLCD, 0);
-	pressure.test(nokiaLCD, 1);
 }
 
 void IMU::calibrateAllSensors() {
-	//gyro.calibrate(false,100);
-	accelerometer.calibrate(true, 100);
-	//magnetometer.calibrate(false);
+	gyro.calibrate(false,100);
+	accelerometer.calibrate(false, 100);
+	magnetometer.calibrate(false);
 }
 
 void IMU::calibrateGyroProcedure() {
 
 	Delay::delay_ms(1);
-
 }
+
 
 IMU::IMU() :
 		gyro(), accelerometer(), magnetometer(), pressure() {
-	sendDataTriger = 0;
+	newDataAvailable = 0;
 	connected = 0;
 	request = 0;
 	error = 0;
@@ -146,20 +156,22 @@ IMU::IMU() :
 
 void IMU::initialize() {
 	I2C::initialize();
-	gyro.initialize();
+
+	//gyro.initialize();
 	accelerometer.initialize();
 	magnetometer.initialize();
 	pressure.initialize();
-	//calibrateAllSensors();
+	calibrateAllSensors();
+
 	initializeTimerForUpdate();
 }
 
 void IMU::computeYaw() {
 	float32_t sqrt_result, arg1, arg2;
 	float32_t mag[3];
-	mag[0] = magnetometer.axis[0];
-	mag[1] = magnetometer.axis[1];
-	mag[2] = magnetometer.axis[2];
+	mag[0] = magnetometer.axis_f[0];
+	mag[1] = magnetometer.axis_f[1];
+	mag[2] = magnetometer.axis_f[2];
 
 	//Normalise measurement:
 	arg1 = (float32_t) (mag[0]) * (mag[0]) + (mag[1]) * (mag[1]) + (mag[2]) * (mag[2]);
@@ -184,12 +196,12 @@ void IMU::computeYaw() {
 }
 
 void IMU::computePitchRollTilt() {
-	float32_t arg1, arg2;
+	float32_t arg1;
 	float32_t sqrt_result;
 	float32_t acc[3];
-	acc[0] = accelerometer.axis[0];
-	acc[1] = accelerometer.axis[1];
-	acc[2] = accelerometer.axis[2];
+	acc[0] = accelerometer.axis_f[0];
+	acc[1] = accelerometer.axis_f[1];
+	acc[2] = accelerometer.axis_f[2];
 
 	//Normalise measurement:
 	arg1 = (float32_t) (acc[0]) * (acc[0]) + (acc[1]) * (acc[1]) + (acc[2]) * (acc[2]);
@@ -226,12 +238,19 @@ void IMU::computePitchRollTilt() {
 	TiltAngle = arm_cos_f32((acc[2]) / sqrt_result);
 }
 
+void IMU::mahonyStepAction() {
+	MahonyAHRSupdate(gyro.axis_f[0],gyro.axis_f[1],gyro.axis_f[2],
+			accelerometer.axis_f[0],accelerometer.axis_f[1],accelerometer.axis_f[2],
+			magnetometer.axis_f[0],magnetometer.axis_f[1],magnetometer.axis_f[2]);
+	MahonyToEuler(eulerAnglesInRadMahony);
+}
+
 void IMU::kalmanStepAction() {
-	const float64_t RAD_TO_DEG = 57.29577951f;
-	float64_t dt_inSec = 0.001;
-	float64_t gyroXrate = -((float64_t) ((gyro.axis[0])));
+	//const float64_t RAD_TO_DEG = 57.29577951f;
+	float64_t dt_inSec = 0.0025;
+	float64_t gyroXrate = -((float64_t) ((gyro.axis_f[0])));
 	gyroXangle += gyroXrate * dt_inSec; // Without any filter
-	float64_t gyroYrate = ((float64_t) ((gyro.axis[1])));
+	float64_t gyroYrate = ((float64_t) ((gyro.axis_f[1])));
 	gyroYangle += gyroYrate * dt_inSec; // Without any filter
 
 	// Complementary filter
@@ -240,4 +259,23 @@ void IMU::kalmanStepAction() {
 	// Kalman filter
 	kalmanX.stepOldVersion(XRollAngle, gyroXrate, dt_inSec);
 	kalmanY.stepOldVersion(YPitchAngle, gyroYrate, dt_inSec);
+}
+
+void IMU::doAllComputation() {
+	if(newDataAvailable) {
+		computationInProgress = 1;
+
+		kalmanStepAction();
+		mahonyStepAction();
+		computePitchRollTilt();
+		computeYaw();
+
+		newDataAvailable = 0;
+		computationInProgress = 0;
+	}
+	if(error) {
+		VCP_write("OVERFLOW!",10);
+		error = 0;
+	}
+
 }
