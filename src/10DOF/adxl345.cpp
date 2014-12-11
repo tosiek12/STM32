@@ -19,6 +19,8 @@ void ADXL345::initialize() {
 	ADXL345_MEASURE_ENABLE);
 	WriteBWRate(ADXL345_NormalPower, ADXL345_BW_400_HZ);
 
+	loadCalibration();
+
 //	TODO: WriteXYZOffSet(&xoff,&yoff,&zoff);
 //	TODO:	WritePWRCtl(ADXL345_LINK_DISABLE, ADXL345_ASLEEP_DISABLE, ADXL345_MEASURE_ENABLE, ADXL345_SLEEP_DISABLE, ADXL345_WAKE_8HZ);
 //	TODO:	WriteDataFormat(ADXL345_DATA_SELFTEST_DISABLE, ADXL345_DATA_SPI_3,
@@ -33,91 +35,75 @@ void ADXL345::initialize() {
 //	}
 }
 
-void ADXL345::calibrate(bool doFullCalibartion, const uint16_t numberOfSamples) {
+void ADXL345::initialize2() {
+	//Need to set power control bit to wake up the adxl345
+	volatile HAL_StatusTypeDef status;
+	uint8_t data = ADXL345_DATA_RANGE_2G;
+
+	status = HAL_I2C_Mem_Write_IT(&I2C::hi2c,I2C_ID_ADXL345,ADXL345_RA_DATA_FORMAT,I2C_MEMADD_SIZE_8BIT,&data,1);
+	while(status !=HAL_OK) { };
+
+	  while (HAL_I2C_GetState(&I2C::hi2c) != HAL_I2C_STATE_READY)
+	  {
+	  }
+
+	status = I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_DATA_FORMAT,
+	ADXL345_DATA_RANGE_2G);
+	status = I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_POWER_CTL,
+	ADXL345_MEASURE_ENABLE);
+	WriteBWRate(ADXL345_NormalPower, ADXL345_BW_400_HZ);
+
+//	TODO: WriteXYZOffSet(&xoff,&yoff,&zoff);
+//	TODO:	WritePWRCtl(ADXL345_LINK_DISABLE, ADXL345_ASLEEP_DISABLE, ADXL345_MEASURE_ENABLE, ADXL345_SLEEP_DISABLE, ADXL345_WAKE_8HZ);
+//	TODO:	WriteDataFormat(ADXL345_DATA_SELFTEST_DISABLE, ADXL345_DATA_SPI_3,
+//			ADXL345_DATA_INT_INVERT_DISABLE, ADXL345_DATA_FULLRES_ENABLE,
+//			ADXL345_DATA_JUSTIFY_LEFT, ADXL345_DATA_RANGE_2G);
+
+//	if (testConnection()) {
+//
+//	} else {
+//		while (1) {
+//		}	//Fail_Handler();
+//	}
+}
+
+void ADXL345::calibrateStationary(const uint16_t numberOfSamples) {
 	char buf[50];
 	uint8_t numberOfCharsInBuffer;
-	int32_t sum[3] = { 0 };
-	int64_t sumOfSqueres[3] = { 0 };
-	uint32_t stdDev[3] = { 0 };
-
-	const uint8_t OVERSAMPLING = 10;
-	const uint8_t DECIMAL = 100;
 	int16_t it = 0;
+	numberOfCharsInBuffer = sprintf(buf, "Accelerometer calibration Start\n");
+	VCP_write(buf, numberOfCharsInBuffer);
 
-	int32_t average[3] = { 0 };
-	int16_t max[3] = { -1000, -1000, -1000 }, min[3] = { 1000, 1000, 1000 }, temp[3];
+	float32_t sum, scalingFactor;
+	for (uint8_t i = 0; i < numberOfSamples; ++i) {
+		update();
+		sum += getGNorm();
+		Delay::delay_ms(1);
+	}
+	scalingFactor = 9.81*(sum/numberOfSamples);
+	gain[0]*=scalingFactor;
+	gain[1]*=scalingFactor;
+	gain[2]*=scalingFactor;
 
-	if (doFullCalibartion) {
-		numberOfCharsInBuffer = sprintf(buf, "Accelerometer calibration Start\n");
-		VCP_write(buf, numberOfCharsInBuffer);
+	numberOfCharsInBuffer = sprintf(buf, "Accelerometer calibration End\n");
+	VCP_write(buf, numberOfCharsInBuffer);
+}
 
-		while ((++it) <= numberOfSamples) {
-			for (uint8_t i = 0; i <= OVERSAMPLING; ++i) {
-				I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, (uint8_t *) &temp);
-				Delay::delay_ms(1);
-				axis[0] += temp[0];
-				axis[1] += temp[1];
-				axis[2] += temp[2];
-			}
-
-			for (uint8_t axisNumber = 0; axisNumber < 3; axisNumber++) {
-				axis[axisNumber] /= OVERSAMPLING;
-
-				//Update sum and sum of squeres
-				sum[axisNumber] += axis[axisNumber];
-				sumOfSqueres[axisNumber] += axis[axisNumber] * axis[axisNumber];
-
-				//Find max value
-				if (axis[axisNumber] > max[axisNumber]) {
-					max[axisNumber] = axis[axisNumber];
-				}
-
-				//Find min value
-				if (axis[axisNumber] < min[axisNumber]) {
-					min[axisNumber] = axis[axisNumber];
-				}
-			}
-		}
-
-		//Compute final statistic.
-		for (uint8_t axisNumber = 0; axisNumber < 3; axisNumber++) {
-			stdDev[axisNumber] = DECIMAL / ((float32_t) (numberOfSamples - 1))
-					* (sumOfSqueres[axisNumber]
-							- (int64_t) (sum[axisNumber])
-									* (sum[axisNumber] / (float32_t) (numberOfSamples)));
-			average[axisNumber] = sum[axisNumber] * DECIMAL / (float32_t) (numberOfSamples);
-		}
-
-		//Send it via VCom
-		numberOfCharsInBuffer = sprintf(buf, "%ld,%ld,%ld,%lu,%lu,%lu\n", average[0], average[1],
-				average[2], stdDev[0], stdDev[1], stdDev[2]);
-		VCP_write(buf, numberOfCharsInBuffer);
-		numberOfCharsInBuffer = sprintf(buf, "%d,%d,%d,%d,%d,%d\r\n", min[0], min[1], min[2],
-				max[0], max[1], max[2]);
-		VCP_write(buf, numberOfCharsInBuffer);
-		numberOfCharsInBuffer = sprintf(buf, "Accelerometer calibration End\n");
-		VCP_write(buf, numberOfCharsInBuffer);
-	} else {
+void ADXL345::loadCalibration() {
 		offset[0] = 5;
 		offset[1] = 10;
 		offset[2] = 0;
 		gain[0] = 3.92;
 		gain[1] = 3.92;
 		gain[2] = 3.92;
-//		//Dla 4g
+//		Dla 4g
 //		offset[0] = 24;
 //		offset[1] = 30;
 //		offset[2] = 12;
-	}
 }
 
 void ADXL345::update() {
 	updateRaw();
-//	//TODO: implement scaling factor!
-//	axis[0] = (int16_t) (axis[0] * ADXL345_2G_CALIBRATED_FACTOR);
-//	axis[1] = (int16_t) (axis[1] * ADXL345_2G_CALIBRATED_FACTOR);
-//	axis[2] = (int16_t) (axis[2] * ADXL345_2G_CALIBRATED_FACTOR);
-
 	axis_f[0] = axis[0] + offset[0];
 	axis_f[1] = axis[1] + offset[1];
 	axis_f[2] = axis[2] + offset[2];
@@ -128,12 +114,15 @@ void ADXL345::update() {
 }
 
 void ADXL345::updateRaw() {
-
 	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, (uint8_t *) &axis);
-
 }
 
-
+float32_t ADXL345::getGNorm() {
+	float32_t res,in;
+	in = axis_f[0]*axis_f[0]+axis_f[1]*axis_f[1]+axis_f[2]*axis_f[2];
+	arm_sqrt_f32(in, &res);
+	return res;
+}
 /*
  * @brief: Test ADXL345 module address
  * @param[in]: none

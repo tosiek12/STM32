@@ -139,7 +139,8 @@ class ITG3200 {
         void test(NokiaLCD & nokia);
         void update();
         void updateRaw();
-        void calibrate(bool doFullCalibartion, const uint16_t numberOfSamples);
+        void calibrateStationary(const uint16_t numberOfSamples);
+
         void getOversampledValueAndSendViaCOM(const uint8_t numberOfSamples);
 
         // WHO_AM_I register
@@ -201,6 +202,7 @@ class ITG3200 {
         float32_t gain[3];
         uint8_t devAddr;
         uint8_t buffer[6];
+        void loadCalibration();
 };
 
 #endif /* ITG3200_H_ */

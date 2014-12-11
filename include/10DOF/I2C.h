@@ -12,7 +12,7 @@
 #include "../Delay/delay.h"
 #include "main.h"
 
-#define TIMEOUT 4000
+#define TIMEOUT 400
 
 #define  I2C_SCL_PORT GPIOB
 #define I2C_SCL_PIN GPIO_PIN_6
@@ -21,7 +21,7 @@
 #define I2C_SDA_PIN GPIO_PIN_9
 
 class I2C {
-private:
+public:
 	static I2C_HandleTypeDef hi2c;
 	static uint8_t initialized;
 	static void resetBus() {
@@ -69,6 +69,10 @@ private:
 		/* Peripheral clock enable */
 		__GPIOB_CLK_ENABLE();
 
+	    /**I2C1 GPIO Configuration
+	    PB6     ------> I2C1_SCL
+	    PB9     ------> I2C1_SDA
+	    */
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
 		GPIO_InitStruct.Pull = GPIO_NOPULL;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
@@ -104,10 +108,20 @@ public:
 		hi2c.Init.GeneralCallMode = I2C_GENERALCALL_DISABLED;
 		hi2c.Init.NoStretchMode = I2C_NOSTRETCH_DISABLED;
 
+//	    /* Peripheral interrupt init*/
+//	    HAL_NVIC_SetPriority((IRQn_Type)I2C1_EV_IRQn, 1, 1);
+//	    HAL_NVIC_EnableIRQ((IRQn_Type)I2C1_EV_IRQn);
+//	    HAL_NVIC_SetPriority((IRQn_Type)I2C1_ER_IRQn, 1, 1);
+//	    HAL_NVIC_EnableIRQ((IRQn_Type)I2C1_ER_IRQn);
+
 		if(HAL_I2C_Init(&hi2c)!= HAL_OK) {
 			Error_Handler();
 		}
 		Delay::delay_ms(2);
+
+//	    /* Enable EVT, BUF and ERR interrupt */
+//	    __HAL_I2C_ENABLE_IT(&hi2c, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
+
 		initialized = 1;
 	}
 

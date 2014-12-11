@@ -109,8 +109,8 @@ public:
 	inline void __attribute__((always_inline)) selfTests(NokiaLCD &nokiaLCD) {
 		magnetometer.selfTest(nokiaLCD);
 	}
-	void calibrateAllSensors();
-	void calibrateGyroProcedure();
+	void calibrateGyroAndAccStationary();
+
 	void timerAction();
 
 	void computePitchRollTilt();

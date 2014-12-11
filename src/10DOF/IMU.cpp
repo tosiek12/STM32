@@ -133,17 +133,12 @@ void IMU::sendGatheredDataViaVCOM() {
 	}
 }
 
-void IMU::calibrateAllSensors() {
-	gyro.calibrate(false,100);
-	accelerometer.calibrate(false, 100);
-	magnetometer.calibrate(false);
+void IMU::calibrateGyroAndAccStationary() {
+	stopTimerUpdate();
+	accelerometer.calibrateStationary(100);
+	gyro.calibrateStationary(100);
+	startTimerUpdate();
 }
-
-void IMU::calibrateGyroProcedure() {
-
-	Delay::delay_ms(1);
-}
-
 
 IMU::IMU() :
 		gyro(), accelerometer(), magnetometer(), pressure() {
@@ -157,11 +152,15 @@ IMU::IMU() :
 void IMU::initialize() {
 	I2C::initialize();
 
-	//gyro.initialize();
+//	accelerometer.initialize2();
+//
+//	while(1) {
+//
+//	}
 	accelerometer.initialize();
+	gyro.initialize();
 	magnetometer.initialize();
 	pressure.initialize();
-	calibrateAllSensors();
 
 	initializeTimerForUpdate();
 }

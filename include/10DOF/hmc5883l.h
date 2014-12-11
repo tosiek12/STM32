@@ -169,6 +169,7 @@ class HMC5883L {
         uint8_t devAddr;
         uint8_t buffer[6];
         uint8_t mode;
+        void loadCalibration();
 };
 
 #endif /* _HMC5883L_H_ */

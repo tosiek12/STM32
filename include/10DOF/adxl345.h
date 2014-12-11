@@ -319,10 +319,13 @@ public:
 	}
 
 	void initialize();
+	void initialize2();
+
 	uint8_t testConnection();
 	void update();
 	void updateRaw();
-	void calibrate(bool doFullCalibartion, const uint16_t numberOfSamples);
+	void calibrateStationary(const uint16_t numberOfSamples);
+	float32_t getGNorm();
 
 	// WHO_AM_I register
 	uint8_t getDeviceID();
@@ -401,6 +404,7 @@ private:
     int16_t offset[3];
     float32_t gain[3];
 	uint8_t devAddr;
+	void loadCalibration();
 };
 
 #endif /* ADXL345_H_ */

@@ -17,13 +17,14 @@ void ITG3200::initialize() {
 	setClockSource(ITG3200_CLOCK_PLL_XGYRO);
 	setDLPFBandwidth(ITG3200_DLPF_BW_256);
 //    setRate(0);
+	loadCalibration();
 
-	if (testConnection()) {
-
-	} else {
-		while (1) {
-		}	//Fail_Handler();
-	}
+//	if (testConnection()) {
+//
+//	} else {
+//		while (1) {
+//		}	//Fail_Handler();
+//	}
 }
 
 /** Verify the I2C connection.
@@ -83,33 +84,37 @@ void ITG3200::getOversampledValueAndSendViaCOM(const uint8_t numberOfSamples) {
 	 VCP_write(buf, numberOfChars);*/
 }
 
-void ITG3200::calibrate(bool doFullCalibartion, const uint16_t numberOfSamples) {
-	char buf[50];
-	uint8_t numberOfChars;
-	int32_t sum[3] = { 0 };
-	int64_t sumOfSqueres[3] = { 0 };
-	uint32_t stdDev[3] = { 0 };
-
-	const uint8_t oversampling = 10;
-	const uint8_t decimal = 100;
-	int16_t it = 0;
-
-	if (doFullCalibartion) {
-		numberOfChars = sprintf(buf, "Gyro calibration Start");
-		VCP_write(buf, numberOfChars);
-
-		numberOfChars = sprintf(buf, "Gyro calibration End");
-		VCP_write(buf, numberOfChars);
-	} else {
-		offset[0] = 461;
-		offset[1] = -243;
-		offset[2] = 58;
-		gain[0] = (PI)/20720;
-		gain[1] = (PI)/20720;
-		gain[2] = (PI)/20720;
-	}
+void ITG3200::loadCalibration() {
+	offset[0] = 461;
+	offset[1] = -243;
+	offset[2] = 58;
+	gain[0] = (PI)/20720;
+	gain[1] = (PI)/20720;
+	gain[2] = (PI)/20720;
 }
 
+void ITG3200::calibrateStationary(const uint16_t numberOfSamples) {
+	char buf[50];
+	uint8_t numberOfChars;
+	volatile int32_t sum[3] = { 0 };
+
+	numberOfChars = sprintf(buf, "Gyro calibration Start\n");
+	VCP_write(buf, numberOfChars);
+
+	for (uint8_t i = 0; i < numberOfSamples; ++i) {
+		updateRaw();
+		sum[0] += axis[0];
+		sum[1] += axis[1];
+		sum[2] += axis[2];
+		Delay::delay_ms(1);
+	}
+	offset[0] = sum[0]/numberOfSamples;
+	offset[1] = sum[1]/numberOfSamples;
+	offset[2] = sum[2]/numberOfSamples;
+
+	numberOfChars = sprintf(buf, "Gyro calibration End\n");
+	VCP_write(buf, numberOfChars);
+}
 // WHO_AM_I register
 
 /** Get Device ID.

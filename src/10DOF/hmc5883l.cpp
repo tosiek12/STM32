@@ -63,49 +63,47 @@ uint8_t HMC5883L::selfTest(NokiaLCD &nokia) {
 	return 1;
 }
 
+void HMC5883L::loadCalibration() {
+	offset[0] = 120;
+	offset[1] = 118;
+	offset[2] = 31;
+
+	gain[0][0] = 0.9670;
+	gain[0][1] =-0.0091;
+	gain[0][2] = 0.0265;
+
+	gain[1][0] =-0.0091;
+	gain[1][1] = 0.9517;
+	gain[1][2] = 0.0071;
+
+	gain[2][0] = 0.0265;
+	gain[2][1] = 0.0071;
+	gain[2][2] = 1.0875;
+}
 void HMC5883L::calibrate(bool doFullCalibartion) {
 	int16_t Max_x = 0, Max_y = 0, Max_z = 0;
 	int16_t Min_x = 0, Min_y = 0, Min_z = 0;
-	if (doFullCalibartion) {
-		while (true) {
-			getHeading(&axis[0], &axis[1], &axis[2]);
-			if (axis[0] > Max_x) {
-				Max_x = axis[0];
-			}
-			if (axis[1] > Max_y) {
-				Max_y = axis[1];
-			}
-			if (axis[2] > Max_z) {
-				Max_z = axis[2];
-			}
-
-			if (axis[0] < Min_x) {
-				Min_x = axis[0];
-			}
-			if (axis[1] < Min_y) {
-				Min_y = axis[1];
-			}
-			if (axis[2] < Min_z) {
-				Min_z = axis[2];
-			}
+	while (doFullCalibartion) {
+		getHeading(&axis[0], &axis[1], &axis[2]);
+		if (axis[0] > Max_x) {
+			Max_x = axis[0];
 		}
-	} else {
-		//Set offset - z wielu serii
-		offset[0] = 120;
-		offset[1] = 118;
-		offset[2] = 31;
+		if (axis[1] > Max_y) {
+			Max_y = axis[1];
+		}
+		if (axis[2] > Max_z) {
+			Max_z = axis[2];
+		}
 
-		gain[0][0] = 0.9670;
-		gain[0][1] =-0.0091;
-		gain[0][2] = 0.0265;
-
-		gain[1][0] =-0.0091;
-		gain[1][1] = 0.9517;
-		gain[1][2] = 0.0071;
-
-		gain[2][0] = 0.0265;
-		gain[2][1] = 0.0071;
-		gain[2][2] = 1.0875;
+		if (axis[0] < Min_x) {
+			Min_x = axis[0];
+		}
+		if (axis[1] < Min_y) {
+			Min_y = axis[1];
+		}
+		if (axis[2] < Min_z) {
+			Min_z = axis[2];
+		}
 	}
 }
 
@@ -170,6 +168,7 @@ void HMC5883L::initialize() {
 
 	// write MODE register
 	setMode(HMC5883L_MODE_CONTINUOUS);
+	loadCalibration();
 }
 
 /** Verify the I2C connection.
@@ -315,6 +314,7 @@ void HMC5883L::setGain(uint8_t gain_) {
 	switch (gain_) {
 	case HMC5883L_GAIN_1370:
 		scalingFactor = 0.73;	//(1000.0/HMC5883L_COEF_GAIN_1370)
+		break;
 	case HMC5883L_GAIN_1090:
 		scalingFactor = 0.92;
 		break;

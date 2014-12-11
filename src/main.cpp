@@ -61,6 +61,8 @@ int main() {
 	NokiaLCD nokiaLCD;	//Create, and initialize
 	GPIO buttons;
 	//buttons.InitButtons();
+	GPS_Init();
+
 
 	imu10DOF.initialize();
 	imu10DOF.startTimerUpdate();
@@ -83,7 +85,6 @@ int main() {
 	//pwm.startPwmChannel(TIM_CHANNEL_1);
 	//pwm.setChannelRawValue(1, 1000);
 
-	GPS_Init();
 	while (1) {
 		buttons.mainBegginingUpdate();
 		//GPS_Send();
@@ -130,7 +131,10 @@ int main() {
 				imu10DOF.sendAngleViaVirtualCom();
 				break;
 			case 'C':
-				imu10DOF.calibrateAllSensors();
+				imu10DOF.stopTimerUpdate();
+				imu10DOF.calibrateGyroAndAccStationary();
+//				imu10DOF.initialize();
+				imu10DOF.startTimerUpdate();
 				break;
 			case 'X':
 				break;
@@ -176,7 +180,7 @@ int main() {
 			memset(buf, 0, 100);
 		}
 
-		//Sprawdz cy trzeba i wykonaj akcje:
+		//Sprawdz czy trzeba i wykonaj akcje:
 		//imu10DOF.sendViaVirtualCom();
 		if (imu10DOF.isDataGatheringComplete()) {
 			imu10DOF.sendGatheredDataViaVCOM();
