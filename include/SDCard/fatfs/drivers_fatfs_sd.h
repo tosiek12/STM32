@@ -61,6 +61,7 @@ DSTATUS TM_FATFS_SD_disk_status(void);
 DRESULT TM_FATFS_SD_disk_read(BYTE* buff, DWORD sector, UINT count);
 DRESULT TM_FATFS_SD_disk_write(const BYTE* buff, DWORD sector, UINT count);
 DRESULT TM_FATFS_SD_disk_ioctl(BYTE cmd, void* buff);
+void testBinaryCommunication();
 
 #endif
 

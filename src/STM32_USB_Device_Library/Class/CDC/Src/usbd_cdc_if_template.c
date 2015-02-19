@@ -27,7 +27,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if_template.h"
-
+#include "main.h"
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
  * @{
  */
@@ -81,10 +81,20 @@ USBD_CDC_LineCodingTypeDef linecoding = { 460800, /* baud rate*/	//115200
 extern USBD_HandleTypeDef USBD_Device;
 
 static struct {
-	uint8_t Buffer[CDC_DATA_HS_OUT_PACKET_SIZE];
-	int Position, Size;
-	char ReadDone;
+	uint8_t Buffer[CDC_DATA_HS_IN_PACKET_SIZE];
+	uint16_t Position;
+	uint16_t Size;
+	uint8_t ReadDone;
 } s_RxBuffer;
+
+static struct {
+	uint8_t Buffer[CDC_DATA_HS_MAX_PACKET_SIZE];
+	uint16_t Position;
+	uint16_t SizeOfDataToWrite;
+	uint8_t WriteDone;
+} s_TxBuffer;
+
+struct FrameBuffer s_RxFrameBuffer;
 
 char g_VCPInitialized;
 
@@ -99,7 +109,12 @@ static int8_t TEMPLATE_Init(void) {
 	 Add your initialization code here
 	 */
 	USBD_CDC_SetRxBuffer(&USBD_Device, s_RxBuffer.Buffer);
+	USBD_CDC_SetTxBuffer(&USBD_Device, (uint8_t *) s_TxBuffer.Buffer, 0);
+
 	g_VCPInitialized = 1;
+
+	s_RxFrameBuffer.Size = 0;
+	s_RxFrameBuffer.State = eStart;
 	return (0);
 }
 
@@ -167,10 +182,13 @@ static int8_t TEMPLATE_Control(uint8_t cmd, uint8_t* pbuf, uint16_t length) {
 		pbuf[6] = linecoding.datatype;
 
 		/* Add your code here */
+
 		break;
 
 	case CDC_SET_CONTROL_LINE_STATE:
 		/* Add your code here */
+
+		//Rozlaczenie od lini
 		break;
 
 	case CDC_SEND_BREAK:
@@ -200,13 +218,73 @@ static int8_t TEMPLATE_Control(uint8_t cmd, uint8_t* pbuf, uint16_t length) {
  * @retval Result of the opeartion: USBD_OK if all operations are OK else USBD_FAIL
  */
 static int8_t TEMPLATE_Receive(uint8_t* Buf, uint32_t *Len) {
-	s_RxBuffer.Position = 0;
-	s_RxBuffer.Size = *Len;
-	s_RxBuffer.ReadDone = 1;
+	//oblsuga dekodowania ramki
+	uint8_t currentChar;
+	for(uint16_t it = 0; it<*Len; it++) {
+		currentChar = *(Buf+it);
+
+		if(currentChar == '$') {
+			s_RxFrameBuffer.State = eReciever;
+			continue;
+		}
+		if(currentChar == '\r' || currentChar == '\n') {
+			//error;
+			s_RxFrameBuffer.State = eStart;
+			continue;
+		}
+
+		switch(s_RxFrameBuffer.State) {
+		case eStart:
+			if(currentChar == '$') {
+				s_RxFrameBuffer.State = eReciever;
+			}
+			break;
+		case eReciever:
+			if(currentChar != 'C') {
+				s_RxFrameBuffer.State = eStart;	//it isn't for this device
+			} else {
+				s_RxFrameBuffer.State = eSender;
+			}
+			break;
+		case eSender:
+			//for future purpose - do nothing now.
+			s_RxFrameBuffer.Sender = currentChar;
+			s_RxFrameBuffer.State = eType;
+			break;
+		case eType:
+			s_RxFrameBuffer.Type = currentChar;
+			s_RxFrameBuffer.State = eMsg;
+			s_RxFrameBuffer.Size = 0;
+			break;
+		case eMsg:
+			if (currentChar == '*' ) {
+				s_RxFrameBuffer.State = eDone;
+				//obsluga odebranej ramki ramki
+				doFrameAction();
+
+				asm volatile ("nop");
+				s_RxFrameBuffer.State = eStart;
+				s_RxFrameBuffer.Size = 0;
+			} else if (s_RxFrameBuffer.Size == 80) {
+				//error;
+				s_RxFrameBuffer.State = eStart;
+				s_RxFrameBuffer.Size = 0;
+			} else {
+				*(s_RxFrameBuffer.Msg + s_RxFrameBuffer.Size) = currentChar;
+				++s_RxFrameBuffer.Size;
+			}
+			break;
+		}
+	}
+
+	//Wyzwzol odbieranie nastepnych danych.
+	USBD_CDC_ReceivePacket(&USBD_Device);
 	return (0);
 }
 
 int VCP_read(void *pBuffer, int size) {
+	return 0 ;
+
 	if (!s_RxBuffer.ReadDone)
 		return 0;
 
@@ -225,7 +303,72 @@ int VCP_read(void *pBuffer, int size) {
 	return todo;
 }
 
-int VCP_write(const void *pBuffer, int size) {
+//Add data to send buffer. If size is bigger than output buffer send max size.
+int VCP_write(const void *pBuffer, uint16_t size ) {
+	int todo = 0;
+	USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;
+	if (pCDC == NULL || pCDC->TxState == 1) {	//device not connected or previous transmition in proggres
+		return 0;
+	}
+	todo = MIN((CDC_DATA_HS_OUT_PACKET_SIZE - pCDC->TxLength - 1), size);
+	memcpy((s_TxBuffer.Buffer + pCDC->TxLength), pBuffer, todo);
+	USBD_CDC_SetTxBuffer(&USBD_Device, (uint8_t *) s_TxBuffer.Buffer, (pCDC->TxLength + todo));
+
+	return todo;
+}
+
+int VCP_StringWrite(const char *pBuffer) {
+	return VCP_write(pBuffer, strlen(pBuffer));
+}
+
+int VCP_Flush() {
+	USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;
+
+		if (pCDC == NULL) {	//device not connected.
+			return 0;
+		}
+		if( pCDC->TxLength != 0) {
+			if (USBD_CDC_TransmitPacket(&USBD_Device) != USBD_OK) {
+					return 0;
+				}
+				while (pCDC->TxState) {
+				} //Wait for previous transfer
+				pCDC->TxLength = 0;
+		}
+		return 1;
+}
+
+int VCP_StartWriteAndWaitTillEnd() {
+	USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;
+
+	if (pCDC == NULL) {	//device not connected.
+		return 0;
+	}
+	if( pCDC->TxLength != 0) {
+		if (USBD_CDC_TransmitPacket(&USBD_Device) != USBD_OK) {
+				return 0;
+			}
+			while (pCDC->TxState) {
+			} //Wait for previous transfer
+			pCDC->TxLength = 0;
+	}
+	return 1;
+}
+
+int VCP_isWriteComplete() {
+	USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;
+	if (pCDC == NULL || pCDC->TxState == 1) {	//device not connected or previous transmition in proggres
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
+void VCP_setTxBufferToZero() {
+s_TxBuffer.SizeOfDataToWrite = 0;
+}
+
+int VCP_write_old(const void *pBuffer, int size) {
 	if (size > CDC_DATA_HS_OUT_PACKET_SIZE) {
 		int offset;
 		for (offset = 0; offset < size; offset += CDC_DATA_HS_OUT_PACKET_SIZE) {
@@ -246,8 +389,7 @@ int VCP_write(const void *pBuffer, int size) {
 
 	while (pCDC->TxState) {
 	} //Wait for previous transfer
-
-	USBD_CDC_SetTxBuffer(&USBD_Device, (uint8_t *) pBuffer, size);
+	USBD_CDC_SetTxBuffer(&USBD_Device, (uint8_t *) s_TxBuffer.Buffer, size);
 	if (USBD_CDC_TransmitPacket(&USBD_Device) != USBD_OK)
 		return 0;
 

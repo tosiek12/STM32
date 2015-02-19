@@ -40,6 +40,7 @@ void GPS_Send();
 
 struct gpsData_t {
 	// time
+	uint8_t hhmmss[6];
 	uint8_t hour;
 	uint8_t min;
 	uint8_t sec;
@@ -49,23 +50,32 @@ struct gpsData_t {
 	uint8_t month;
 	uint8_t year;
 
-	// position
+	// position:
 	uint8_t valid;
 	int32_t lat;
 	int32_t lon;
 	uint16_t alt;
 
-	uint16_t heading;
-	uint16_t speed;
+	//Orientation:
+	uint16_t headingTruePRMC;
+	uint16_t headingMagneticPVTG;
+	uint16_t headingTruePVTG;
+	uint16_t speedInKm_h;
 
+	//Conection stats:
+	uint8_t position3D;
+	uint8_t modeGPSA;
 	uint8_t sats;
-	uint8_t hdop;
+	uint8_t satID[12];
+	uint32_t dop;
+	uint32_t hdop;
+	uint32_t vdop;
 };
 
 extern struct gpsData_t gpsdata;
 
-void GPS_Parse(uint8_t *buf, uint8_t len);
-
+void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len);
+void GPS_SendCrucialData();
 
 
 #endif

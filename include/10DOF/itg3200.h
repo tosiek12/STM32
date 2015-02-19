@@ -137,8 +137,8 @@ class ITG3200 {
         void initialize();
         uint8_t testConnection();
         void test(NokiaLCD & nokia);
-        void update();
-        void updateRaw();
+        uint8_t update();
+        uint8_t updateRaw();
         void calibrateStationary(const uint16_t numberOfSamples);
 
         void getOversampledValueAndSendViaCOM(const uint8_t numberOfSamples);

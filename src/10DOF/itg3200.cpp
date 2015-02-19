@@ -586,8 +586,10 @@ void ITG3200::setClockSource(uint8_t source) {
 	ITG3200_PWR_CLK_SEL_LENGTH, source);
 }
 
-void ITG3200::update() {
-	updateRaw();
+uint8_t ITG3200::update() {
+	if(updateRaw() == 1) {
+		return 1;
+	}
 	axis_f[0] = axis[0] + offset[0];
 	axis_f[1] = axis[1] + offset[1];
 	axis_f[2] = axis[2] + offset[2];
@@ -595,16 +597,15 @@ void ITG3200::update() {
 	axis_f[0] = axis_f[0] * gain[0];
 	axis_f[1] = axis_f[1] * gain[1];
 	axis_f[2] = axis_f[2] * gain[2];
+	return 0;
 }
 
-void ITG3200::updateRaw() {
+uint8_t ITG3200::updateRaw() {
 	if(I2C::i2c_ReadBuf(devAddr, ITG3200_RA_GYRO_XOUT_H, 6, buffer) != HAL_OK) {
-		for(uint8_t a = 100;a !=1;) {
-			--a;
-		}
+		return 1;
 	}
 	axis[0] = (((int16_t) buffer[0]) << 8) | buffer[1];
 	axis[1] = (((int16_t) buffer[2]) << 8) | buffer[3];
 	axis[2] = (((int16_t) buffer[4]) << 8) | buffer[5];
-
+	return 0;
 }

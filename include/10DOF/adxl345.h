@@ -322,8 +322,8 @@ public:
 	void initialize2();
 
 	uint8_t testConnection();
-	void update();
-	void updateRaw();
+	uint8_t update();
+	uint8_t updateRaw();
 	void calibrateStationary(const uint16_t numberOfSamples);
 	float32_t getGNorm();
 

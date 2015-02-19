@@ -36,10 +36,23 @@
 /* Exported constants --------------------------------------------------------*/
 extern USBD_CDC_ItfTypeDef  USBD_CDC_Template_fops;
 extern char g_VCPInitialized;
+struct FrameBuffer{
+	uint8_t Msg[80];
+	uint8_t Type;
+	uint8_t Sender;
+	uint8_t Size;
+	enum {eStart = 0, eReciever, eSender, eType, eMsg, eDone} State;
+};
+extern struct FrameBuffer s_RxFrameBuffer;
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 int VCP_read(void *pBuffer, int size);
-int VCP_write(const void *pBuffer, int size);
+int VCP_write(const void *pBuffer, uint16_t size );
+int VCP_StringWrite(const char *pBuffer);
+int VCP_Flush();
+int VCP_StartWriteAndWaitTillEnd();
+int VCP_isWriteComplete();
+extern void doFrameAction();
 
 #endif /* __USBD_CDC_IF_TEMPLATE_H */
 

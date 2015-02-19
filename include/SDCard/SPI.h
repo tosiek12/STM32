@@ -12,7 +12,7 @@
 #include "stm32f4xx_hal_spi.h"
 #include "../Delay/delay.h"
 
-#define TIMEOUT 1000
+#define TIMEOUT 10000
 
 class SPI {
 private:
@@ -34,7 +34,7 @@ private:
 		*/
 		GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-		GPIO_InitStruct.Pull = GPIO_PULLUP;	//by³o nopullup
+		GPIO_InitStruct.Pull = GPIO_PULLUP;	//byï¿½o nopullup
 		GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
 		GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
 		HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -84,8 +84,10 @@ public:
 		hspi1.Init.Mode = SPI_MODE_MASTER;
 		hspi1.Init.Direction = SPI_DIRECTION_2LINES;
 		hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+
 		hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
 		hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+
 		hspi1.Init.NSS = SPI_NSS_SOFT;
 		hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
 		hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;

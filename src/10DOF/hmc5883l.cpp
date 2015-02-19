@@ -107,8 +107,10 @@ void HMC5883L::calibrate(bool doFullCalibartion) {
 	}
 }
 
-void HMC5883L::update() {
-	updateRaw();
+uint8_t HMC5883L::update() {
+	if(updateRaw()) {
+		return 1;
+	}
 	//Remove offset
 	axis_f[0] = axis[0] + offset[0];
 	axis_f[1] = axis[1] + offset[1];
@@ -118,10 +120,14 @@ void HMC5883L::update() {
 	axis_f[0] = axis_f[0] * gain[0][0] + axis_f[1] * gain[0][1] + axis_f[2] * gain[0][2];
 	axis_f[1] = axis_f[0] * gain[1][0] + axis_f[1] * gain[1][1] + axis_f[2] * gain[1][2];
 	axis_f[2] = axis_f[0] * gain[2][0] + axis_f[1] * gain[2][1] + axis_f[2] * gain[2][2];
+	return 0;
 }
 
-void HMC5883L::updateRaw() {
-	getHeading(&axis[0], &axis[1], &axis[2]);
+uint8_t HMC5883L::updateRaw() {
+	if(getHeading(&axis[0], &axis[1], &axis[2])) {
+		return 1;
+	}
+	return 0;
 }
 
 /** Default constructor, uses default I2C address.
@@ -403,14 +409,17 @@ void HMC5883L::setMode(uint8_t newMode) {
  * @param z 16-bit signed integer container for Z-axis heading
  * @see HMC5883L_RA_DATAX_H
  */
-void HMC5883L::getHeading(int16_t *x, int16_t *y, int16_t *z) {
-	I2C::i2c_ReadBuf(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
+uint8_t HMC5883L::getHeading(int16_t *x, int16_t *y, int16_t *z) {
+	if(I2C::i2c_ReadBuf(devAddr, HMC5883L_RA_DATAX_H, 6, buffer)!= HAL_OK) {
+		return 1;
+	}
 	if (mode == HMC5883L_MODE_SINGLE)
 		I2C::i2c_WriteByte(devAddr, HMC5883L_RA_MODE,
 		HMC5883L_MODE_SINGLE << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
 	*x = (((int16_t) buffer[0]) << 8) | buffer[1];
 	*y = (((int16_t) buffer[4]) << 8) | buffer[5];
 	*z = (((int16_t) buffer[2]) << 8) | buffer[3];
+	return 0;
 //	if(*x == -4096) {
 //		*x = 0;
 //	}

@@ -13,7 +13,9 @@
 #include "GPIO/gpio.h"
 #include "10DOF/IMU.h"
 #include "SpeedTester/speedTester.h"
+extern "C" {
 #include "SDCard/tm_stm32f4_fatfs.h"
+}
 #include "PWM/pwm.h"
 #include "GPS/gps.h"
 
@@ -50,6 +52,13 @@ constexpr uint32_t BLINK_ON_TICKS = 1000;
  * TIM5 -> SpeedTester
  * SYSTIC -> GPIO,I2C,SPI(SDCard)
  */
+volatile uint8_t trigger = 0;
+/*
+ * [0] - imu connection [1 = ok, error, error when gathered]
+ * [1] - gps connection
+ */
+volatile uint8_t flags[10] = {};
+static uint8_t message[50];
 
 int main() {
 	USBD_Init(&USBD_Device, &VCP_Desc, 0);
@@ -61,21 +70,10 @@ int main() {
 	NokiaLCD nokiaLCD;	//Create, and initialize
 	GPIO buttons;
 	//buttons.InitButtons();
-	GPS_Init();
+	//GPS_Init();
 
-
-	imu10DOF.initialize();
-	imu10DOF.startTimerUpdate();
-
-	//Zmienne do ramki
-	char buf[100] = { 0 };
-	char *ptrNextFrame, *ptrRcvFrame, *ptrTemp, *ptrRest;
-	uint8_t lengthOfFrame = 0;
-
-	//inne
-	uint32_t cnt[5] = { 0 };
-	uint32_t numberOfChars;
-	uint8_t * pEnd;
+	//imu10DOF.initialize();
+	//imu10DOF.startTimerUpdate();
 
 	//imitate connection state
 	imu10DOF.setConnected();
@@ -84,109 +82,21 @@ int main() {
 	//pwm.PWMInit();
 	//pwm.startPwmChannel(TIM_CHANNEL_1);
 	//pwm.setChannelRawValue(1, 1000);
+	//testBinaryCommunication();
+
+	testSD();
 
 	while (1) {
 		buttons.mainBegginingUpdate();
 		//GPS_Send();
-
-		//Format ramki: [$kod,wartosc*]
-		if ((numberOfChars = VCP_read(buf, 100)) > 0) {
-			ptrRcvFrame = buf;
-			ptrNextFrame = buf;
-			lengthOfFrame += strlen(ptrNextFrame) + 1;
-			while(strchr(ptrNextFrame, '*') != NULL) {
-				ptrRcvFrame =  strchr(ptrNextFrame,'$');
-				if(ptrRcvFrame != NULL) {
-					//parsuj ramke
-					VCP_write("Parsuj \n", 8);
-					VCP_write(ptrRcvFrame, strlen(ptrRcvFrame));
-				} else {
-					//blad - brak znaku startu.
-					VCP_write("BLAD \n", 5);
-					VCP_write(ptrRcvFrame, strlen(ptrRcvFrame));
-				}
-				//Nastepna ramka
-				if(lengthOfFrame >= numberOfChars) {
-					break;
-				}
-				ptrNextFrame = (buf + lengthOfFrame);
-				lengthOfFrame += strlen(ptrNextFrame)+1;
-
-			}
-			//VCP_write("KONIEC\n", 8);
-			//VCP_write(ptrRcvFrame, strlen(ptrRcvFrame));
-
-
-			switch (buf[0]) {
-			case 'S':
-				imu10DOF.setConnected();
-				speedTester.tic();
-				break;
-			case 'E':
-				imu10DOF.setDisconnected();
-				speedTester.toc();
-				break;
-			case 'R':
-				imu10DOF.setRequestOfData();
-				imu10DOF.sendAngleViaVirtualCom();
-				break;
-			case 'C':
-				imu10DOF.stopTimerUpdate();
-				imu10DOF.calibrateGyroAndAccStationary();
-//				imu10DOF.initialize();
-				imu10DOF.startTimerUpdate();
-				break;
-			case 'X':
-				break;
-			case 'M':
-				imu10DOF.sendMahonyViaVirtualCom();
-				break;
-			case 'T':
-				if (*cnt > 1) {
-					*cnt = strtol((char *) buf + 1, (char **) &(pEnd), 10);
-					*cnt = speedTester.testTimeOfSending(*cnt);
-					numberOfChars = sprintf((char *) buf, "\ntime:\n%lu\n", *cnt);
-					VCP_write(buf, numberOfChars);
-					memset(buf, 0, 50);
-				}
-				break;
-			case 'I':
-				speedTester.tic();
-				imu10DOF.timerAction();
-				cnt[0] = speedTester.delta();
-				imu10DOF.timerAction();
-				cnt[1] = speedTester.delta();
-				imu10DOF.timerAction();
-				cnt[2] = speedTester.delta();
-				imu10DOF.timerAction();
-				cnt[3] = speedTester.toc();
-
-				numberOfChars = sprintf((char *) buf, "\ntime:\n%lu\n%lu\n%lu\n%lu\n", cnt[0],
-						cnt[1], cnt[2], cnt[3]);
-				VCP_write(buf, numberOfChars);
-				break;
-			case 'Z':
-				VCP_write("Connected", 9);
-				break;
-			case 'G':
-				if (numberOfChars > 1) {
-					*cnt = atol((char *) buf + 1);
-					imu10DOF.requestDataGathering(*cnt);
-				}
-				break;
-			default:
-				break;
-			}
-			memset(buf, 0, 100);
-		}
-
 		//Sprawdz czy trzeba i wykonaj akcje:
 		//imu10DOF.sendViaVirtualCom();
+		flags[0] = 1;
 		if (imu10DOF.isDataGatheringComplete()) {
 			imu10DOF.sendGatheredDataViaVCOM();
 		}
-		imu10DOF.doAllComputation();
 
+		VCP_StartWriteAndWaitTillEnd();
 
 		//Obsluga przyciskow:
 		if (buttons.getButtonState(0) == GPIO::longPush) {
@@ -199,8 +109,84 @@ int main() {
 		buttons.mainEndUpdate();
 	}
 }
+extern "C" {
+void doFrameAction(void) {
+	//Zmienne do ramki
+	char buf[100] = { 0 };
+	//inne
+	uint32_t cnt[5] = { 0 };
+	uint16_t val;
+	uint8_t * pEnd;
+	uint32_t numberOfChars;
 
-void Error_Handler() {
+	switch (s_RxFrameBuffer.Type) {
+	case 'S':
+		imu10DOF.setConnected();
+		speedTester.tic();
+		break;
+	case 'E':
+		imu10DOF.setDisconnected();
+		speedTester.toc();
+		break;
+	case 'R':
+		imu10DOF.setRequestOfData();
+		imu10DOF.sendAngleViaVirtualCom();
+		break;
+	case 'C':
+		imu10DOF.stopTimerUpdate();
+		imu10DOF.calibrateGyroAndAccStationary();
+//				imu10DOF.initialize();
+		imu10DOF.startTimerUpdate();
+		break;
+	case 'X':
+		break;
+	case 'M':
+		imu10DOF.sendMahonyViaVirtualCom();
+		break;
+	case 'T':
+		pEnd= s_RxFrameBuffer.Msg + s_RxFrameBuffer.Size;
+		val = strtol((char *) &s_RxFrameBuffer.Msg, (char **) &pEnd, 10);
+		val = speedTester.testTimeOfSending(val);
+		numberOfChars = sprintf((char *) buf, "\ntime:\n%lu\n", val);
+		VCP_write(buf, numberOfChars);
+		memset(buf, 0, 50);
+		break;
+	case 'I':
+		speedTester.tic();
+		imu10DOF.timerAction();
+		cnt[0] = speedTester.delta();
+		imu10DOF.timerAction();
+		cnt[1] = speedTester.delta();
+		imu10DOF.timerAction();
+		cnt[2] = speedTester.delta();
+		imu10DOF.timerAction();
+		cnt[3] = speedTester.toc();
+
+		numberOfChars = sprintf((char *) buf, "\ntime:\n%lu\n%lu\n%lu\n%lu\n", cnt[0],
+				cnt[1], cnt[2], cnt[3]);
+		VCP_write(buf, numberOfChars);
+		break;
+	case 'Z':
+		trigger = 1;
+		VCP_write("Connected\n", 10);
+		break;
+	case 'G':
+		pEnd= s_RxFrameBuffer.Msg + s_RxFrameBuffer.Size;
+		val = strtol((char *) &s_RxFrameBuffer.Msg, (char **) &pEnd, 10);
+		imu10DOF.requestDataGathering(val);
+		break;
+	case 'A':
+		VCP_StringWrite("Start: Testing SD-Card\n");
+		testBinaryCommunication();
+		VCP_StringWrite("End: Testing SD-Card\n");
+		break;
+	default:
+		break;
+	}
+	memset(buf, 0, 100);
+}
+}
+void Error_Handler(void) {
 
 	while (1) {
 	}

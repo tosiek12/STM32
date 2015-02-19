@@ -4,6 +4,7 @@
 
 #include "SDCard/fatfs/drivers_fatfs_sd.h"
 
+#include "usbd_cdc_if_template.h"
 #include "SDCard/fatfs/diskio.h"
 #include "SDCard/SPI.h"
 
@@ -320,6 +321,75 @@ void testInit() {
 
 }
 
+void testBinaryCommunication() {
+	BYTE n, cmd, ty, ocr[4];
+
+		FATFS_DEBUG_SEND_USART("disk_initialize: inside");
+
+		//Initialize CS pin
+		TM_FATFS_InitPins();
+		init_spi();
+
+		testInit();
+
+		if (!TM_FATFS_Detect()) {
+			//return STA_NODISK;
+		}
+
+		// start MMC in SPI mode
+		for (n = 10; n; n--) {
+			xchg_spi(0xFF);	 // send 10*8=80 clock pulses
+		}
+		ty = 0;
+		if (send_cmd(CMD0, 0) == 1) { /* Put the card SPI/Idle state */
+			FATFS_DEBUG_SEND_USART("disk_initialize: CMD0 = 1");
+			TimeSPI = (1000); /* Initialization timeout = 1 sec */
+			if (send_cmd(CMD8, 0x1AA) == 1) { /* SDv2? */
+				for (n = 0; n < 4; n++)
+					ocr[n] = xchg_spi(0xFF); /* Get 32 bit return value of R7 resp */
+				if (ocr[2] == 0x01 && ocr[3] == 0xAA) { /* Is the card supports vcc of 2.7-3.6V? */
+					while ((TimeSPI != 0) && send_cmd(ACMD41, 1UL << 30))
+						; /* Wait for end of initialization with ACMD41(HCS) */
+					if ((TimeSPI != 0) && send_cmd(CMD58, 0) == 0) { /* Check CCS bit in the OCR */
+						for (n = 0; n < 4; n++) {
+							ocr[n] = xchg_spi(0xFF);
+						}
+						ty = (ocr[0] & 0x40) ? CT_SD2 | CT_BLOCK : CT_SD2; /* Card id SDv2 */
+					}
+				}
+			} else { /* Not SDv2 card */
+				if (send_cmd(ACMD41, 0) <= 1) { /* SDv1 or MMC? */
+					ty = CT_SD1;
+					cmd = ACMD41; /* SDv1 (ACMD41(0)) */
+				} else {
+					ty = CT_MMC;
+					cmd = CMD1; /* MMCv3 (CMD1(0)) */
+				}
+				while ((TimeSPI != 0) && send_cmd(cmd, 0))
+					; /* Wait for end of initialization */
+				if ((TimeSPI != 0) || send_cmd(CMD16, 512) != 0) { /* Set block length: 512 */
+					ty = 0;
+				}
+			}
+		}
+		TM_FATFS_SD_CardType = ty; /* Card type */
+		FATFS_DEBUG_SEND_USART("disk_initialize: deselecting");
+		deselect();
+
+		if (ty) { /* OK */
+			TM_FATFS_SD_Stat &= ~STA_NOINIT; /* Clear STA_NOINIT flag */
+		} else { /* Failed */
+			TM_FATFS_SD_Stat = STA_NOINIT;
+		}
+
+		if (!TM_FATFS_WriteEnabled()) {
+			TM_FATFS_SD_Stat |= STA_PROTECT;
+		} else {
+			TM_FATFS_SD_Stat &= ~STA_PROTECT;
+		}
+
+	//return TM_FATFS_SD_Stat;
+}
 DSTATUS TM_FATFS_SD_disk_initialize(void) {
 	BYTE n, cmd, ty, ocr[4];
 

@@ -10,21 +10,34 @@ extern "C" {
 #include <usbd_cdc_if_template.h>
 }
 #include "10DOF/Filters/MahonyAHRS.h"
-
+#include "GPS/gps.h"
 // Global variable //
 IMU imu10DOF;
 
 void IMU::timerAction() {
 	if(computationInProgress == 1) {
 		error = 1;
+		VCP_write("$PCE", 4);
+		VCP_write("OVF", 8);
+		VCP_write("*", 1);
 	}
 	if (newDataAvailable == 1) {
 
 		//return;
 	}
-	accelerometer.update();
-	gyro.update();
-	magnetometer.update();
+	volatile uint8_t res[3];
+	res[0] = accelerometer.update();
+	res[1] = gyro.update();
+	res[2] = magnetometer.update();
+
+	GPS_SendCrucialData();
+
+	if(res[0] || res[1] || res[2]) {
+		VCP_write("$PCE", 4);
+		VCP_write("Czujniki", 8);
+		VCP_write("*", 1);
+	}
+	doAllComputation();
 
 
 	/* Save data to temporary buffer */
@@ -93,7 +106,7 @@ uint8_t IMU::sendViaVirtualCom() {
 void IMU::sendMahonyViaVirtualCom() {
 	uint16_t size;
 	uint8_t buff[50];
-	size = sprintf((char*) buff, "%d,%d,%d,%d\n", (int16_t)(eulerAnglesInRadMahony[0]*1000),(int16_t)(eulerAnglesInRadMahony[1]*1000),(int16_t)(eulerAnglesInRadMahony[2]*1000));
+	size = sprintf((char*) buff, "%d,%d,%d\n", (int16_t)(eulerAnglesInRadMahony[0]*1000),(int16_t)(eulerAnglesInRadMahony[1]*1000),(int16_t)(eulerAnglesInRadMahony[2]*1000));
 	VCP_write((void *) buff, size);
 }
 
@@ -103,9 +116,11 @@ void IMU::sendAngleViaVirtualCom() {
 	if ((request == 1) && (connected == 1)) {
 		uint16_t it = 0, size;
 		uint8_t buff[50];
-		size = sprintf((char*) buff, "%d,%d,%d,%d\n", (int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
+		size = sprintf((char*) buff, "x:%d,y:%d,z:%d", (int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
+
+		VCP_write("$PCA", 4);
 		VCP_write((void *) buff, size);
-		//VCP_write("\n", 1);
+		VCP_write("*", 1);
 		request = 0;
 	}
 }
@@ -126,6 +141,7 @@ void IMU::sendGatheredDataViaVCOM() {
 			size = sprintf((char*) buff, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", pTemp[0], pTemp[1], pTemp[2],
 					pTemp[3], pTemp[4], pTemp[5], pTemp[6], pTemp[7], pTemp[8]);
 			VCP_write((void *) buff, size);
+			VCP_Flush();
 		}
 		numberOfGatheredSamples = 0;
 		numberOfSamplesToGather = 0;
@@ -185,13 +201,13 @@ void IMU::computeYaw() {
 			+ arm_cos_f32(XRollAngle) * arm_sin_f32(YPitchAngle) * mag[2];
 	ZYawAngle = atan2f(arg1, arg2);
 
-	//Correct declination
-	//ZYawAngle += (5.0 + (16.0 / 60.0))*PI/180.0; //Positive declination.
-	if (ZYawAngle < 0) {
-		ZYawAngle += 2 * PI;
-	} else if (ZYawAngle > 2 * PI) {
-		ZYawAngle -= 2 * PI;
-	}
+	//Correct declination, and change to compass angles
+//	ZYawAngle += (5.0 + (16.0 / 60.0))*PI/180.0; //Positive declination.
+//	if (ZYawAngle < 0) {
+//		ZYawAngle += 2 * PI;
+//	} else if (ZYawAngle > 2 * PI) {
+//		ZYawAngle -= 2 * PI;
+//	}
 }
 
 void IMU::computePitchRollTilt() {

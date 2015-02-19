@@ -128,8 +128,8 @@ class HMC5883L {
         uint8_t selfTest(NokiaLCD &nokia);
 
         void calibrate(bool doFullCalibartion);
-        void update();
-        void updateRaw();
+        uint8_t update();
+        uint8_t updateRaw();
 
         // CONFIG_A register
         uint8_t getSampleAveraging();
@@ -148,7 +148,7 @@ class HMC5883L {
         void setMode(uint8_t mode);
 
         // DATA* registers
-        void getHeading(int16_t *x, int16_t *y, int16_t *z);
+        uint8_t getHeading(int16_t *x, int16_t *y, int16_t *z);
         int16_t getHeadingX();
         int16_t getHeadingY();
         int16_t getHeadingZ();

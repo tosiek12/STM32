@@ -74,7 +74,7 @@ void ADXL345::calibrateStationary(const uint16_t numberOfSamples) {
 	numberOfCharsInBuffer = sprintf(buf, "Accelerometer calibration Start\n");
 	VCP_write(buf, numberOfCharsInBuffer);
 
-	float32_t sum, scalingFactor;
+	float32_t sum = 0, scalingFactor = 0;
 	for (uint8_t i = 0; i < numberOfSamples; ++i) {
 		update();
 		sum += getGNorm();
@@ -102,8 +102,10 @@ void ADXL345::loadCalibration() {
 //		offset[2] = 12;
 }
 
-void ADXL345::update() {
-	updateRaw();
+uint8_t ADXL345::update() {
+	if(updateRaw() == 1) {
+		return 1;
+	}
 	axis_f[0] = axis[0] + offset[0];
 	axis_f[1] = axis[1] + offset[1];
 	axis_f[2] = axis[2] + offset[2];
@@ -111,10 +113,14 @@ void ADXL345::update() {
 	axis_f[0] = axis_f[0] * gain[0];
 	axis_f[1] = axis_f[1] * gain[1];
 	axis_f[2] = axis_f[2] * gain[2];
+	return 0;
 }
 
-void ADXL345::updateRaw() {
-	I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, (uint8_t *) &axis);
+uint8_t ADXL345::updateRaw() {
+	if(I2C::i2c_ReadBuf(I2C_ID_ADXL345, ADXL345_RA_DATAX0, 6, (uint8_t *) &axis) != HAL_OK) {
+		return 1;
+	}
+	return 0;
 }
 
 float32_t ADXL345::getGNorm() {
