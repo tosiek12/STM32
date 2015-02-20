@@ -76,24 +76,17 @@ int main() {
 	//buttons.InitButtons();
 	//GPS_Init();
 
+
 	//imu10DOF.initialize();
 	//imu10DOF.startTimerUpdate();
+	imu10DOF.setConnected();	//imitate connection state
 
-	//imitate connection state
-	imu10DOF.setConnected();
 	//speedTester.tic();
 
 	//pwm.PWMInit();
 	//pwm.startPwmChannel(TIM_CHANNEL_1);
 	//pwm.setChannelRawValue(1, 1000);
-	//testBinaryCommunication();
-
-	//testSD();
-
 	SPI_SD_Init();
-	testCreatingFiles();
-
-	testCreatingFiles2();
 
 	while (1) {
 		buttons.mainBegginingUpdate();
