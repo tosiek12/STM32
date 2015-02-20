@@ -30,10 +30,8 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../system/include/stm32f4-hal/stm32f4xx_ll_usb.h \
  ../system/include/cmsis/arm_math.h ../include/Delay/Delay.h \
  ../system/include/cmsis/cmsis_device.h \
- ../system/include/cmsis/stm32f4xx.h \
- ../include/SDCard/fatfs/drivers_fatfs_sd.h \
- ../include/SDCard/fatfs/diskio.h ../include/SDCard/fatfs/integer.h \
- ../include/NokiaLCD/nokiaLCD.h ../include/NokiaLCD/../Delay/delay.h \
+ ../system/include/cmsis/stm32f4xx.h ../include/NokiaLCD/nokiaLCD.h \
+ ../include/NokiaLCD/../Delay/delay.h \
  ../include/NokiaLCD/english_6x8_pixel.h ../include/NokiaLCD/bmp_pixel.h \
  ../include/GPIO/gpio.h ../include/10DOF/IMU.h \
  ../include/10DOF/../NokiaLCD/nokiaLCD.h \
@@ -41,9 +39,7 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../include/10DOF/itg3200.h ../include/10DOF/adxl345.h \
  ../include/Delay/delay.h ../include/10DOF/hmc5883l.h \
  ../include/10DOF/bmp085.h ../include/10DOF/Filters/Kalman.h \
- ../include/SpeedTester/speedTester.h \
- ../include/SDCard/tm_stm32f4_fatfs.h ../include/SDCard/fatfs/ff.h \
- ../include/SDCard/fatfs/ffconf.h ../include/PWM/pwm.h \
+ ../include/SpeedTester/speedTester.h ../include/PWM/pwm.h \
  ../include/GPS/gps.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../include/usbd_conf.h \
@@ -56,7 +52,9 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../include/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc_if_template.h \
  ../include/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h \
  ../include/usbd_desc.h \
- ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h
+ ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
+ ../include/SD/spi_sd.h ../include/SD/ff.h ../include/SD/integer.h \
+ ../include/SD/ffconf.h ../include/SD/tm_stm32f4_fatfs.h
 
 ../system/include/diag/Trace.h:
 
@@ -130,12 +128,6 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../system/include/cmsis/stm32f4xx.h:
 
-../include/SDCard/fatfs/drivers_fatfs_sd.h:
-
-../include/SDCard/fatfs/diskio.h:
-
-../include/SDCard/fatfs/integer.h:
-
 ../include/NokiaLCD/nokiaLCD.h:
 
 ../include/NokiaLCD/../Delay/delay.h:
@@ -168,12 +160,6 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../include/SpeedTester/speedTester.h:
 
-../include/SDCard/tm_stm32f4_fatfs.h:
-
-../include/SDCard/fatfs/ff.h:
-
-../include/SDCard/fatfs/ffconf.h:
-
 ../include/PWM/pwm.h:
 
 ../include/GPS/gps.h:
@@ -201,3 +187,13 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 ../include/usbd_desc.h:
 
 ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
+
+../include/SD/spi_sd.h:
+
+../include/SD/ff.h:
+
+../include/SD/integer.h:
+
+../include/SD/ffconf.h:
+
+../include/SD/tm_stm32f4_fatfs.h:

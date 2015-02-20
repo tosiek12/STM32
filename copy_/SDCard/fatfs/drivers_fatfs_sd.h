@@ -8,8 +8,8 @@
 #define _USE_WRITE	1	/* 1: Enable disk_write function */
 #define _USE_IOCTL	1	/* 1: Enable disk_ioctl fucntion */
 
-#include "diskio.h"
-#include "integer.h"
+#include "_diskio.h"
+#include "_integer.h"
 
 #include "stm32f4xx.h"
 #include "stm32f4xx.h"

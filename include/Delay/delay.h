@@ -2,7 +2,7 @@
 #define DELAY_H_
 
 #include "cmsis_device.h"
-#include "SDCard/fatfs/drivers_fatfs_sd.h"
+//#include "SDCard/fatfs/drivers_fatfs_sd.h"
 
 class Delay {
 private:
@@ -28,9 +28,9 @@ public:
 		if (delayCount != 0u) {
 			--delayCount;
 		}
-		if (TimeSPI != 0u) {
-			--TimeSPI;
-		}
+//		if (TimeSPI != 0u) {
+//			--TimeSPI;
+//		}
 	}
 
 	void static delay_ms(uint32_t timeInMs) {

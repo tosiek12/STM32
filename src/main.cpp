@@ -13,9 +13,6 @@
 #include "GPIO/gpio.h"
 #include "10DOF/IMU.h"
 #include "SpeedTester/speedTester.h"
-extern "C" {
-#include "SDCard/tm_stm32f4_fatfs.h"
-}
 #include "PWM/pwm.h"
 #include "GPS/gps.h"
 
@@ -60,6 +57,13 @@ volatile uint8_t trigger = 0;
 volatile uint8_t flags[10] = {};
 static uint8_t message[50];
 
+
+///////////
+#include "SD/spi_sd.h"
+#include "SD/ff.h"
+#include "SD/tm_stm32f4_fatfs.h"
+////////////
+
 int main() {
 	USBD_Init(&USBD_Device, &VCP_Desc, 0);
 	USBD_RegisterClass(&USBD_Device, &USBD_CDC);
@@ -84,7 +88,12 @@ int main() {
 	//pwm.setChannelRawValue(1, 1000);
 	//testBinaryCommunication();
 
-	testSD();
+	//testSD();
+
+	SPI_SD_Init();
+	testCreatingFiles();
+
+	testCreatingFiles2();
 
 	while (1) {
 		buttons.mainBegginingUpdate();
@@ -177,7 +186,7 @@ void doFrameAction(void) {
 		break;
 	case 'A':
 		VCP_StringWrite("Start: Testing SD-Card\n");
-		testBinaryCommunication();
+		//testBinaryCommunication();
 		VCP_StringWrite("End: Testing SD-Card\n");
 		break;
 	default:

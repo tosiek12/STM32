@@ -16,9 +16,8 @@ RM := rm -rf
 -include src/SpeedTester/subdir.mk
 -include src/STM32_USB_Device_Library/Core/Src/subdir.mk
 -include src/STM32_USB_Device_Library/Class/CDC/Src/subdir.mk
--include src/SDCard/fatfs/option/subdir.mk
--include src/SDCard/fatfs/subdir.mk
--include src/SDCard/subdir.mk
+-include src/SD/option/subdir.mk
+-include src/SD/subdir.mk
 -include src/PWM/subdir.mk
 -include src/NokiaLCD/subdir.mk
 -include src/GPS/subdir.mk
