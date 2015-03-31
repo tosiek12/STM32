@@ -96,8 +96,6 @@ static struct {
 
 struct FrameBuffer s_RxFrameBuffer;
 
-char g_VCPInitialized;
-
 /**
  * @brief  TEMPLATE_Init
  *         Initializes the CDC media low layer
@@ -105,17 +103,13 @@ char g_VCPInitialized;
  * @retval Result of the opeartion: USBD_OK if all operations are OK else USBD_FAIL
  */
 static int8_t TEMPLATE_Init(void) {
-	/*
-	 Add your initialization code here
-	 */
+
 	USBD_CDC_SetRxBuffer(&USBD_Device, s_RxBuffer.Buffer);
 	USBD_CDC_SetTxBuffer(&USBD_Device, (uint8_t *) s_TxBuffer.Buffer, 0);
-
-	g_VCPInitialized = 1;
-
+	flagsComunicationInterface[0] = f_connectedWithPC;
 	s_RxFrameBuffer.Size = 0;
 	s_RxFrameBuffer.State = eStart;
-	return (0);
+	return (USBD_OK);
 }
 
 /**
@@ -125,10 +119,8 @@ static int8_t TEMPLATE_Init(void) {
  * @retval Result of the opeartion: USBD_OK if all operations are OK else USBD_FAIL
  */
 static int8_t TEMPLATE_DeInit(void) {
-	/*
-	 Add your deinitialization code here
-	 */
-	return (0);
+	flagsComunicationInterface[0] = f_configured;
+	return (USBD_OK);
 }
 
 /**
@@ -259,16 +251,15 @@ static int8_t TEMPLATE_Receive(uint8_t* Buf, uint32_t *Len) {
 		case eMsg:
 			if (currentChar == '*' ) {
 				s_RxFrameBuffer.State = eDone;
-				//obsluga odebranej ramki ramki
-				doFrameAction();
-
-				asm volatile ("nop");
+				//obsluga odebranej ramki ramki - gdy sie dzieje w przerwaniu to TxState == 1 i nie wykonuje akcji!!!
+				if(s_RxFrameBuffer.isNew == 1) {
+					//errror - nie obsluzono poprzedniej ramki ;(
+				}
+				s_RxFrameBuffer.isNew = 1;
 				s_RxFrameBuffer.State = eStart;
-				s_RxFrameBuffer.Size = 0;
 			} else if (s_RxFrameBuffer.Size == 80) {
-				//error;
+				//error - za dluga ramka
 				s_RxFrameBuffer.State = eStart;
-				s_RxFrameBuffer.Size = 0;
 			} else {
 				*(s_RxFrameBuffer.Msg + s_RxFrameBuffer.Size) = currentChar;
 				++s_RxFrameBuffer.Size;
@@ -282,46 +273,78 @@ static int8_t TEMPLATE_Receive(uint8_t* Buf, uint32_t *Len) {
 	return (0);
 }
 
-int VCP_read(void *pBuffer, int size) {
-	return 0 ;
-
-	if (!s_RxBuffer.ReadDone)
-		return 0;
-
-	int remaining = s_RxBuffer.Size - s_RxBuffer.Position;
-	int todo = MIN(remaining, size);
-	if (todo <= 0)
-		return 0;
-
-	memcpy(pBuffer, s_RxBuffer.Buffer + s_RxBuffer.Position, todo);
-	s_RxBuffer.Position += todo;
-	if (s_RxBuffer.Position >= s_RxBuffer.Size) {
-		s_RxBuffer.ReadDone = 0;
-		USBD_CDC_ReceivePacket(&USBD_Device);
-	}
-
-	return todo;
-}
+//int VCP_read(void *pBuffer, int size) {
+//	return 0 ;
+//
+//	if (!s_RxBuffer.ReadDone)
+//		return 0;
+//
+//	int remaining = s_RxBuffer.Size - s_RxBuffer.Position;
+//	int todo = MIN(remaining, size);
+//	if (todo <= 0)
+//		return 0;
+//
+//	memcpy(pBuffer, s_RxBuffer.Buffer + s_RxBuffer.Position, todo);
+//	s_RxBuffer.Position += todo;
+//	if (s_RxBuffer.Position >= s_RxBuffer.Size) {
+//		s_RxBuffer.ReadDone = 0;
+//		USBD_CDC_ReceivePacket(&USBD_Device);
+//	}
+//
+//	return todo;
+//}
 
 //Add data to send buffer. If size is bigger than output buffer send max size.
 int VCP_write(const void *pBuffer, uint16_t size ) {
-	int todo = 0;
-	USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;
-	if (pCDC == NULL || pCDC->TxState == 1) {	//device not connected or previous transmition in proggres
+	if(semaphore_timerInterrupt) {
 		return 0;
 	}
+	if(flagsComunicationInterface[0] != f_connectedWithClient) {
+		return 0;
+	}
+
+	int todo = 0;
+	USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;
+	if (pCDC == NULL) {	//device not connected
+		return 0;
+	}
+	while (pCDC->TxState) {
+	} //Wait for previous transfer
+
 	todo = MIN((CDC_DATA_HS_OUT_PACKET_SIZE - pCDC->TxLength - 1), size);
 	memcpy((s_TxBuffer.Buffer + pCDC->TxLength), pBuffer, todo);
 	USBD_CDC_SetTxBuffer(&USBD_Device, (uint8_t *) s_TxBuffer.Buffer, (pCDC->TxLength + todo));
 
+	if (USBD_CDC_TransmitPacket(&USBD_Device) != USBD_OK) {	//MOJE
+		return 0;
+	}	//Transmit first packet, rest will follow in interrupts.
+
 	return todo;
 }
+
+static uint8_t frameBuffer[100];
+static uint8_t  numberOfChars;
+int VCP_writeStringFrame(const char address,const char frameType, const void *pMsg) {
+	numberOfChars = sprintf((char *) frameBuffer, "$%cC%c%s*",address, frameType, pMsg);
+	return VCP_write(frameBuffer, numberOfChars);
+}
+int VCP_writeBinaryFrame(const char address, const void *pFrameType, const uint8_t typeSize, const void *pMsg, uint16_t msgSize) {
+	numberOfChars = sprintf((char *) frameBuffer, "$%cC%s",address, pFrameType);
+	numberOfChars = VCP_write(frameBuffer, numberOfChars);
+	numberOfChars += VCP_write(pMsg, msgSize);
+	numberOfChars += VCP_write("*", 1);
+	return numberOfChars;
+}
+
 
 int VCP_StringWrite(const char *pBuffer) {
 	return VCP_write(pBuffer, strlen(pBuffer));
 }
 
-int VCP_Flush() {
+int VCP_Flush(void) {
+	if(flagsComunicationInterface[0] != f_connectedWithClient) {
+		return 0;
+	}
 	USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;
 
 		if (pCDC == NULL) {	//device not connected.
@@ -338,24 +361,7 @@ int VCP_Flush() {
 		return 1;
 }
 
-int VCP_StartWriteAndWaitTillEnd() {
-	USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;
-
-	if (pCDC == NULL) {	//device not connected.
-		return 0;
-	}
-	if( pCDC->TxLength != 0) {
-		if (USBD_CDC_TransmitPacket(&USBD_Device) != USBD_OK) {
-				return 0;
-			}
-			while (pCDC->TxState) {
-			} //Wait for previous transfer
-			pCDC->TxLength = 0;
-	}
-	return 1;
-}
-
-int VCP_isWriteComplete() {
+int VCP_isWriteComplete(void) {
 	USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;
 	if (pCDC == NULL || pCDC->TxState == 1) {	//device not connected or previous transmition in proggres
 		return 0;
@@ -364,7 +370,7 @@ int VCP_isWriteComplete() {
 	}
 }
 
-void VCP_setTxBufferToZero() {
+void VCP_setTxBufferToZero(void) {
 s_TxBuffer.SizeOfDataToWrite = 0;
 }
 
@@ -387,8 +393,7 @@ int VCP_write_old(const void *pBuffer, int size) {
 		return 0;
 	}
 
-	while (pCDC->TxState) {
-	} //Wait for previous transfer
+
 	USBD_CDC_SetTxBuffer(&USBD_Device, (uint8_t *) s_TxBuffer.Buffer, size);
 	if (USBD_CDC_TransmitPacket(&USBD_Device) != USBD_OK)
 		return 0;

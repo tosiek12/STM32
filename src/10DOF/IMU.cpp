@@ -11,71 +11,82 @@ extern "C" {
 }
 #include "10DOF/Filters/MahonyAHRS.h"
 #include "GPS/gps.h"
+#include "SD/sdCardLogger.h"
+#include "main.h"
+
 // Global variable //
 IMU imu10DOF;
 
 void IMU::timerAction() {
 	if(computationInProgress == 1) {
 		error = 1;
-		VCP_write("$PCE", 4);
-		VCP_write("OVF", 8);
-		VCP_write("*", 1);
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "ComputationInProgress");
 	}
-	if (newDataAvailable == 1) {
-
-		//return;
-	}
-	volatile uint8_t res[3];
+	static uint8_t errorSensor = 0;
+	static uint32_t counterForSDCard = 0;
+	uint8_t res[3];
 	res[0] = accelerometer.update();
 	res[1] = gyro.update();
 	res[2] = magnetometer.update();
 
-	GPS_SendCrucialData();
+	//GPS_SendCrucialData();
 
 	if(res[0] || res[1] || res[2]) {
-		VCP_write("$PCE", 4);
-		VCP_write("Czujniki", 8);
-		VCP_write("*", 1);
+		if(errorSensor == 0) {
+			errorSensor = 1;
+			VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "SensorUpdateError");
+		}
+	} else {
+		errorSensor = 0;
+		newRawDataAvailable = 1;
+		doAllComputation();
+		if(++counterForSDCard == 10000) {
+			counterForSDCard = 0;
+			sdCardLogger.closeFileForIMU();
+			sdCardLogger.openFileForIMU("imu.txt");
+		}
+		sprintf((char*) buf, "%u: x:%d,y:%d,z:%d\n",counterForSDCard, (int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
+		//sprintf((char *) buf,"%u: %.2f,%.2f,%.2f\n",counterForSDCard, XRollAngle, YPitchAngle, ZYawAngle);
+		sdCardLogger.writeStringForIMU((char *) buf);
 	}
-	doAllComputation();
 
 
 	/* Save data to temporary buffer */
 	if (numberOfGatheredSamples < numberOfSamplesToGather) {
-		measurements[numberOfGatheredSamples][0] = accelerometer.axis[0];
-		measurements[numberOfGatheredSamples][1] = accelerometer.axis[1];
-		measurements[numberOfGatheredSamples][2] = accelerometer.axis[2];
-		measurements[numberOfGatheredSamples][3] = gyro.axis[0];
-		measurements[numberOfGatheredSamples][4] = gyro.axis[1];
-		measurements[numberOfGatheredSamples][5] = gyro.axis[2];
-		measurements[numberOfGatheredSamples][6] = magnetometer.axis[0];
-		measurements[numberOfGatheredSamples][7] = magnetometer.axis[1];
-		measurements[numberOfGatheredSamples][8] = magnetometer.axis[2];
+//		measurements[numberOfGatheredSamples][0] = accelerometer.axis[0];
+//		measurements[numberOfGatheredSamples][1] = accelerometer.axis[1];
+//		measurements[numberOfGatheredSamples][2] = accelerometer.axis[2];
+//		measurements[numberOfGatheredSamples][3] = gyro.axis[0];
+//		measurements[numberOfGatheredSamples][4] = gyro.axis[1];
+//		measurements[numberOfGatheredSamples][5] = gyro.axis[2];
+//		measurements[numberOfGatheredSamples][6] = magnetometer.axis[0];
+//		measurements[numberOfGatheredSamples][7] = magnetometer.axis[1];
+//		measurements[numberOfGatheredSamples][8] = magnetometer.axis[2];
 		++numberOfGatheredSamples;
 	}
-	newDataAvailable = 1;
 }
 
 // ----- TIM_IRQHandler() ----------------------------------------------------
 extern "C" void TIM3_IRQHandler(void) {
 	if (__HAL_TIM_GET_ITSTATUS(&imu10DOF.TimHandle, TIM_IT_UPDATE ) != RESET) {
+		semaphore_timerInterrupt = 1;
 		imu10DOF.timerAction();
+		semaphore_timerInterrupt = 0;
 		__HAL_TIM_CLEAR_IT(&imu10DOF.TimHandle, TIM_IT_UPDATE);
 	}
 }
 
-uint8_t IMU::sendViaVirtualCom() {
+uint8_t IMU::sendRawDataViaVirtualCom() {
 	const uint8_t frameSize = 2 * 3;
 	int16_t temp;
 	uint32_t timeDelta = 0;
 	if (error == 1) {
-		//VCP_write("OVERWRITTEN!!", 13);
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "Overwritten!");
 		error = 0;
 		return 0;
 	}
 
-	if ((request == 1) && (connected == 1) && (newDataAvailable == 1)) {
-		//VCP_write("D", 1);
+	if ((request == 1) && (connected == 1) && (newRawDataAvailable == 1)) {
 		timeDelta = speedTester.delta();
 		/*	Frame:
 		 * [
@@ -93,9 +104,7 @@ uint8_t IMU::sendViaVirtualCom() {
 		temp = (int16_t) magnetometer.heading;
 		VCP_write(&temp, 2);
 
-		//VCP_write("\n", 1);
-
-		newDataAvailable = 0;
+		newRawDataAvailable = 0;
 		request = 0;
 
 		return 3 * frameSize;
@@ -104,23 +113,16 @@ uint8_t IMU::sendViaVirtualCom() {
 }
 
 void IMU::sendMahonyViaVirtualCom() {
-	uint16_t size;
-	uint8_t buff[50];
-	size = sprintf((char*) buff, "%d,%d,%d\n", (int16_t)(eulerAnglesInRadMahony[0]*1000),(int16_t)(eulerAnglesInRadMahony[1]*1000),(int16_t)(eulerAnglesInRadMahony[2]*1000));
-	VCP_write((void *) buff, size);
+	uint16_t numberOfChars;
+	numberOfChars = sprintf((char*) buf, "%d,%d,%d\n", (int16_t)(eulerAnglesInRadMahony[0]*1000),(int16_t)(eulerAnglesInRadMahony[1]*1000),(int16_t)(eulerAnglesInRadMahony[2]*1000));
+	VCP_write((void *) buf, numberOfChars);
 }
 
 void IMU::sendAngleViaVirtualCom() {
-	int16_t temp;
-	uint32_t timeDelta = 0;
 	if ((request == 1) && (connected == 1)) {
-		uint16_t it = 0, size;
-		uint8_t buff[50];
-		size = sprintf((char*) buff, "x:%d,y:%d,z:%d", (int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
-
-		VCP_write("$PCA", 4);
-		VCP_write((void *) buff, size);
-		VCP_write("*", 1);
+		uint16_t numberOfChars;
+		numberOfChars = sprintf((char*) buf, "x:%d,y:%d,z:%d", (int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_DataRequest, buf);
 		request = 0;
 	}
 }
@@ -133,15 +135,13 @@ void IMU::requestDataGathering(uint16_t timeToSampleInSec) {
 void IMU::sendGatheredDataViaVCOM() {
 	if(numberOfSamplesToGather>0) {
 		stopTimerUpdate();
-		uint16_t it = 0, size;
-		uint8_t buff[50];
+		uint16_t it = 0, numberOfChars;
 		volatile int16_t *pTemp;
 		for (it = 0; it < numberOfSamplesToGather; it++) {
-			pTemp = measurements[it];
-			size = sprintf((char*) buff, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", pTemp[0], pTemp[1], pTemp[2],
-					pTemp[3], pTemp[4], pTemp[5], pTemp[6], pTemp[7], pTemp[8]);
-			VCP_write((void *) buff, size);
-			VCP_Flush();
+//			pTemp = measurements[it];
+//			numberOfChars = sprintf((char*) buf, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", pTemp[0], pTemp[1], pTemp[2],
+//					pTemp[3], pTemp[4], pTemp[5], pTemp[6], pTemp[7], pTemp[8]);
+//			VCP_write((void *) buf, numberOfChars);
 		}
 		numberOfGatheredSamples = 0;
 		numberOfSamplesToGather = 0;
@@ -158,7 +158,7 @@ void IMU::calibrateGyroAndAccStationary() {
 
 IMU::IMU() :
 		gyro(), accelerometer(), magnetometer(), pressure() {
-	newDataAvailable = 0;
+	newRawDataAvailable = 0;
 	connected = 0;
 	request = 0;
 	error = 0;
@@ -167,12 +167,6 @@ IMU::IMU() :
 
 void IMU::initialize() {
 	I2C::initialize();
-
-//	accelerometer.initialize2();
-//
-//	while(1) {
-//
-//	}
 	accelerometer.initialize();
 	gyro.initialize();
 	magnetometer.initialize();
@@ -277,7 +271,7 @@ void IMU::kalmanStepAction() {
 }
 
 void IMU::doAllComputation() {
-	if(newDataAvailable) {
+	if(newRawDataAvailable) {
 		computationInProgress = 1;
 
 		kalmanStepAction();
@@ -285,12 +279,7 @@ void IMU::doAllComputation() {
 		computePitchRollTilt();
 		computeYaw();
 
-		newDataAvailable = 0;
+		newRawDataAvailable = 0;
 		computationInProgress = 0;
 	}
-	if(error) {
-		VCP_write("OVERFLOW!",10);
-		error = 0;
-	}
-
 }

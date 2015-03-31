@@ -6,6 +6,7 @@
  */
 
 #include "10DOF/Filters/Kalman.h"
+#include "main.h"
 extern "C" {
 #include <usbd_cdc_if_template.h>
 }
@@ -77,30 +78,29 @@ void Kalman::testMatrixOperations() {
 	status = arm_mat_mult_f32(&matrix1, &vector, &result);
 	sendMatrixViaCom(&result);
 	if (status != ARM_MATH_SUCCESS) {
-		VCP_write("Erroor\n", 7);
+		VCP_writeStringFrame('P', frameType_Error, "Erroor\n");
 	}
 	//arm_mat_trans_f32();
-	VCP_write("END\n", 4);
-
+	VCP_writeStringFrame('P', frameType_Log, "END\n");
 }
 
 void Kalman::sendMatrixViaCom(arm_matrix_instance_f32* matrix) {
 	char buf[10] = { 0 };
-	uint8_t numberOfCharsInBuffer;
+	uint8_t numberOfChars;
 	volatile float32_t number;
 	uint8_t i = 0, j = 0;
 
 	for (i = 0; i < matrix->numRows; i++) {
 		for (j = 0; j < matrix->numCols; j++) {
 			number = *(matrix->pData + matrix->numCols * i + j);
-			numberOfCharsInBuffer = sprintf(buf, "%ld,", (int32_t) (100 * number));
-			VCP_write(buf, numberOfCharsInBuffer);
+			numberOfChars = sprintf(buf, "%ld,", (int32_t) (100 * number));
+			VCP_write(buf, numberOfChars);
 		}
-		numberOfCharsInBuffer = sprintf(buf, "\n");
-		VCP_write(buf, numberOfCharsInBuffer);
+		numberOfChars = sprintf(buf, "\n");
+		VCP_write(buf, numberOfChars);
 	}
 
-	VCP_write(buf, numberOfCharsInBuffer);
+	VCP_write(buf, numberOfChars);
 }
 
 int32_t Kalman::testExample(void) {

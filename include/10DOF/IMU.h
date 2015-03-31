@@ -27,12 +27,18 @@ private:
 	const uint8_t I2C_ID_BMP085 = 0x77 << 1;		//Barometr?
 
 /* Status */
-	volatile uint8_t newDataAvailable;
-	volatile uint8_t showDataTriger;
+	volatile uint8_t newRawDataAvailable;
 	uint8_t connected;
 	uint8_t request;
 	uint8_t error;
 	volatile uint8_t computationInProgress;
+
+/*	Position */
+	float32_t height_GPS;
+	float32_t longtitude_GPS;
+	float32_t lattitude_GPS;
+	float32_t x_IMU, y_IMU, z_IMU;
+
 
 /*	Filter */
 	Kalman kalmanX;
@@ -50,9 +56,10 @@ private:
 	float64_t compAngleY = 180;
 
 	/* Temporary buffers */
-	volatile int16_t measurements[6000][9];
+	//volatile int16_t measurements[6][9];	//nie używane - do usuniecia!
 	volatile uint16_t numberOfGatheredSamples;
 	uint16_t numberOfSamplesToGather;
+	uint8_t buf[50];
 
 	inline void __attribute__((always_inline)) initializeTimerForUpdate() {
 		/* TIMx Peripheral clock enable */
@@ -100,12 +107,7 @@ public:
 	TIM_HandleTypeDef TimHandle;
 	void initialize();
 	void showMeasurment(NokiaLCD& nokiaLCD);
-	inline uint8_t __attribute__((always_inline))  getShowDataTriger() {
-		return showDataTriger;
-	}
-	inline void __attribute__((always_inline)) clearShowDataTriger() {
-		showDataTriger = 0;
-	}
+
 	inline void __attribute__((always_inline)) selfTests(NokiaLCD &nokiaLCD) {
 		magnetometer.selfTest(nokiaLCD);
 	}
@@ -123,7 +125,7 @@ public:
 	void stopTimerUpdate() {
 		__HAL_TIM_DISABLE(&TimHandle);
 	}
-	uint8_t sendViaVirtualCom();
+	uint8_t sendRawDataViaVirtualCom();
 	void sendAngleViaVirtualCom();
 	void sendMahonyViaVirtualCom();
 

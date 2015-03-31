@@ -38,7 +38,7 @@ uint32_t SpeedTester::testTimeOfSending(uint32_t cnt) {
 		buf[cnt - 1] = 'E';
 
 		speedTester.tic();
-		VCP_write(buf, cnt);
+		VCP_writeBinaryFrame('P', "T",1, buf, cnt);
 		res = speedTester.toc();
 	} else {
 		res = 0;

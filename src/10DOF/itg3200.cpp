@@ -79,9 +79,8 @@ void ITG3200::getOversampledValueAndSendViaCOM(const uint8_t numberOfSamples) {
 	temp[0] /= numberOfSamples;
 	temp[1] /= numberOfSamples;
 	temp[2] /= numberOfSamples;
-	/*numberOfChars = sprintf(buf, "%ld,%ld,%ld", average[0],
-	 average[1], average[2], stdDev[0], stdDev[1], stdDev[2]);
-	 VCP_write(buf, numberOfChars);*/
+	numberOfChars = sprintf((char *)buf, "%d,%d,%d", temp[0], temp[1], temp[2]);
+	 VCP_writeStringFrame(frameAddress_Pecet, frameType_DataRequest, buf);
 }
 
 void ITG3200::loadCalibration() {
@@ -98,9 +97,7 @@ void ITG3200::calibrateStationary(const uint16_t numberOfSamples) {
 	uint8_t numberOfChars;
 	volatile int32_t sum[3] = { 0 };
 
-	numberOfChars = sprintf(buf, "Gyro calibration Start\n");
-	VCP_write(buf, numberOfChars);
-
+	VCP_writeStringFrame(frameAddress_Pecet, frameType_Log, "Gyro calibration Start\n");
 	for (uint8_t i = 0; i < numberOfSamples; ++i) {
 		updateRaw();
 		sum[0] += axis[0];
@@ -112,8 +109,7 @@ void ITG3200::calibrateStationary(const uint16_t numberOfSamples) {
 	offset[1] = sum[1]/numberOfSamples;
 	offset[2] = sum[2]/numberOfSamples;
 
-	numberOfChars = sprintf(buf, "Gyro calibration End\n");
-	VCP_write(buf, numberOfChars);
+	VCP_writeStringFrame(frameAddress_Pecet, frameType_Log, "Gyro calibration End\n");
 }
 // WHO_AM_I register
 

@@ -69,10 +69,9 @@ void ADXL345::initialize2() {
 
 void ADXL345::calibrateStationary(const uint16_t numberOfSamples) {
 	char buf[50];
-	uint8_t numberOfCharsInBuffer;
+	uint8_t numberOfChars;
 	int16_t it = 0;
-	numberOfCharsInBuffer = sprintf(buf, "Accelerometer calibration Start\n");
-	VCP_write(buf, numberOfCharsInBuffer);
+	VCP_writeStringFrame(frameAddress_Pecet, frameType_Log, "Accelerometer calibration Start\n");
 
 	float32_t sum = 0, scalingFactor = 0;
 	for (uint8_t i = 0; i < numberOfSamples; ++i) {
@@ -85,8 +84,8 @@ void ADXL345::calibrateStationary(const uint16_t numberOfSamples) {
 	gain[1]*=scalingFactor;
 	gain[2]*=scalingFactor;
 
-	numberOfCharsInBuffer = sprintf(buf, "Accelerometer calibration End\n");
-	VCP_write(buf, numberOfCharsInBuffer);
+
+	VCP_writeStringFrame(frameAddress_Pecet, frameType_Log, "Accelerometer calibration End\n");
 }
 
 void ADXL345::loadCalibration() {
@@ -632,8 +631,8 @@ void ADXL345::ReadFIFOCtl(uint8_t *fifo) {
  * 			  	ADXL345_SAMPLE_WATERMARKDISABLE
  * 	@param[out]: none
  */
-void ADXL345::WriteFIFOCtl(uint8_t fifo, uint8_t trigger, uint8_t sample) {
-	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_CTL, fifo | trigger | sample);
+void ADXL345::WriteFIFOCtl(uint8_t fifo, uint8_t _trigger, uint8_t sample) {
+	I2C::i2c_WriteByte(I2C_ID_ADXL345, ADXL345_RA_FIFO_CTL, fifo | _trigger | sample);
 }
 
 /*

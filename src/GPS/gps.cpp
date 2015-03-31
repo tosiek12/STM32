@@ -21,18 +21,15 @@ uint8_t charToSkip = 0;
 volatile uint8_t isNewFrame = 0;
 void GPS_Send() {
 	 if(isNewFrame) {
-		 VCP_write("$PCG", 4);
-		 VCP_write(pFrame+1, frameSize-1);	//skip $
-		 VCP_write("*", 1);
+		 pFrame[frameSize-1] = '\0';
+		 VCP_writeStringFrame(frameAddress_Pecet,'G', pFrame+1);//skip $
 		 isNewFrame = 0;
 	 }
  }
 
 void GPS_SendCrucialData() {
-	 VCP_write("$PCL", 4);
-	 VCP_write(gpsdata.hhmmss, 6);
-	 VCP_write("*", 1);
-	 isNewFrame = 0;
+	VCP_writeBinaryFrame('P', "G",1, gpsdata.hhmmss,6);
+	isNewFrame = 0;
 }
 void GPS_PushCharToFrame(volatile uint8_t recievedChar) {
 	if (charToSkip > 0) {
@@ -112,7 +109,7 @@ static uint32_t GPS_atoi(const char *p)
 //GSA - GNSS DOP and Active Satellites
 //RMC - Recommended Minimum Specific GNSS Data
 //VTG - Course Over Ground and Ground Speed
-void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len)
+void GPS_Parse(struct gpsData_t *_gpsdata, uint8_t *buf, uint8_t len)
 {
 	char *p;
 	volatile uint32_t tmp;
@@ -122,10 +119,10 @@ void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len)
 	{
 		//123519 – Aktualność danych - 12:35 : 19 UTC,
 		p += 7;
-		gpsdata->hour = (p[0] - '0') * 10 + p[1] - '0';
-		gpsdata->min = (p[2] - '0') * 10 + p[3] - '0';
-		gpsdata->sec = (p[4] - '0') * 10 + p[5] - '0';
-		memcpy(gpsdata->hhmmss, p, 6*sizeof(uint8_t));
+		_gpsdata->hour = (p[0] - '0') * 10 + p[1] - '0';
+		_gpsdata->min = (p[2] - '0') * 10 + p[3] - '0';
+		_gpsdata->sec = (p[4] - '0') * 10 + p[5] - '0';
+		memcpy(_gpsdata->hhmmss, p, 6*sizeof(uint8_t));
 
 		//4807.038, N – szerokość geograficzna(latitude) - 48 deg 07.038' N,
 		p = strchr(p, ',') + 1;
@@ -133,7 +130,7 @@ void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len)
 		p = strchr(p, ',') + 1;
 		if (p[0] == 'S')
 			tmp = -tmp;
-		gpsdata->lat = tmp;
+		_gpsdata->lat = tmp;
 
 		//01131.000, E – długość geograficzna(longitude) - 11 deg 31.000' E,
 		p = strchr(p, ',') + 1;
@@ -141,23 +138,23 @@ void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len)
 		p = strchr(p, ',') + 1;
 		if (p[0] == 'W')
 			tmp = -tmp;
-		gpsdata->lon = tmp;
+		_gpsdata->lon = tmp;
 
 		//1 – jakość pomiaru
 		p = strchr(p, ',') + 1;
-		gpsdata->valid = (p[0] - '0') ? 1 : 0;
+		_gpsdata->valid = (p[0] - '0') ? 1 : 0;
 
 		//08 – ilość śledzonych satelitów,
 		p = strchr(p, ',') + 1;
-		gpsdata->sats = (p[0] - '0') * 10 + p[1] - '0';
+		_gpsdata->sats = (p[0] - '0') * 10 + p[1] - '0';
 
 		//0.9 – horyzontalna dokładność pozycji(HDOP),
 		p = strchr(p, ',') + 1;
-		gpsdata->hdop = GPS_atoi(p);
+		_gpsdata->hdop = GPS_atoi(p);
 
 		//545.4, M – wysokość w metrach nad poziom morza,
 		p = strchr(p, ',') + 1;
-		gpsdata->alt = GPS_atoi(p);
+		_gpsdata->alt = GPS_atoi(p);
 	}
 	else if (!strncmp(p, "$GPRMC", 6)) {
 //		3    = Latitude of fix
@@ -175,15 +172,15 @@ void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len)
 		//		1    = UTC time of fix
 		//123519 – Aktualność danych - 12:35:19 UTC,
 		p += 7;
-		gpsdata->hour = (p[0] - '0') * 10 + p[1] - '0';
-		gpsdata->min = (p[2] - '0') * 10 + p[3] - '0';
-		gpsdata->sec = (p[4] - '0') * 10 + p[5] - '0';
-		memcpy(gpsdata->hhmmss, p, 6*sizeof(uint8_t));
+		_gpsdata->hour = (p[0] - '0') * 10 + p[1] - '0';
+		_gpsdata->min = (p[2] - '0') * 10 + p[3] - '0';
+		_gpsdata->sec = (p[4] - '0') * 10 + p[5] - '0';
+		memcpy(_gpsdata->hhmmss, p, 6*sizeof(uint8_t));
 
 		//		2    = Data status (A=Valid position, V=navigation receiver warning)
 		// A – status(A – aktywny; V – nieaktywny),
 		p = strchr(p, ',') + 1;
-		gpsdata->valid = (p[0] == 'A') ? 1 : 0;
+		_gpsdata->valid = (p[0] == 'A') ? 1 : 0;
 
 		//4807.038,N – szerokość geograficzna (latitude) - 48 deg 07.038' N,
 		p = strchr(p, ',') + 1;
@@ -191,7 +188,7 @@ void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len)
 		p = strchr(p, ',') + 1;
 		if (p[0] == 'S')
 			tmp = -tmp;
-		gpsdata->lat = tmp;
+		_gpsdata->lat = tmp;
 
 		//01131.000, E – długość geograficzna(longitude) - 11 deg 31.000' E,
 		p = strchr(p, ',') + 1;
@@ -199,7 +196,7 @@ void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len)
 		p = strchr(p, ',') + 1;
 		if (p[0] == 'W')
 			tmp = -tmp;
-		gpsdata->lon = tmp;
+		_gpsdata->lon = tmp;
 
 		//022.4 – prędkość obiektu(liczona w węzłach),
 		p = strchr(p, ',') + 1;
@@ -207,53 +204,53 @@ void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len)
 
 		//084.4 – kąt śledzenia / poruszania się obiektu(w stopniach)
 		p = strchr(p, ',') + 1;
-		gpsdata->headingTruePRMC = GPS_atoi(p);
+		_gpsdata->headingTruePRMC = GPS_atoi(p);
 
 		//230394 – data(23 marca 1994),
 		p = strchr(p, ',') + 1;
-		gpsdata->day = (p[0] - '0') * 10 + p[1] - '0';
-		gpsdata->month = (p[2] - '0') * 10 + p[3] - '0';
-		gpsdata->year = (p[4] - '0') * 10 + p[5] - '0';
+		_gpsdata->day = (p[0] - '0') * 10 + p[1] - '0';
+		_gpsdata->month = (p[2] - '0') * 10 + p[3] - '0';
+		_gpsdata->year = (p[4] - '0') * 10 + p[5] - '0';
 	}
 	else if (!strncmp(p, "$GPGSA", 6)) {
 		//		1    = Mode:
 		//		       M=Manual, forced to operate in 2D or 3D
 		//		       A=Automatic, 3D/2D
 		p += 7;
-		gpsdata->modeGPSA = p[0];
+		_gpsdata->modeGPSA = p[0];
 
 		//		2    = Mode:
 		//		       1=Fix not available
 		//		       2=2D
 		//		       3=3D
 		p = strchr(p, ',') + 1;
-		gpsdata->position3D = (p[0] - '0');
+		_gpsdata->position3D = (p[0] - '0');
 
 		//		3-14 = PRN's of Satellite Vechicles (SV's) used in position fix (null for unused fields)
 		//04,05... – Numery satelitów wykorzystane do wyznaczenia pozycji (miejsce dla 12 satelitów),
 		for (uint8_t it = 0; it < 12; it++) {
 			p = strchr(p, ',') + 1;
 			if(*p == ',') {
-				gpsdata->satID[it] = '-';
+				_gpsdata->satID[it] = '-';
 			} else {
-				gpsdata->satID[it] = (p[0] - '0') * 10 + p[1] - '0';
+				_gpsdata->satID[it] = (p[0] - '0') * 10 + p[1] - '0';
 			}
 		}
 
 		//		15   = Position Dilution of Precision (PDOP)
 		p = strchr(p, ',') + 1;
 		tmp = GPS_atoi(p);
-		gpsdata->dop = tmp;
+		_gpsdata->dop = tmp;
 
 		//		16   = Horizontal Dilution of Precision (HDOP)
 		p = strchr(p, ',') + 1;
 		tmp = GPS_atoi(p);
-		gpsdata->hdop = tmp;
+		_gpsdata->hdop = tmp;
 
 		//		17   = Vertical Dilution of Precision (VDOP)
 		p = strchr(p, ',') + 1;
 		tmp = GPS_atoi(p);
-		gpsdata->vdop = tmp;
+		_gpsdata->vdop = tmp;
 	}
 	else if (!strncmp(p, "$GPVTG", 6)) {
 		//054.7,T – ścieżka poruszania się (w stopniach),
@@ -261,14 +258,14 @@ void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len)
 		tmp = GPS_atoi(p);
 		p = strchr(p, ',') + 1;
 		if (p[0] == 'T')
-			gpsdata->headingTruePVTG= tmp;
+			_gpsdata->headingTruePVTG= tmp;
 
 		//034.4,M – ścieżka poruszania się (na podstawię współrzędnych magnetycznych – w stopniach),
 		p = strchr(p, ',') + 1;
 		tmp = GPS_atoi(p);
 		p = strchr(p, ',') + 1;
 		if (p[0] == 'M')
-			gpsdata->headingMagneticPVTG= tmp;
+			_gpsdata->headingMagneticPVTG= tmp;
 
 		//005.5,N – prędkość w węzłach,
 		p = strchr(p, ',') + 1;
@@ -282,7 +279,7 @@ void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len)
 		tmp = GPS_atoi(p);
 		p = strchr(p, ',') + 1;
 		if (p[0] == 'K')
-			gpsdata->speedInKm_h = tmp;
+			_gpsdata->speedInKm_h = tmp;
 	}
 }
 
@@ -448,7 +445,7 @@ extern "C" void USART1_IRQHandler(void) {
 		//then read data register ...
 		data = (uint8_t) (USART1->DR & (uint8_t) 0xFF);
 		GPS_PushCharToFrame(data);
-		//VCP_write("OVF", 3);
+		//VCP_writeFrame('P', "E",1, "OVF", 3);
 	}
 
 	if (__HAL_UART_GET_FLAG(&UartHandle, UART_FLAG_RXNE) != RESET) {

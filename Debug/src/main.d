@@ -40,7 +40,8 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../include/Delay/delay.h ../include/10DOF/hmc5883l.h \
  ../include/10DOF/bmp085.h ../include/10DOF/Filters/Kalman.h \
  ../include/SpeedTester/speedTester.h ../include/PWM/pwm.h \
- ../include/GPS/gps.h \
+ ../include/GPS/gps.h ../include/SD/sdCardLogger.h ../include/SD/ff.h \
+ ../include/SD/integer.h ../include/SD/ffconf.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../include/usbd_conf.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
@@ -53,8 +54,7 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../include/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h \
  ../include/usbd_desc.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
- ../include/SD/spi_sd.h ../include/SD/ff.h ../include/SD/integer.h \
- ../include/SD/ffconf.h ../include/SD/tm_stm32f4_fatfs.h
+ ../include/SD/spi_sd.h
 
 ../system/include/diag/Trace.h:
 
@@ -164,6 +164,14 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../include/GPS/gps.h:
 
+../include/SD/sdCardLogger.h:
+
+../include/SD/ff.h:
+
+../include/SD/integer.h:
+
+../include/SD/ffconf.h:
+
 ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h:
 
 ../include/usbd_conf.h:
@@ -189,11 +197,3 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
 
 ../include/SD/spi_sd.h:
-
-../include/SD/ff.h:
-
-../include/SD/integer.h:
-
-../include/SD/ffconf.h:
-
-../include/SD/tm_stm32f4_fatfs.h:

@@ -15,7 +15,7 @@
 #include "SpeedTester/speedTester.h"
 #include "PWM/pwm.h"
 #include "GPS/gps.h"
-
+#include "SD/sdCardLogger.h"
 //#include "Accelerometer/stm32f4_discovery_lis3dsh.h"
 //#include "Accelerometer/accelerometer.h"
 
@@ -50,59 +50,154 @@ constexpr uint32_t BLINK_ON_TICKS = 1000;
  * SYSTIC -> GPIO,I2C,SPI(SDCard)
  */
 volatile uint8_t trigger = 0;
-/*
+
+/* Flags - inform about state of various process.
  * [0] - imu connection [1 = ok, error, error when gathered]
  * [1] - gps connection
  */
 volatile uint8_t flags[10] = {};
-static uint8_t message[50];
+/*
+ *
+ */
+volatile uint8_t flagsComunicationInterface[10] = {};
+volatile uint8_t flagsHardware[10] = {};
+
+/* Global semaphores */
+volatile uint8_t semaphore_timerInterrupt;
 
 
+extern "C" {
+static void doFrameAction(void) {
+	//Zmienne do ramki
+	char buf[100] = { 0 };
+	//inne
+	uint32_t cnt[5] = { 0 };
+	uint16_t val;
+	uint32_t numberOfChars;
+	int16_t i = 0;
+	int16_t numberOfSendChars = -1;
+
+	FATFS FatFs;
+	FIL fil;
+	FRESULT state = FR_INT_ERR;
+
+	if(s_RxFrameBuffer.isNew == 0) {
+		return;
+	} else {
+		s_RxFrameBuffer.isNew = 0;
+	}
+
+	switch (s_RxFrameBuffer.Type) {
+	case frameType_ConnectedWithGUI:
+		flagsComunicationInterface[0] = f_connectedWithClient;
+		strncpy((char *) buf,"IMU.txt",100);
+		sdCardLogger.openFileForIMU(buf);
+		imu10DOF.setConnected();
+		break;
+	case frameType_DisconnectedFromGUI:
+		imu10DOF.stopTimerUpdate();
+		imu10DOF.setDisconnected();
+		flagsComunicationInterface[0] = f_connectedWithPC;
+		sdCardLogger.closeFileForIMU();
+		break;
+	case frameType_StartIMUTimerUpdate:
+		imu10DOF.startTimerUpdate();
+		break;
+	case frameType_DataRequest:
+		imu10DOF.setRequestOfData();
+		imu10DOF.sendAngleViaVirtualCom();
+		break;
+	case frameType_Calibrate:
+		imu10DOF.stopTimerUpdate();
+		imu10DOF.calibrateGyroAndAccStationary();
+		imu10DOF.startTimerUpdate();
+		break;
+	case frameType_MahonyOrientationRequest:
+		imu10DOF.sendMahonyViaVirtualCom();
+		break;
+	case frameType_SendingTimeCheck:
+		s_RxFrameBuffer.Msg[s_RxFrameBuffer.Size] = '\0';
+		val = atol((char *) &s_RxFrameBuffer.Msg);
+		val = speedTester.testTimeOfSending(val);
+		numberOfChars = sprintf((char *) buf, "time:%u\n", val);
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_SendingTimeCheck, buf);
+		memset(buf, 0, 50);
+		break;
+	case frameType_FunctionExecutionTimeCheck:
+		speedTester.tic();
+		imu10DOF.timerAction();
+		cnt[0] = speedTester.toc();
+		numberOfChars = sprintf((char *) buf, "Time: %lu\n", cnt[0]);
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_FunctionExecutionTimeCheck, buf);
+		break;
+	case frameType_Ping:
+		trigger = 1;
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_Ping, "Connected\n");
+		break;
+	case 'G':
+		s_RxFrameBuffer.Msg[s_RxFrameBuffer.Size] = '\0';
+		val = atol((char *) &s_RxFrameBuffer.Msg);
+		imu10DOF.requestDataGathering(val);
+		break;
+	case frameType_FunctionTest:
+		if(s_RxFrameBuffer.Msg[0] == 'O') {
+			strncpy((char *) buf,"IMU.txt",100);
+			sdCardLogger.openFileForIMU(buf);
+		}else if(s_RxFrameBuffer.Msg[0] == 'S') {
+			sdCardLogger.writeStringForIMU((char *) s_RxFrameBuffer.Msg);
+		}else if(s_RxFrameBuffer.Msg[0] == 'C') {
+			sdCardLogger.closeFileForIMU();
+		}
+		break;
+	default:
+		numberOfChars = sprintf((char *) buf, "%s(%c))", "FrameTypeNotFound",s_RxFrameBuffer.Type);
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error,"FrameTypeNotFound");
+		break;
+	}
+	memset(buf, 0, 100);
+}
+}
 ///////////
 #include "SD/spi_sd.h"
 #include "SD/ff.h"
-#include "SD/tm_stm32f4_fatfs.h"
 ////////////
 
 int main() {
+	/* Initialize Systick, */
+	Delay::initialize();
+	//NokiaLCD nokiaLCD;	//Create, and initialize
+	GPIO buttons;
+	//buttons.InitButtons();
+
 	USBD_Init(&USBD_Device, &VCP_Desc, 0);
 	USBD_RegisterClass(&USBD_Device, &USBD_CDC);
 	USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_Template_fops);
 	USBD_Start(&USBD_Device);
 
-	Delay::initialize();	//Create, and initialize
-	NokiaLCD nokiaLCD;	//Create, and initialize
-	GPIO buttons;
-	//buttons.InitButtons();
-	//GPS_Init();
+	SPI_SD_Init();
 
+	GPS_Init();
 
-	//imu10DOF.initialize();
-	//imu10DOF.startTimerUpdate();
-	imu10DOF.setConnected();	//imitate connection state
-
+	imu10DOF.initialize();
 	//speedTester.tic();
 
 	//pwm.PWMInit();
 	//pwm.startPwmChannel(TIM_CHANNEL_1);
 	//pwm.setChannelRawValue(1, 1000);
-	SPI_SD_Init();
 
 	while (1) {
 		buttons.mainBegginingUpdate();
 		//GPS_Send();
-		//Sprawdz czy trzeba i wykonaj akcje:
-		//imu10DOF.sendViaVirtualCom();
-		flags[0] = 1;
+
 		if (imu10DOF.isDataGatheringComplete()) {
 			imu10DOF.sendGatheredDataViaVCOM();
 		}
 
-		VCP_StartWriteAndWaitTillEnd();
+		doFrameAction();
 
 		//Obsluga przyciskow:
 		if (buttons.getButtonState(0) == GPIO::longPush) {
-			nokiaLCD.WriteTextXY((char*) "longPush const", 0, 0);
+			//nokiaLCD.WriteTextXY((char*) "longPush const", 0, 0);
 		}
 		if (buttons.getButtonStateChange(1, GPIO::shortPush)) {
 		}
@@ -111,83 +206,7 @@ int main() {
 		buttons.mainEndUpdate();
 	}
 }
-extern "C" {
-void doFrameAction(void) {
-	//Zmienne do ramki
-	char buf[100] = { 0 };
-	//inne
-	uint32_t cnt[5] = { 0 };
-	uint16_t val;
-	uint8_t * pEnd;
-	uint32_t numberOfChars;
 
-	switch (s_RxFrameBuffer.Type) {
-	case 'S':
-		imu10DOF.setConnected();
-		speedTester.tic();
-		break;
-	case 'E':
-		imu10DOF.setDisconnected();
-		speedTester.toc();
-		break;
-	case 'R':
-		imu10DOF.setRequestOfData();
-		imu10DOF.sendAngleViaVirtualCom();
-		break;
-	case 'C':
-		imu10DOF.stopTimerUpdate();
-		imu10DOF.calibrateGyroAndAccStationary();
-//				imu10DOF.initialize();
-		imu10DOF.startTimerUpdate();
-		break;
-	case 'X':
-		break;
-	case 'M':
-		imu10DOF.sendMahonyViaVirtualCom();
-		break;
-	case 'T':
-		pEnd= s_RxFrameBuffer.Msg + s_RxFrameBuffer.Size;
-		val = strtol((char *) &s_RxFrameBuffer.Msg, (char **) &pEnd, 10);
-		val = speedTester.testTimeOfSending(val);
-		numberOfChars = sprintf((char *) buf, "\ntime:\n%lu\n", val);
-		VCP_write(buf, numberOfChars);
-		memset(buf, 0, 50);
-		break;
-	case 'I':
-		speedTester.tic();
-		imu10DOF.timerAction();
-		cnt[0] = speedTester.delta();
-		imu10DOF.timerAction();
-		cnt[1] = speedTester.delta();
-		imu10DOF.timerAction();
-		cnt[2] = speedTester.delta();
-		imu10DOF.timerAction();
-		cnt[3] = speedTester.toc();
-
-		numberOfChars = sprintf((char *) buf, "\ntime:\n%lu\n%lu\n%lu\n%lu\n", cnt[0],
-				cnt[1], cnt[2], cnt[3]);
-		VCP_write(buf, numberOfChars);
-		break;
-	case 'Z':
-		trigger = 1;
-		VCP_write("Connected\n", 10);
-		break;
-	case 'G':
-		pEnd= s_RxFrameBuffer.Msg + s_RxFrameBuffer.Size;
-		val = strtol((char *) &s_RxFrameBuffer.Msg, (char **) &pEnd, 10);
-		imu10DOF.requestDataGathering(val);
-		break;
-	case 'A':
-		VCP_StringWrite("Start: Testing SD-Card\n");
-		//testBinaryCommunication();
-		VCP_StringWrite("End: Testing SD-Card\n");
-		break;
-	default:
-		break;
-	}
-	memset(buf, 0, 100);
-}
-}
 void Error_Handler(void) {
 
 	while (1) {
