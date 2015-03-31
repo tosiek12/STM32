@@ -54,6 +54,7 @@ public:
 	 */
 	FRESULT TM_FATFS_USBDriveSize(uint32_t* total, uint32_t* free);
 
+	void initialize(void);
 	void testCreatingFiles(const uint8_t *pfilename);
 	void testCreatingFiles2(void);
 	void test(void);

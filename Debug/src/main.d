@@ -53,8 +53,7 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../include/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc_if_template.h \
  ../include/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h \
  ../include/usbd_desc.h \
- ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
- ../include/SD/spi_sd.h
+ ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h
 
 ../system/include/diag/Trace.h:
 
@@ -195,5 +194,3 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 ../include/usbd_desc.h:
 
 ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
-
-../include/SD/spi_sd.h:

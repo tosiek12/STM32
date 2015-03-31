@@ -106,7 +106,7 @@ static int8_t TEMPLATE_Init(void) {
 
 	USBD_CDC_SetRxBuffer(&USBD_Device, s_RxBuffer.Buffer);
 	USBD_CDC_SetTxBuffer(&USBD_Device, (uint8_t *) s_TxBuffer.Buffer, 0);
-	flagsComunicationInterface[0] = f_connectedWithPC;
+	flagsComunicationInterface[f_interface_USB] = f_connectedWithPC;
 	s_RxFrameBuffer.Size = 0;
 	s_RxFrameBuffer.State = eStart;
 	return (USBD_OK);
@@ -119,7 +119,7 @@ static int8_t TEMPLATE_Init(void) {
  * @retval Result of the opeartion: USBD_OK if all operations are OK else USBD_FAIL
  */
 static int8_t TEMPLATE_DeInit(void) {
-	flagsComunicationInterface[0] = f_configured;
+	flagsComunicationInterface[f_interface_USB] = f_configured;
 	return (USBD_OK);
 }
 
@@ -232,7 +232,7 @@ static int8_t TEMPLATE_Receive(uint8_t* Buf, uint32_t *Len) {
 			}
 			break;
 		case eReciever:
-			if(currentChar != 'C') {
+			if(currentChar != frameAddress_Cortex) {
 				s_RxFrameBuffer.State = eStart;	//it isn't for this device
 			} else {
 				s_RxFrameBuffer.State = eSender;
@@ -299,7 +299,7 @@ int VCP_write(const void *pBuffer, uint16_t size ) {
 	if(semaphore_timerInterrupt) {
 		return 0;
 	}
-	if(flagsComunicationInterface[0] != f_connectedWithClient) {
+	if(flagsComunicationInterface[f_interface_USB] != f_connectedWithClient) {
 		return 0;
 	}
 
@@ -342,7 +342,7 @@ int VCP_StringWrite(const char *pBuffer) {
 }
 
 int VCP_Flush(void) {
-	if(flagsComunicationInterface[0] != f_connectedWithClient) {
+	if(flagsComunicationInterface[f_interface_USB] != f_connectedWithClient) {
 		return 0;
 	}
 	USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *) USBD_Device.pClassData;

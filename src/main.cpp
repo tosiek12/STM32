@@ -42,44 +42,34 @@ constexpr uint32_t BLINK_ON_TICKS = 1000;
 //#pragma GCC diagnostic ignored "-Wreturn-type"
 
 /*
- * Using:
+ * Used hardware elements:
  * TIM1 -> PWM_generator
  * TIM3 -> IMU
  * TIM4 -> GPIO
  * TIM5 -> SpeedTester
- * SYSTIC -> GPIO,I2C,SPI(SDCard)
+ * SYSTIC -> GPIO, I2C, SPI(SDCard)
  */
-volatile uint8_t trigger = 0;
+
+/* Global variables: */
 
 /* Flags - inform about state of various process.
  * [0] - imu connection [1 = ok, error, error when gathered]
  * [1] - gps connection
  */
-volatile uint8_t flags[10] = {};
-/*
- *
- */
 volatile uint8_t flagsComunicationInterface[10] = {};
 volatile uint8_t flagsHardware[10] = {};
 
-/* Global semaphores */
+/* Semaphores */
 volatile uint8_t semaphore_timerInterrupt;
 
-
+/* End of Global variables */
 extern "C" {
 static void doFrameAction(void) {
 	//Zmienne do ramki
 	char buf[100] = { 0 };
 	//inne
 	uint32_t cnt[5] = { 0 };
-	uint16_t val;
-	uint32_t numberOfChars;
-	int16_t i = 0;
-	int16_t numberOfSendChars = -1;
-
-	FATFS FatFs;
-	FIL fil;
-	FRESULT state = FR_INT_ERR;
+	uint16_t value;
 
 	if(s_RxFrameBuffer.isNew == 0) {
 		return;
@@ -89,7 +79,7 @@ static void doFrameAction(void) {
 
 	switch (s_RxFrameBuffer.Type) {
 	case frameType_ConnectedWithGUI:
-		flagsComunicationInterface[0] = f_connectedWithClient;
+		flagsComunicationInterface[f_interface_USB] = f_connectedWithClient;
 		strncpy((char *) buf,"IMU.txt",100);
 		sdCardLogger.openFileForIMU(buf);
 		imu10DOF.setConnected();
@@ -97,7 +87,7 @@ static void doFrameAction(void) {
 	case frameType_DisconnectedFromGUI:
 		imu10DOF.stopTimerUpdate();
 		imu10DOF.setDisconnected();
-		flagsComunicationInterface[0] = f_connectedWithPC;
+		flagsComunicationInterface[f_interface_USB] = f_connectedWithPC;
 		sdCardLogger.closeFileForIMU();
 		break;
 	case frameType_StartIMUTimerUpdate:
@@ -117,9 +107,9 @@ static void doFrameAction(void) {
 		break;
 	case frameType_SendingTimeCheck:
 		s_RxFrameBuffer.Msg[s_RxFrameBuffer.Size] = '\0';
-		val = atol((char *) &s_RxFrameBuffer.Msg);
-		val = speedTester.testTimeOfSending(val);
-		numberOfChars = sprintf((char *) buf, "time:%u\n", val);
+		value = atol((char *) &s_RxFrameBuffer.Msg);
+		value = speedTester.testTimeOfSending(value);
+		sprintf((char *) buf, "time:%u\n", value);
 		VCP_writeStringFrame(frameAddress_Pecet, frameType_SendingTimeCheck, buf);
 		memset(buf, 0, 50);
 		break;
@@ -127,17 +117,16 @@ static void doFrameAction(void) {
 		speedTester.tic();
 		imu10DOF.timerAction();
 		cnt[0] = speedTester.toc();
-		numberOfChars = sprintf((char *) buf, "Time: %lu\n", cnt[0]);
+		sprintf((char *) buf, "Time: %lu\n", cnt[0]);
 		VCP_writeStringFrame(frameAddress_Pecet, frameType_FunctionExecutionTimeCheck, buf);
 		break;
 	case frameType_Ping:
-		trigger = 1;
 		VCP_writeStringFrame(frameAddress_Pecet, frameType_Ping, "Connected\n");
 		break;
 	case 'G':
 		s_RxFrameBuffer.Msg[s_RxFrameBuffer.Size] = '\0';
-		val = atol((char *) &s_RxFrameBuffer.Msg);
-		imu10DOF.requestDataGathering(val);
+		value = atol((char *) &s_RxFrameBuffer.Msg);
+		imu10DOF.requestDataGathering(value);
 		break;
 	case frameType_FunctionTest:
 		if(s_RxFrameBuffer.Msg[0] == 'O') {
@@ -150,17 +139,13 @@ static void doFrameAction(void) {
 		}
 		break;
 	default:
-		numberOfChars = sprintf((char *) buf, "%s(%c))", "FrameTypeNotFound",s_RxFrameBuffer.Type);
-		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error,"FrameTypeNotFound");
+		sprintf((char *) buf, "%s(%c))", "FrameTypeNotFound", s_RxFrameBuffer.Type);
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, buf);
 		break;
 	}
 	memset(buf, 0, 100);
 }
 }
-///////////
-#include "SD/spi_sd.h"
-#include "SD/ff.h"
-////////////
 
 int main() {
 	/* Initialize Systick, */
@@ -174,12 +159,8 @@ int main() {
 	USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_Template_fops);
 	USBD_Start(&USBD_Device);
 
-	SPI_SD_Init();
-
 	GPS_Init();
-
 	imu10DOF.initialize();
-	//speedTester.tic();
 
 	//pwm.PWMInit();
 	//pwm.startPwmChannel(TIM_CHANNEL_1);
@@ -208,7 +189,7 @@ int main() {
 }
 
 void Error_Handler(void) {
-
+	VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "Error Handler! Infinite loop.");
 	while (1) {
 	}
 }

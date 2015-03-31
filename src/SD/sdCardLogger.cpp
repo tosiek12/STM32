@@ -1,6 +1,8 @@
 #include "SD/sdCardLogger.h"
 #include "SD/ff.h"
+#include "SD/spi_sd.h"
 #include "stm32f4xx_hal.h"
+#include "main.h"
 extern "C" {
 #include <usbd_cdc_if_template.h>
 }
@@ -126,6 +128,11 @@ void SdCardLogger::testCreatingFiles2(void) {
 			state = f_close( &plik );
 		}
 	f_mount(0, "", 1);
+}
+
+void SdCardLogger::initialize(void) {
+	SPI_SD_Init();
+	flagsComunicationInterface[f_interface_sdCard] = f_configured;
 }
 
 void SdCardLogger::test(void) {

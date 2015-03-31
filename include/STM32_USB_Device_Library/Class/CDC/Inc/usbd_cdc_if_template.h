@@ -45,6 +45,7 @@ struct FrameBuffer{
 };
 
 const uint8_t frameAddress_Pecet = 'P';
+const uint8_t frameAddress_Cortex = 'C';
 
 const uint8_t frameType_ConnectedWithGUI = 'S';
 const uint8_t frameType_StartIMUTimerUpdate = 's';
@@ -62,21 +63,6 @@ const uint8_t frameType_FunctionTest = 'F';
 const uint8_t frameType_Log = 'L';
 const uint8_t frameType_Error = 'E';
 
-//extern const uint8_t frameAddress_Pecet;
-//extern const uint8_t frameType_ConnectedWithGUI;
-//extern const uint8_t frameType_DisconnectedFromGUI;
-//extern const uint8_t frameType_DataRequest;
-//extern const uint8_t frameType_DataGatherRequest;
-//extern const uint8_t frameType_MahonyOrientationRequest;
-//
-//extern const uint8_t frameType_Calibrate;
-//extern const uint8_t frameType_SendingTimeCheck;
-//extern const uint8_t frameType_FunctionExecutionTimeCheck;
-//extern const uint8_t frameType_Ping;
-//extern const uint8_t frameType_FunctionTest;
-//
-//extern const uint8_t frameType_Log;
-//extern const uint8_t frameType_Error;
 
 extern struct FrameBuffer s_RxFrameBuffer;
 /* Exported macro ------------------------------------------------------------*/
