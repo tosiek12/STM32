@@ -80,6 +80,7 @@ static void doFrameAction(void) {
 	switch (s_RxFrameBuffer.Type) {
 	case frameType_ConnectedWithGUI:
 		flagsComunicationInterface[f_interface_USB] = f_connectedWithClient;
+		IO_module.turnLedOn(GPIO::LED3_PIN, 1);
 		strncpy((char *) buf,"IMU.txt",100);
 		sdCardLogger.openFileForIMU(buf);
 		imu10DOF.setConnected();
@@ -88,10 +89,19 @@ static void doFrameAction(void) {
 		imu10DOF.stopTimerUpdate();
 		imu10DOF.setDisconnected();
 		flagsComunicationInterface[f_interface_USB] = f_connectedWithPC;
+		IO_module.turnLedOn(GPIO::LED3_PIN, 0);
 		sdCardLogger.closeFileForIMU();
+
 		break;
 	case frameType_StartIMUTimerUpdate:
 		imu10DOF.startTimerUpdate();
+		IO_module.turnLedOn(GPIO::LED4_PIN, 1);
+
+		break;
+	case frameType_StopIMUTimerUpdate:
+		imu10DOF.stopTimerUpdate();
+		sdCardLogger.closeFileForIMU();
+		IO_module.turnLedOn(GPIO::LED4_PIN, 0);
 		break;
 	case frameType_DataRequest:
 		imu10DOF.setRequestOfData();
@@ -151,8 +161,9 @@ int main() {
 	/* Initialize Systick, */
 	Delay::initialize();
 	//NokiaLCD nokiaLCD;	//Create, and initialize
-	GPIO buttons;
-	//buttons.InitButtons();
+	IO_module.InitButtons();
+	IO_module.InitLeds();
+	sdCardLogger.initialize();
 
 	USBD_Init(&USBD_Device, &VCP_Desc, 0);
 	USBD_RegisterClass(&USBD_Device, &USBD_CDC);
@@ -167,7 +178,7 @@ int main() {
 	//pwm.setChannelRawValue(1, 1000);
 
 	while (1) {
-		buttons.mainBegginingUpdate();
+		IO_module.mainBegginingUpdate();
 		//GPS_Send();
 
 		if (imu10DOF.isDataGatheringComplete()) {
@@ -177,14 +188,14 @@ int main() {
 		doFrameAction();
 
 		//Obsluga przyciskow:
-		if (buttons.getButtonState(0) == GPIO::longPush) {
+		if (IO_module.getButtonState(0) == GPIO::longPush) {
 			//nokiaLCD.WriteTextXY((char*) "longPush const", 0, 0);
 		}
-		if (buttons.getButtonStateChange(1, GPIO::shortPush)) {
+		if (IO_module.getButtonStateChange(1, GPIO::shortPush)) {
 		}
-		if (buttons.getButtonState(0) == GPIO::longPush) {
+		if (IO_module.getButtonState(0) == GPIO::longPush) {
 		}
-		buttons.mainEndUpdate();
+		IO_module.mainEndUpdate();
 	}
 }
 

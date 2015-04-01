@@ -194,18 +194,33 @@ void SdCardLogger::test(void) {
 
 void SdCardLogger::openFileForIMU(const char *pFilename){
 //Mount drive
+	uint8_t buf[50];
+	if(IMU_state == f_deviceWorking) {
+		return;
+	}
 	state = f_mount(&FatFs_SDCard, "", 0);
 	if (state == FR_OK) {
+		flagsComunicationInterface[f_interface_sdCard] = f_connected;
 		IMU_state = f_connected;
 		VCP_writeStringFrame(frameAddress_Pecet, frameType_Log, "(1):mount ok");
-		state = f_open(&IMU_dataFile, pFilename, FA_CREATE_ALWAYS | FA_WRITE);		//Try to open file
+		/* Opens an existing file. If not exist, creates a new file. */
+		state = f_open(&IMU_dataFile, pFilename, FA_CREATE_ALWAYS | FA_WRITE);
 		IMU_state = f_error;
 		sprintf((char *)buff, "(%d): file open. State(%d)", 1, state);
 		VCP_writeStringFrame(frameAddress_Pecet, frameType_Log, buff);
 		if (state == FR_OK) {
-			IMU_state = f_deviceWorking;
-			//find endOfFile,
-			//append some header data,
+			/* Seek to end of the file to append data */
+			state = f_lseek(&IMU_dataFile, f_size(&IMU_dataFile));
+			if (state != FR_OK) {
+				f_close(&IMU_dataFile);
+				IMU_state = f_error;
+			} else {
+				IMU_state = f_deviceWorking;
+				//append some header data,
+				f_printf(&IMU_dataFile, "\nNew session opened\n");
+				sprintf((char*) buf, "%s,%s,%s\n","X_Roll","Y_Pitch","Z_Yaw");
+				sdCardLogger.writeStringForIMU((char *) buf);
+			}
 		}
 	}
 }
@@ -218,6 +233,8 @@ void SdCardLogger::closeFileForIMU(void){
 	sprintf((char *)buff, "Unmounded. State(%d)", state);
 	VCP_writeStringFrame(frameAddress_Pecet, frameType_Log, buff);
 	IMU_state = f_nonInit;
+	flagsComunicationInterface[f_interface_sdCard] = f_configured;
+
 }
 
 int16_t SdCardLogger::writeStringForIMU(const char *pString){

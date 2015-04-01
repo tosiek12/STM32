@@ -20,6 +20,10 @@ private:
 #define BTN3_PIN_Line EXTI_Line8
 
 public:
+	static const uint16_t LED3_PIN = GPIO_PIN_13;
+	static const uint16_t LED4_PIN = GPIO_PIN_12;
+	static const uint16_t LED5_PIN = GPIO_PIN_14;
+	static const uint16_t LED6_PIN = GPIO_PIN_15;
 	enum state {
 		noPush = 0, shortPush = 1, mediumPush = 2, longPush = 3
 	};
@@ -114,33 +118,27 @@ public:
 		}
 	}
 
+
+	void turnLedOn (uint16_t ledNumber, uint8_t _state) {
+		if(_state) {
+			GPIOD->BSRRL |= ledNumber;
+		}  else {
+			GPIOD->BSRRH |= ledNumber;
+		}
+	}
 	/**
-	 * Configure LED5, LED6 as output,
-	 * LED3, LED4 as AF - for PWM from TIM4
+	 * Configure all leds as output,
+	 * LED3, LED4 are possible as AF - for PWM from TIM4
 	 */
 	inline void __attribute__((always_inline)) InitLeds() {
 		GPIO_InitTypeDef GPIO_InitStructure;
 		/* Periph clock enable */
 		__GPIOD_CLK_ENABLE();	// The LEDs are on GPIOD
 
-		//	// Configure PD12, PD13, PD14 and PD15 in output pushpull mode
-		//	GPIO_InitStructure.Pin = LED5_PIN | LED6_PIN | LED4_PIN | LED3_PIN;
-		//	GPIO_InitStructure.Mode = GPIO_Mode_OUT;
-		//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-		//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-		//	GPIO_InitStructure.Pull = GPIO_PuPd_NOPULL;
-		//	GPIO_Init(GPIOD, &GPIO_InitStructure);
-
-		/* Configure PD14 (LED5) and PD15(LED6) in output pushpull mode */
-		GPIO_InitStructure.Pin = GPIO_PIN_14 | GPIO_PIN_15;
+		GPIO_InitStructure.Pin = LED3_PIN | LED4_PIN | LED5_PIN | LED6_PIN;
 		GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
 		GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
 		GPIO_InitStructure.Pull = GPIO_NOPULL;
-		HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
-
-		// GPIOD, PIN_12 - LED4, PIN_13 - LED3, - for PWM.
-		GPIO_InitStructure.Pin = GPIO_PIN_12 | GPIO_PIN_13;
-		GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
 		HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
 	}
 
@@ -221,5 +219,7 @@ private:
 		HAL_TIM_Base_Start_IT(&TIM_TimeBaseStructure);
 	}
 };
+
+extern GPIO IO_module;
 
 #endif

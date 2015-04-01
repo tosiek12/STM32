@@ -13,6 +13,7 @@
 #include "hmc5883l.h"
 #include "bmp085.h"
 #include "Filters/Kalman.h"
+#include "GPS/gps.h"
 
 class IMU {
 public:
@@ -153,6 +154,7 @@ public:
 	void mahonyStepAction();
 	void kalmanStepAction();
 	void showAnglesKalman(NokiaLCD& nokiaLCD);
+	void updateGPSData(struct gpsData_t *_gpsdata);
 };
 
 extern IMU imu10DOF;

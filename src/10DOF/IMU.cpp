@@ -23,13 +23,10 @@ void IMU::timerAction() {
 		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "ComputationInProgress");
 	}
 	static uint8_t errorSensor = 0;
-	static uint32_t counterForSDCard = 0;
 	uint8_t res[3];
 	res[0] = accelerometer.update();
 	res[1] = gyro.update();
 	res[2] = magnetometer.update();
-
-	//GPS_SendCrucialData();
 
 	if(res[0] || res[1] || res[2]) {
 		if(errorSensor == 0) {
@@ -40,13 +37,7 @@ void IMU::timerAction() {
 		errorSensor = 0;
 		newRawDataAvailable = 1;
 		doAllComputation();
-		if(++counterForSDCard == 10000) {
-			counterForSDCard = 0;
-			sdCardLogger.closeFileForIMU();
-			sdCardLogger.openFileForIMU("imu.txt");
-		}
-		sprintf((char*) buf, "%u: x:%d,y:%d,z:%d\n",counterForSDCard, (int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
-		//sprintf((char *) buf,"%u: %.2f,%.2f,%.2f\n",counterForSDCard, XRollAngle, YPitchAngle, ZYawAngle);
+		sprintf((char*) buf, "%d,%d,%d\n",(int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
 		sdCardLogger.writeStringForIMU((char *) buf);
 	}
 
@@ -120,8 +111,7 @@ void IMU::sendMahonyViaVirtualCom() {
 
 void IMU::sendAngleViaVirtualCom() {
 	if ((request == 1) && (connected == 1)) {
-		uint16_t numberOfChars;
-		numberOfChars = sprintf((char*) buf, "x:%d,y:%d,z:%d", (int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
+		sprintf((char*) buf, "x:%d,y:%d,z:%d", (int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
 		VCP_writeStringFrame(frameAddress_Pecet, frameType_DataRequest, buf);
 		request = 0;
 	}
@@ -135,7 +125,7 @@ void IMU::requestDataGathering(uint16_t timeToSampleInSec) {
 void IMU::sendGatheredDataViaVCOM() {
 	if(numberOfSamplesToGather>0) {
 		stopTimerUpdate();
-		uint16_t it = 0, numberOfChars;
+		uint16_t it = 0;
 		volatile int16_t *pTemp;
 		for (it = 0; it < numberOfSamplesToGather; it++) {
 //			pTemp = measurements[it];
@@ -162,15 +152,42 @@ IMU::IMU() :
 	connected = 0;
 	request = 0;
 	error = 0;
+	samplingFrequency = 400;
+	numberOfGatheredSamples = 0;
+	numberOfSamplesToGather = 0;
 
+	x_IMU = 0;
+	y_IMU = 0;
+	z_IMU = 0;
+
+	height_GPS = 0;
+	lattitude_GPS = 0;
+	longtitude_GPS = 0;
+
+	TiltAngle = 0;
+	ZYawAngle = 0;
+	XRollAngle = 0;
+	YPitchAngle = 0;
 }
 
 void IMU::initialize() {
 	I2C::initialize();
+	flagsComunicationInterface[f_interface_sensors] = f_configured;
 	accelerometer.initialize();
+	flagsHardware[f_device_accelerometer] = f_configured;
+	flagsHardware[f_device_accelerometer] = f_deviceWorking;
+
 	gyro.initialize();
+	flagsHardware[f_device_gyroscope] = f_configured;
+	flagsHardware[f_device_gyroscope] = f_deviceWorking;
+
 	magnetometer.initialize();
+	flagsHardware[f_device_magnetometer] = f_configured;
+	flagsHardware[f_device_magnetometer] = f_deviceWorking;
+
 	pressure.initialize();
+	flagsHardware[f_device_pressure] = f_configured;
+	flagsHardware[f_device_pressure] = f_deviceWorking;
 
 	initializeTimerForUpdate();
 }
@@ -283,3 +300,10 @@ void IMU::doAllComputation() {
 		computationInProgress = 0;
 	}
 }
+
+void IMU::updateGPSData(struct gpsData_t *_gpsdata) {
+	this->lattitude_GPS = _gpsdata->lat;
+	this->longtitude_GPS = _gpsdata->lon;
+	this->height_GPS = _gpsdata->alt;
+}
+

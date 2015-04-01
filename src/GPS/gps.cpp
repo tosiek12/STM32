@@ -1,4 +1,5 @@
 #include "GPS/gps.h"
+#include "10DOF/IMU.h"
 #include "cortexm/ExceptionHandlers.h"
 #include "main.h"
 extern "C" {
@@ -10,27 +11,19 @@ UART_HandleTypeDef UartHandle;
 
 uint8_t buf1[80] = { 0 };
 uint8_t buf2[80] = { 0 };
-
 uint8_t *pFrame = buf1; //Zmienia sie wskaznik i wartosci
 uint16_t frameSize = 0;
-
 uint8_t *pTempFrame = buf2;
 uint8_t charsInFrame = 0;
-
 uint8_t charToSkip = 0;
-volatile uint8_t isNewFrame = 0;
-void GPS_Send() {
-	 if(isNewFrame) {
-		 pFrame[frameSize-1] = '\0';
-		 VCP_writeStringFrame(frameAddress_Pecet,'G', pFrame+1);//skip $
-		 isNewFrame = 0;
-	 }
- }
 
-void GPS_SendCrucialData() {
-	VCP_writeBinaryFrame('P', "G",1, gpsdata.hhmmss,6);
-	isNewFrame = 0;
-}
+volatile uint8_t isNewFrame = 0;
+struct gpsData_t gpsdata;
+
+/*
+ * Decode frame received from GPS, and update data in IMU class.
+ */
+
 void GPS_PushCharToFrame(volatile uint8_t recievedChar) {
 	if (charToSkip > 0) {
 		--charToSkip;	//skip check Sum
@@ -61,12 +54,9 @@ void GPS_PushCharToFrame(volatile uint8_t recievedChar) {
 			charsInFrame = 0;
 			pTempFrame[0] = '0';
 
-			//interpretuj ramke
-			if (!strncmp((char *) pFrame, "$GPGGA", 6)) {
-				//printf("nowa: %s\n", pFrame);
-			}
-			GPS_Parse(&gpsdata, pFrame, frameSize);
-
+			GPS_Parse(&gpsdata, pFrame, frameSize); //interpretuj ramke
+			imu10DOF.updateGPSData(&gpsdata);
+			isNewFrame = 0;
 		} else if (recievedChar == '\n' || recievedChar == '\r') {
 			charsInFrame = 0;
 			pTempFrame[0] = '0';
@@ -86,7 +76,6 @@ void GPS_PushCharToFrame(volatile uint8_t recievedChar) {
 	}
 }
 
-struct gpsData_t gpsdata;
 
 static uint32_t GPS_atoi(const char *p)
 {
@@ -104,7 +93,7 @@ static uint32_t GPS_atoi(const char *p)
 	return out;
 }
 
-//Potrzeba:
+//Potrzebne parsowanie ramek:
 //GGA - Global Positioning System Fix Data
 //GSA - GNSS DOP and Active Satellites
 //RMC - Recommended Minimum Specific GNSS Data
@@ -349,11 +338,7 @@ void GPS_UnitTests() {
 
 }
 
-
 void GPS_Init() {
-	//UnitTest at begginging:
-	GPS_UnitTests();
-
 	/* Configure hardware */
 	HAL_UART_MspInit(&UartHandle);
 
@@ -445,7 +430,7 @@ extern "C" void USART1_IRQHandler(void) {
 		//then read data register ...
 		data = (uint8_t) (USART1->DR & (uint8_t) 0xFF);
 		GPS_PushCharToFrame(data);
-		//VCP_writeFrame('P', "E",1, "OVF", 3);
+		//overflow - new data arrived before previous received.
 	}
 
 	if (__HAL_UART_GET_FLAG(&UartHandle, UART_FLAG_RXNE) != RESET) {
@@ -454,7 +439,7 @@ extern "C" void USART1_IRQHandler(void) {
 		data = (uint8_t) (USART1->DR & (uint8_t) 0xFF);
 		GPS_PushCharToFrame(data);
 	}
-//
+
 //	if (__HAL_UART_GET_FLAG(&UartHandle, UART_FLAG_TXE) != RESET) {
 //		__HAL_UART_CLEAR_FLAG(&UartHandle, UART_FLAG_TXE);
 //		data = (uint8_t) (USART1->SR & (uint8_t) 0xFF);  //read status

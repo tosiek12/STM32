@@ -31,6 +31,8 @@ public:
 		numberOfChars = -1;
 		state = FR_INT_ERR;
 		IMU_state = f_nonInit;
+		flagsComunicationInterface[f_interface_sdCard] = f_nonInit;
+
 	}
 	/**
 	 * Get SD card drive size
