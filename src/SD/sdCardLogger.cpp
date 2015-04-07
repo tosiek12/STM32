@@ -239,9 +239,10 @@ void SdCardLogger::closeFileForIMU(void){
 
 int16_t SdCardLogger::writeStringForIMU(const char *pString){
 	if(isUsed == 1 || IMU_state != f_deviceWorking) {
-		VCP_writeStringFrame(frameAddress_Pecet, frameType_Log, "File in use, or not opened");
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "File in use, or not opened");
 		return  -1;
 	} else {
+		numberOfChars = -1;
 		numberOfChars = f_puts(pString, &IMU_dataFile);			//If we put more than 0 characters (everything OK)
 		if (numberOfChars > 0) {
 			sprintf((char *)buff, "Written %d chars.", numberOfChars);

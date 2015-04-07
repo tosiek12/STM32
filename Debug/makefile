@@ -26,6 +26,7 @@ RM := rm -rf
 -include src/Delay/subdir.mk
 -include src/Algorithms/subdir.mk
 -include src/10DOF/Filters/subdir.mk
+-include src/10DOF/CQRlib/subdir.mk
 -include src/10DOF/subdir.mk
 -include src/subdir.mk
 -include subdir.mk

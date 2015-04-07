@@ -93,8 +93,8 @@ void ADXL345::loadCalibration() {
 		offset[1] = 10;
 		offset[2] = 0;
 		gain[0] = 3.92;
-		gain[1] = 3.92;
-		gain[2] = 3.92;
+		gain[1] = 3.94;
+		gain[2] = 3.94;
 //		Dla 4g
 //		offset[0] = 24;
 //		offset[1] = 30;
@@ -105,13 +105,13 @@ uint8_t ADXL345::update() {
 	if(updateRaw() == 1) {
 		return 1;
 	}
-	axis_f[0] = axis[0] + offset[0];
-	axis_f[1] = axis[1] + offset[1];
-	axis_f[2] = axis[2] + offset[2];
+	axisInMPerSsquared[0] = axis[0] + offset[0];
+	axisInMPerSsquared[1] = axis[1] + offset[1];
+	axisInMPerSsquared[2] = axis[2] + offset[2];
 
-	axis_f[0] = axis_f[0] * gain[0];
-	axis_f[1] = axis_f[1] * gain[1];
-	axis_f[2] = axis_f[2] * gain[2];
+	axisInMPerSsquared[0] = axisInMPerSsquared[0] * gain[0] / 100.0;
+	axisInMPerSsquared[1] = axisInMPerSsquared[1] * gain[1] / 100.0;
+	axisInMPerSsquared[2] = axisInMPerSsquared[2] * gain[2] / 100.0;
 	return 0;
 }
 
@@ -124,7 +124,7 @@ uint8_t ADXL345::updateRaw() {
 
 float32_t ADXL345::getGNorm() {
 	float32_t res,in;
-	in = axis_f[0]*axis_f[0]+axis_f[1]*axis_f[1]+axis_f[2]*axis_f[2];
+	in = axisInMPerSsquared[0]*axisInMPerSsquared[0]+axisInMPerSsquared[1]*axisInMPerSsquared[1]+axisInMPerSsquared[2]*axisInMPerSsquared[2];
 	arm_sqrt_f32(in, &res);
 	return res;
 }

@@ -14,163 +14,76 @@ extern "C" {
 #include "SD/sdCardLogger.h"
 #include "main.h"
 
-// Global variable //
+/* Global variable */
 IMU imu10DOF;
 
-void IMU::timerAction() {
-	if(computationInProgress == 1) {
-		error = 1;
-		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "ComputationInProgress");
-	}
-	static uint8_t errorSensor = 0;
-	uint8_t res[3];
-	res[0] = accelerometer.update();
-	res[1] = gyro.update();
-	res[2] = magnetometer.update();
-
-	if(res[0] || res[1] || res[2]) {
-		if(errorSensor == 0) {
-			errorSensor = 1;
-			VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "SensorUpdateError");
-		}
-	} else {
-		errorSensor = 0;
-		newRawDataAvailable = 1;
-		doAllComputation();
-		sprintf((char*) buf, "%d,%d,%d\n",(int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
-		sdCardLogger.writeStringForIMU((char *) buf);
-	}
-
-
-	/* Save data to temporary buffer */
-	if (numberOfGatheredSamples < numberOfSamplesToGather) {
-//		measurements[numberOfGatheredSamples][0] = accelerometer.axis[0];
-//		measurements[numberOfGatheredSamples][1] = accelerometer.axis[1];
-//		measurements[numberOfGatheredSamples][2] = accelerometer.axis[2];
-//		measurements[numberOfGatheredSamples][3] = gyro.axis[0];
-//		measurements[numberOfGatheredSamples][4] = gyro.axis[1];
-//		measurements[numberOfGatheredSamples][5] = gyro.axis[2];
-//		measurements[numberOfGatheredSamples][6] = magnetometer.axis[0];
-//		measurements[numberOfGatheredSamples][7] = magnetometer.axis[1];
-//		measurements[numberOfGatheredSamples][8] = magnetometer.axis[2];
-		++numberOfGatheredSamples;
-	}
-}
-
-// ----- TIM_IRQHandler() ----------------------------------------------------
-extern "C" void TIM3_IRQHandler(void) {
-	if (__HAL_TIM_GET_ITSTATUS(&imu10DOF.TimHandle, TIM_IT_UPDATE ) != RESET) {
-		semaphore_timerInterrupt = 1;
-		imu10DOF.timerAction();
-		semaphore_timerInterrupt = 0;
-		__HAL_TIM_CLEAR_IT(&imu10DOF.TimHandle, TIM_IT_UPDATE);
-	}
-}
-
-uint8_t IMU::sendRawDataViaVirtualCom() {
-	const uint8_t frameSize = 2 * 3;
-	int16_t temp;
-	uint32_t timeDelta = 0;
-	if (error == 1) {
-		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "Overwritten!");
-		error = 0;
-		return 0;
-	}
-
-	if ((request == 1) && (connected == 1) && (newRawDataAvailable == 1)) {
-		timeDelta = speedTester.delta();
-		/*	Frame:
-		 * [
-		 *  timeDelta, 4BYTES
-		 *  accelerometer, 3x2BYTES
-		 *  gyroscope,	3x2BYTES
-		 *  magnetometer,	3x2BYTES
-		 *  heading,	2BYTES
-		 *  ]
-		 */
-		VCP_write(&timeDelta, 4);
-		VCP_write(accelerometer.axis, frameSize);
-		VCP_write(gyro.axis, frameSize);
-		VCP_write(magnetometer.axis, frameSize);
-		temp = (int16_t) magnetometer.heading;
-		VCP_write(&temp, 2);
-
-		newRawDataAvailable = 0;
-		request = 0;
-
-		return 3 * frameSize;
-	}
-	return 0;
-}
-
-void IMU::sendMahonyViaVirtualCom() {
-	uint16_t numberOfChars;
-	numberOfChars = sprintf((char*) buf, "%d,%d,%d\n", (int16_t)(eulerAnglesInRadMahony[0]*1000),(int16_t)(eulerAnglesInRadMahony[1]*1000),(int16_t)(eulerAnglesInRadMahony[2]*1000));
-	VCP_write((void *) buf, numberOfChars);
-}
-
-void IMU::sendAngleViaVirtualCom() {
-	if ((request == 1) && (connected == 1)) {
-		sprintf((char*) buf, "x:%d,y:%d,z:%d", (int16_t)(XRollAngle*1000),(int16_t)(YPitchAngle*1000),(int16_t)(ZYawAngle*1000));
-		VCP_writeStringFrame(frameAddress_Pecet, frameType_DataRequest, buf);
-		request = 0;
-	}
-}
-
-void IMU::requestDataGathering(uint16_t timeToSampleInSec) {
-	numberOfSamplesToGather = MIN(samplingFrequency*timeToSampleInSec, 6000);
-	numberOfGatheredSamples = 0;
-}
-
-void IMU::sendGatheredDataViaVCOM() {
-	if(numberOfSamplesToGather>0) {
-		stopTimerUpdate();
-		uint16_t it = 0;
-		volatile int16_t *pTemp;
-		for (it = 0; it < numberOfSamplesToGather; it++) {
-//			pTemp = measurements[it];
-//			numberOfChars = sprintf((char*) buf, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", pTemp[0], pTemp[1], pTemp[2],
-//					pTemp[3], pTemp[4], pTemp[5], pTemp[6], pTemp[7], pTemp[8]);
-//			VCP_write((void *) buf, numberOfChars);
-		}
-		numberOfGatheredSamples = 0;
-		numberOfSamplesToGather = 0;
-		startTimerUpdate();
-	}
-}
-
-void IMU::calibrateGyroAndAccStationary() {
-	stopTimerUpdate();
-	accelerometer.calibrateStationary(100);
-	gyro.calibrateStationary(100);
-	startTimerUpdate();
-}
-
-IMU::IMU() :
+/* Member method implementation */
+IMU::IMU(void) :
 		gyro(), accelerometer(), magnetometer(), pressure() {
 	newRawDataAvailable = 0;
 	connected = 0;
 	request = 0;
 	error = 0;
-	samplingFrequency = 400;
+	samplingFrequencyInHz = 0;
+	samplingPeriodInS = .0;
 	numberOfGatheredSamples = 0;
 	numberOfSamplesToGather = 0;
 
-	x_IMU = 0;
-	y_IMU = 0;
-	z_IMU = 0;
+	positionInGlobalFrame_IMU[0] = 0;
+	positionInGlobalFrame_IMU[1] = 0;
+	positionInGlobalFrame_IMU[2] = 0;
 
 	height_GPS = 0;
 	lattitude_GPS = 0;
 	longtitude_GPS = 0;
 
-	TiltAngle = 0;
-	ZYawAngle = 0;
-	XRollAngle = 0;
-	YPitchAngle = 0;
+	TiltAngleInRad = 0;
+	ZYawAngleInRad = 0;
+	XRollAngleInRad = 0;
+	YPitchAngleInRad = 0;
 }
 
-void IMU::initialize() {
+void IMU::initializeTimerForUpdate(void) {
+	/* TIMx Peripheral clock enable */
+	__TIM3_CLK_ENABLE();
+
+	const uint32_t CounterClk = 10000;	//Hz
+	const uint16_t OutputClk = 400;	//Hz
+	samplingFrequencyInHz = OutputClk;
+	samplingPeriodInS = 1.0 / OutputClk;
+	//Prescaler = ((SystemCoreClock/2) / TIM3 counter clock) - 1
+	const uint16_t Prescaler = (((SystemCoreClock / 2) / CounterClk) - 1);
+	//ARR(TIM_Period) = (TIM3 counter clock / TIM3 output clock) - 1
+	const uint32_t Period = ((CounterClk / OutputClk) - 1);
+
+	/* Set TIMx instance */
+	TimHandle.Instance = TIM3;
+	TimHandle.Init.Period = Period;
+	TimHandle.Init.Prescaler = Prescaler;
+	TimHandle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
+	TimHandle.Init.RepetitionCounter = 0;
+	if (HAL_TIM_Base_Init(&TimHandle) != HAL_OK) {
+		/* Initialization Error */
+		while (1) {
+		};
+	}
+
+	/* Enable the TIMx global Interrupt */
+	HAL_NVIC_EnableIRQ((IRQn_Type) TIM3_IRQn);
+	/* Set Interrupt Group Priority */
+	HAL_NVIC_SetPriority((IRQn_Type) TIM3_IRQn, 1, 2);
+	/* Start Channel1 */
+	if (HAL_TIM_Base_Start_IT(&TimHandle) != HAL_OK) {
+		/* Starting Error */
+		while (1) {
+		};
+	}
+
+	__HAL_TIM_DISABLE(&TimHandle);
+}
+
+void IMU::initialize(void) {
 	I2C::initialize();
 	flagsComunicationInterface[f_interface_sensors] = f_configured;
 	accelerometer.initialize();
@@ -192,7 +105,120 @@ void IMU::initialize() {
 	initializeTimerForUpdate();
 }
 
-void IMU::computeYaw() {
+void IMU::timerAction(void) {
+	if (semahpore_computationInProgress == 1) {
+		error = 1;
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error,
+				"semahpore_computationInProgress");
+	}
+	static uint8_t errorSensor = 0;
+	uint8_t res[3];
+	res[0] = accelerometer.update();
+	res[1] = gyro.update();
+	res[2] = magnetometer.update();
+
+	if (res[0] || res[1] || res[2]) {
+		if (errorSensor == 0) {
+			errorSensor = 1;
+			VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "SensorUpdateError");
+		}
+	} else {
+		errorSensor = 0;
+		newRawDataAvailable = 1;
+		doAllComputation();
+		logDataOnSD();
+
+	}
+
+	/* Save data to temporary buffer */
+	if (numberOfGatheredSamples < numberOfSamplesToGather) {
+//		measurements[numberOfGatheredSamples][0] = accelerometer.axis[0];
+//		measurements[numberOfGatheredSamples][1] = accelerometer.axis[1];
+//		measurements[numberOfGatheredSamples][2] = accelerometer.axis[2];
+//		measurements[numberOfGatheredSamples][3] = gyro.axis[0];
+//		measurements[numberOfGatheredSamples][4] = gyro.axis[1];
+//		measurements[numberOfGatheredSamples][5] = gyro.axis[2];
+//		measurements[numberOfGatheredSamples][6] = magnetometer.axis[0];
+//		measurements[numberOfGatheredSamples][7] = magnetometer.axis[1];
+//		measurements[numberOfGatheredSamples][8] = magnetometer.axis[2];
+		++numberOfGatheredSamples;
+	}
+}
+void IMU::logDataOnSD(void) {
+	sprintf((char*) buf, "%d,%d,%d\n", (int16_t) (XRollAngleInRad * 1000),
+			(int16_t) (YPitchAngleInRad * 1000), (int16_t) (ZYawAngleInRad * 1000));
+	sdCardLogger.writeStringForIMU((char *) buf);
+}
+
+// ----- TIM_IRQHandler() ----------------------------------------------------
+extern "C" void TIM3_IRQHandler(void) {
+	if (__HAL_TIM_GET_ITSTATUS(&imu10DOF.TimHandle, TIM_IT_UPDATE ) != RESET) {
+		semaphore_timerInterrupt = 1;
+		imu10DOF.timerAction();
+		semaphore_timerInterrupt = 0;
+		__HAL_TIM_CLEAR_IT(&imu10DOF.TimHandle, TIM_IT_UPDATE);
+	}
+}
+
+void __attribute__((always_inline)) IMU::selfTests(NokiaLCD &nokiaLCD) {
+	magnetometer.selfTest(nokiaLCD);
+}
+void IMU::startTimerUpdate(void) {
+	__HAL_TIM_ENABLE(&TimHandle);
+}
+void IMU::stopTimerUpdate(void) {
+	__HAL_TIM_DISABLE(&TimHandle);
+}
+
+void IMU::setConnected(void) {
+	connected = 1;
+	request = 0;
+}
+void IMU::setDisconnected(void) {
+	connected = 0;
+	request = 0;
+}
+void IMU::setRequestOfData(void) {
+	request = 1;
+}
+
+void IMU::startDataGathering(void) {
+	numberOfGatheredSamples = 0;
+}
+uint8_t IMU::isDataGatheringComplete(void) {
+	return (numberOfGatheredSamples >= numberOfSamplesToGather);
+}
+
+void IMU::requestDataGathering(uint16_t timeToSampleInSec) {
+	numberOfSamplesToGather = MIN(samplingFrequencyInHz * timeToSampleInSec, 6000);
+	numberOfGatheredSamples = 0;
+}
+
+void IMU::sendGatheredDataViaVCOM(void) {
+	if (numberOfSamplesToGather > 0) {
+		stopTimerUpdate();
+		uint16_t it = 0;
+		volatile int16_t *pTemp;
+		for (it = 0; it < numberOfSamplesToGather; it++) {
+//			pTemp = measurements[it];
+//			numberOfChars = sprintf((char*) buf, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", pTemp[0], pTemp[1], pTemp[2],
+//					pTemp[3], pTemp[4], pTemp[5], pTemp[6], pTemp[7], pTemp[8]);
+//			VCP_write((void *) buf, numberOfChars);
+		}
+		numberOfGatheredSamples = 0;
+		numberOfSamplesToGather = 0;
+		startTimerUpdate();
+	}
+}
+
+void IMU::calibrateGyroAndAccStationary(void) {
+	stopTimerUpdate();
+	accelerometer.calibrateStationary(100);
+	gyro.calibrateStationary(100);
+	startTimerUpdate();
+}
+
+void IMU::computeYaw(void) {
 	float32_t sqrt_result, arg1, arg2;
 	float32_t mag[3];
 	mag[0] = magnetometer.axis_f[0];
@@ -206,28 +232,28 @@ void IMU::computeYaw() {
 	mag[1] /= sqrt_result;
 	mag[2] /= sqrt_result;
 
-	arg1 = arm_sin_f32(XRollAngle) * mag[2] - arm_cos_f32(XRollAngle) * mag[1];
-	arg2 = arm_cos_f32(YPitchAngle) * mag[0]
-			+ arm_sin_f32(XRollAngle) * arm_sin_f32(YPitchAngle) * mag[1]
-			+ arm_cos_f32(XRollAngle) * arm_sin_f32(YPitchAngle) * mag[2];
-	ZYawAngle = atan2f(arg1, arg2);
+	arg1 = arm_sin_f32(XRollAngleInRad) * mag[2] - arm_cos_f32(XRollAngleInRad) * mag[1];
+	arg2 = arm_cos_f32(YPitchAngleInRad) * mag[0]
+			+ arm_sin_f32(XRollAngleInRad) * arm_sin_f32(YPitchAngleInRad) * mag[1]
+			+ arm_cos_f32(XRollAngleInRad) * arm_sin_f32(YPitchAngleInRad) * mag[2];
+	ZYawAngleInRad = atan2f(arg1, arg2);
 
 	//Correct declination, and change to compass angles
-//	ZYawAngle += (5.0 + (16.0 / 60.0))*PI/180.0; //Positive declination.
-//	if (ZYawAngle < 0) {
-//		ZYawAngle += 2 * PI;
-//	} else if (ZYawAngle > 2 * PI) {
-//		ZYawAngle -= 2 * PI;
+//	ZYawAngleInRad += (5.0 + (16.0 / 60.0))*PI/180.0; //Positive declination.
+//	if (ZYawAngleInRad < 0) {
+//		ZYawAngleInRad += 2 * PI;
+//	} else if (ZYawAngleInRad > 2 * PI) {
+//		ZYawAngleInRad -= 2 * PI;
 //	}
 }
 
-void IMU::computePitchRollTilt() {
+void IMU::computePitchRollTilt(void) {
 	float32_t arg1;
 	float32_t sqrt_result;
 	float32_t acc[3];
-	acc[0] = accelerometer.axis_f[0];
-	acc[1] = accelerometer.axis_f[1];
-	acc[2] = accelerometer.axis_f[2];
+	acc[0] = accelerometer.axisInMPerSsquared[0];
+	acc[1] = accelerometer.axisInMPerSsquared[1];
+	acc[2] = accelerometer.axisInMPerSsquared[2];
 
 	//Normalise measurement:
 	arg1 = (float32_t) (acc[0]) * (acc[0]) + (acc[1]) * (acc[1]) + (acc[2]) * (acc[2]);
@@ -247,63 +273,203 @@ void IMU::computePitchRollTilt() {
 	}
 	arg1 = (acc[2]) * (acc[2]) + mi * (acc[0]) * (acc[0]);
 	arm_sqrt_f32(arg1, &sqrt_result);
-	XRollAngle = atan2(acc[1], signZ * sqrt_result);
+	XRollAngleInRad = atan2(acc[1], signZ * sqrt_result);
 
 	arg1 = 0;
 	arg1 += (float32_t) (acc[2]) * (float32_t) (acc[2]);
 	arg1 += (float32_t) (acc[1]) * (float32_t) (acc[1]);
 	arm_sqrt_f32(arg1, &sqrt_result);
-	YPitchAngle = atan2f(-(acc[0]), sqrt_result);
-	//YPitchAngle_2 = arm_sin_f32((float32_t)(-acc[0])/(float32_t)(g));
+	YPitchAngleInRad = atan2(-(acc[0]), sqrt_result);
+	//YPitchAngleInRad_2 = arm_sin_f32((float32_t)(-acc[0])/(float32_t)(g));
 
 	arg1 = 0;
 	arg1 += (float32_t) (acc[0]) * (float32_t) (acc[0]);
 	arg1 += (float32_t) (acc[1]) * (float32_t) (acc[1]);
 	arg1 += (float32_t) (acc[2]) * (float32_t) (acc[2]);
 	arm_sqrt_f32(arg1, &sqrt_result);
-	TiltAngle = arm_cos_f32((acc[2]) / sqrt_result);
+	TiltAngleInRad = arm_cos_f32((acc[2]) / sqrt_result);
 }
 
-void IMU::mahonyStepAction() {
-	MahonyAHRSupdate(gyro.axis_f[0],gyro.axis_f[1],gyro.axis_f[2],
-			accelerometer.axis_f[0],accelerometer.axis_f[1],accelerometer.axis_f[2],
-			magnetometer.axis_f[0],magnetometer.axis_f[1],magnetometer.axis_f[2]);
+void IMU::mahonyStepAction(void) {
+	const float32_t * const pGyro = gyro.axisInRadPerS, * const pAcc = accelerometer.axisInMPerSsquared, * const pMag = magnetometer.axis_f;
+	MahonyAHRSupdate(pGyro[0], pGyro[1], pGyro[2],
+			pAcc[0], pAcc[1], pAcc[2],
+			pMag[0], pMag[1], pMag[2]);
 	MahonyToEuler(eulerAnglesInRadMahony);
 }
 
-void IMU::kalmanStepAction() {
+void IMU::kalmanStepAction(void) {
 	//const float64_t RAD_TO_DEG = 57.29577951f;
 	float64_t dt_inSec = 0.0025;
-	float64_t gyroXrate = -((float64_t) ((gyro.axis_f[0])));
+	float64_t gyroXrate = -((float64_t) ((gyro.axisInRadPerS[0])));
 	gyroXangle += gyroXrate * dt_inSec; // Without any filter
-	float64_t gyroYrate = ((float64_t) ((gyro.axis_f[1])));
+	float64_t gyroYrate = ((float64_t) ((gyro.axisInRadPerS[1])));
 	gyroYangle += gyroYrate * dt_inSec; // Without any filter
 
 	// Complementary filter
-	compAngleX = (0.93 * (compAngleX + gyroYrate * dt_inSec)) + (0.07 * XRollAngle);
-	compAngleY = (0.93 * (compAngleY + gyroYrate * dt_inSec)) + (0.07 * YPitchAngle);
+	compAngleX = (0.93 * (compAngleX + gyroYrate * dt_inSec)) + (0.07 * XRollAngleInRad);
+	compAngleY = (0.93 * (compAngleY + gyroYrate * dt_inSec)) + (0.07 * YPitchAngleInRad);
 	// Kalman filter
-	kalmanX.stepOldVersion(XRollAngle, gyroXrate, dt_inSec);
-	kalmanY.stepOldVersion(YPitchAngle, gyroYrate, dt_inSec);
+	kalmanX.stepOldVersion(XRollAngleInRad, gyroXrate, dt_inSec);
+	kalmanY.stepOldVersion(YPitchAngleInRad, gyroYrate, dt_inSec);
 }
 
-void IMU::doAllComputation() {
-	if(newRawDataAvailable) {
-		computationInProgress = 1;
+void IMU::doAllComputation(void) {
+	if (newRawDataAvailable) {
+		semahpore_computationInProgress = 1;
 
-		kalmanStepAction();
 		mahonyStepAction();
 		computePitchRollTilt();
 		computeYaw();
+		kalmanStepAction();
+		updatePositionFromIMU();
 
 		newRawDataAvailable = 0;
-		computationInProgress = 0;
+		semahpore_computationInProgress = 0;
 	}
 }
 
-void IMU::updateGPSData(struct gpsData_t *_gpsdata) {
+void IMU::updateGPSData(const struct gpsData_t *_gpsdata) {
 	this->lattitude_GPS = _gpsdata->lat;
 	this->longtitude_GPS = _gpsdata->lon;
 	this->height_GPS = _gpsdata->alt;
+	memcpy(&gps, _gpsdata, sizeof(struct gpsData_t));
 }
 
+void IMU::prepareDataFrame(uint8_t * const pBuff, int16_t buffFreeSpace) {
+	uint8_t tempBuff[50] = { '\0' };
+	uint8_t numberOfcharsToAppend = 0;
+
+	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "x:%d,y:%d,z:%d,",
+			(int16_t) (XRollAngleInRad * 1000), (int16_t) (YPitchAngleInRad * 1000),
+			(int16_t) (ZYawAngleInRad * 1000));
+	buffFreeSpace -= numberOfcharsToAppend;
+	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+
+	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "x_c:%d,y_c:%d,z_c:%d,",
+			(int16_t) (eulerAnglesInRadMahony[0] * 1000),
+			(int16_t) (eulerAnglesInRadMahony[1] * 1000),
+			(int16_t) (eulerAnglesInRadMahony[2] * 1000));
+	buffFreeSpace -= numberOfcharsToAppend;
+	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+
+	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "altG:%ld,lonG:%ld,latG:%ld,",
+			(int32_t) (height_GPS * 1000), (int32_t) (longtitude_GPS * 1000),
+			(int32_t) (lattitude_GPS * 1000));
+	buffFreeSpace -= numberOfcharsToAppend;
+	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+
+	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "dop:%uld,hdop:%uld,", gps.dop,
+			gps.hdop);
+	buffFreeSpace -= numberOfcharsToAppend;
+	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+
+	if (buffFreeSpace < 0) {
+		Error_Handler();
+	}
+}
+
+void IMU::updatePositionFromIMU(void) {
+	removeCentrifugalForceEffect();
+	transformAccelerationToGlobalFrame();
+	computeMovementAndAddToPossition();
+}
+
+void IMU::removeCentrifugalForceEffect(void) {
+	float32_t arg1 = .0, sumOfSquares = .0;
+	float32_t result = .0;
+	float32_t centrifugalAcceleration[3] = { .0 };
+	const float32_t rotationThresholdInRadPerSec = 10.0;
+	//Physical dimensions on board in mm
+	const float32_t dx = 0.0015,	//15 mm
+			dy = 0.002,		//20 mm
+			dz = 0.0003;	//3 mm
+
+	if (gyro.axis[0] > rotationThresholdInRadPerSec) {
+		centrifugalAcceleration[1] = gyro.axis[0] * gyro.axis[0] * dx;
+	}
+	if (gyro.axis[1] > rotationThresholdInRadPerSec) {
+		centrifugalAcceleration[0] = gyro.axis[1] * gyro.axis[1] * dy;
+	}
+	if (gyro.axis[2] > rotationThresholdInRadPerSec) {
+		arm_sqrt_f32(sumOfSquares, &result);
+		centrifugalAcceleration[0] = gyro.axis[2] * gyro.axis[2] * result;
+		centrifugalAcceleration[1] = gyro.axis[2] * gyro.axis[2] * result;
+
+		sumOfSquares = dx * dx + dy * dy;
+		arg1 = dy / sumOfSquares;
+		centrifugalAcceleration[0] *= arm_sin_f32(arg1);
+		arg1 = dx / sumOfSquares;
+		centrifugalAcceleration[1] *= arm_cos_f32(arg1);
+	}
+	accelerometer.axis[0] -= centrifugalAcceleration[0];
+	accelerometer.axis[1] -= centrifugalAcceleration[1];
+	accelerometer.axis[2] -= centrifugalAcceleration[2];
+}
+
+void IMU::transformAccelerationToGlobalFrame(void) {
+	float32_t norm = q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3;
+	float32_t invQuaterion[4] = { q0, -q1, -q2, -q3 };
+	//inverse of quaterion
+	if ((norm - 1.0) > 1.001 || (norm - 1.0) < 0.999) {
+		invQuaterion[0] /= norm;
+		invQuaterion[1] /= norm;
+		invQuaterion[2] /= norm;
+		invQuaterion[3] /= norm;
+	}
+	//rotation of acceleration vector by given quaterion.
+	float32_t result = .0;
+	result += 2 * (-invQuaterion[2] * invQuaterion[2] - invQuaterion[3] * invQuaterion[3] + 0.5)
+			* accelerometer.axis[0];
+	result += 2 * (invQuaterion[1] * invQuaterion[2] + invQuaterion[0] * invQuaterion[3])
+			* accelerometer.axis[1];
+	result += 2 * (-invQuaterion[0] * invQuaterion[2] + invQuaterion[1] * invQuaterion[3])
+			* accelerometer.axis[2];
+	accelerationInGlobalFrame[0] = result;
+
+	result = .0;
+	result += 2 * (invQuaterion[1] * invQuaterion[2] - invQuaterion[0] * invQuaterion[3])
+			* accelerometer.axis[0];
+	result += 2 * (-invQuaterion[1] * invQuaterion[1] - invQuaterion[3] * invQuaterion[3] + 0.5)
+			* accelerometer.axis[1];
+	result += 2 * (invQuaterion[0] * invQuaterion[1] + invQuaterion[2] * invQuaterion[3])
+			* accelerometer.axis[2];
+	accelerationInGlobalFrame[1] = result;
+
+	result = .0;
+	result += 2 * (invQuaterion[1] * invQuaterion[3] + invQuaterion[0] * invQuaterion[2])
+			* accelerometer.axis[0];
+	result += 2 * (-invQuaterion[0] * invQuaterion[1] + invQuaterion[2] * invQuaterion[3])
+			* accelerometer.axis[1];
+	result += 2 * (-invQuaterion[1] * invQuaterion[1] - invQuaterion[2] * invQuaterion[2] + 0.5)
+			* accelerometer.axis[2];
+	accelerationInGlobalFrame[2] = result;
+}
+
+void IMU::computeMovementAndAddToPossition(void) {
+	float32_t possitionChange[3] = { .0 };
+	//remove gravitation
+	accelerationInGlobalFrame[3] -= 9.81;
+
+	//compute movement
+	possitionChange[0] = velocityInGlobalFrame[0] * samplingPeriodInS
+			+ accelerationInGlobalFrame[0] * samplingPeriodInS * samplingPeriodInS * 0.5;
+	possitionChange[1] = velocityInGlobalFrame[1] * samplingPeriodInS
+			+ accelerationInGlobalFrame[1] * samplingPeriodInS * samplingPeriodInS * 0.5;
+	possitionChange[2] = velocityInGlobalFrame[2] * samplingPeriodInS
+			+ accelerationInGlobalFrame[2] * samplingPeriodInS * samplingPeriodInS * 0.5;
+
+	//update position
+	positionInGlobalFrame_IMU[0] += possitionChange[0];
+	positionInGlobalFrame_IMU[1] += possitionChange[1];
+	positionInGlobalFrame_IMU[2] += possitionChange[2];
+
+	//update velocity
+	velocityInGlobalFrame[0] += accelerationInGlobalFrame[0] * samplingPeriodInS;
+	velocityInGlobalFrame[1] += accelerationInGlobalFrame[1] * samplingPeriodInS;
+	velocityInGlobalFrame[2] += accelerationInGlobalFrame[2] * samplingPeriodInS;
+}
+
+void IMU::setPossitionFromGPSToIMU(void) {
+
+}

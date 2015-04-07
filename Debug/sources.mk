@@ -47,4 +47,5 @@ src/Delay \
 src/Algorithms \
 src/10DOF \
 src/10DOF/Filters \
+src/10DOF/CQRlib \
 

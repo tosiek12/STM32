@@ -130,9 +130,8 @@ class ITG3200 {
 			devAddr = address;
 		}
 
-		// Values in (grad/sek)
 		int16_t axis[3];
-		float32_t axis_f[3];
+		float32_t axisInRadPerS[3];
 
         void initialize();
         uint8_t testConnection();

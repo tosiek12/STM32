@@ -309,7 +309,7 @@
 class ADXL345 {
 public:
 	int16_t axis[3];
-	float32_t axis_f[3];
+	float32_t axisInMPerSsquared[3];
 
 	ADXL345(uint8_t address = ADXL345_DEFAULT_ADDRESS) {
 		devAddr = address;

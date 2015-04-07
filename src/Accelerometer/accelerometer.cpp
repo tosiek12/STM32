@@ -113,37 +113,37 @@ void SysTick_UpdateAccelerometer() {
 }
 
 void Main_AccelerometerAction(NokiaLCD *pNokiaLCD) {
-	__IO int16_t XRollAngle;	//Range -180,180
-	__IO int16_t YPitchAngle;	//Range -90,90
-	__IO int16_t TiltAngle;		//Range 0,180	//odchylenie od pionu (grawitacji)
+	__IO int16_t XRollAngleInRad;	//Range -180,180
+	__IO int16_t YPitchAngleInRad;	//Range -90,90
+	__IO int16_t TiltAngleInRad;		//Range 0,180	//odchylenie od pionu (grawitacji)
 	float32_t sqrt_argument;
 	float32_t sqrt_result;
 	char buf[24];
 
-	XRollAngle = atan2f((float)(yActual), (float)(zActual))*180/PI;	//zgodne z teori¹
+	XRollAngleInRad = atan2f((float)(yActual), (float)(zActual))*180/PI;	//zgodne z teoriï¿½
 	sqrt_argument = 0;
 	sqrt_argument +=(float)(zActual)*(float)(zActual);
 	sqrt_argument +=(float)(yActual)*(float)(yActual);
 	arm_sqrt_f32(sqrt_argument,&sqrt_result);
-	YPitchAngle = atan2f(-(xActual),sqrt_result)*180/PI;
+	YPitchAngleInRad = atan2f(-(xActual),sqrt_result)*180/PI;
 
 	sqrt_argument = 0;
 	sqrt_argument +=(float)(zActual)*(float)(zActual);
 	sqrt_argument +=(float)(xActual)*(float)(xActual);
 	sqrt_argument +=(float)(yActual)*(float)(yActual);
 	arm_sqrt_f32(sqrt_argument,&sqrt_result);
-	TiltAngle = acosf((zActual)/sqrt_result)*180/PI;
+	TiltAngleInRad = acosf((zActual)/sqrt_result)*180/PI;
 
 	pNokiaLCD->ClearLine(3);
-	sprintf(buf,"XRoll=%d",XRollAngle);
+	sprintf(buf,"XRoll=%d",XRollAngleInRad);
 	pNokiaLCD->WriteTextXY(buf,0,3);
 
 	pNokiaLCD->ClearLine(4);
-	sprintf(buf,"YPitch=%d",YPitchAngle);
+	sprintf(buf,"YPitch=%d",YPitchAngleInRad);
 	pNokiaLCD->WriteTextXY(buf,0,4);
 
 	pNokiaLCD->ClearLine(5);
-	sprintf(buf,"Tilt=%d",TiltAngle);
+	sprintf(buf,"Tilt=%d",TiltAngleInRad);
 	pNokiaLCD->WriteTextXY(buf,0,5);
 
 	if (xActual != 0 || yActual != 0 || zActual != 0) {

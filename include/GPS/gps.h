@@ -36,7 +36,6 @@ PA10     ------> USART1_RX
 #define COUNTOF(__BUFFER__)   (sizeof(__BUFFER__) / sizeof(*(__BUFFER__)))
 
 void GPS_Init();
-void GPS_Send();
 
 struct gpsData_t {
 	// time
@@ -75,7 +74,5 @@ struct gpsData_t {
 extern struct gpsData_t gpsdata;
 
 void GPS_Parse(struct gpsData_t *gpsdata, uint8_t *buf, uint8_t len);
-void GPS_SendCrucialData();
-
 
 #endif

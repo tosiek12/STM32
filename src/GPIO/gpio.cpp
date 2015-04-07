@@ -57,6 +57,44 @@ void GPIO::SysTick_ButtonAction() {
 	}
 }
 
+void GPIO::InitTimer() {
+		/* --------------------------------------------------------
+		 TIM6 input clock (TIM6CLK) is set to 2 * APB1 clock (PCLK1),
+		 since APB1 prescaler is different from 1.
+		 TIM6CLK = 2 * PCLK1
+		 TIM6CLK = HCLK / 2 = SystemCoreClock /2
+		 TIM6 Update event occurs each TIM6CLK/256
+		 Note:
+		 SystemCoreClock variable holds HCLK frequency and is defined in system_stm32f4xx.c file.
+		 Each time the core clock (HCLK) changes, user had to call SystemCoreClockUpdate()
+		 function to update SystemCoreClock variable value. Otherwise, any configuration
+		 based on this variable will be incorrect.
+		 ----------------------------------------------------------- */
+
+		const uint32_t CounterClk = 10000;	//100kHz
+		const uint16_t OutputClk = 1000;	//1kHz
+		const uint16_t Prescaler = (((SystemCoreClock / 2) / CounterClk) - 1);
+		//ARR(TIM_Period) = (TIM3 counter clock / TIM3 output clock) - 1
+		const uint32_t Period = ((CounterClk / OutputClk) - 1);
+
+		/* TIM4 Periph clock enable */
+		__TIM4_CLK_ENABLE();
+
+		/* Time base configuration */
+		TIM_TimeBaseStructure.Instance = TIM4;
+		TIM_TimeBaseStructure.Init.Period = Period;
+		TIM_TimeBaseStructure.Init.Prescaler = Prescaler;
+		TIM_TimeBaseStructure.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+		TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;
+		TIM_TimeBaseStructure.Init.RepetitionCounter = 0;
+		HAL_TIM_Base_Init(&TIM_TimeBaseStructure);
+
+		HAL_NVIC_SetPriority((IRQn_Type) TIM4_IRQn, 1, 1);
+		HAL_NVIC_EnableIRQ((IRQn_Type) TIM4_IRQn);
+
+		HAL_TIM_Base_Start_IT(&TIM_TimeBaseStructure);
+	}
+
 // ----- EXTI9_5_IRQHandler() ----------------------------------------------------
 
 extern "C" void EXTI9_5_IRQHandler(void) {
@@ -77,7 +115,7 @@ extern "C" void TIM4_IRQHandler(void) {
 }
 
 
-GPIO IO_module;
+GPIO io_module;
 
 // ----------------------------------------------------------------------------
 

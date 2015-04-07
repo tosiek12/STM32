@@ -87,9 +87,9 @@ void ITG3200::loadCalibration() {
 	offset[0] = 461;
 	offset[1] = -243;
 	offset[2] = 58;
-	gain[0] = (PI)/20720;
-	gain[1] = (PI)/20720;
-	gain[2] = (PI)/20720;
+	gain[0] = (PI)/20720.0;
+	gain[1] = (PI)/20720.0;
+	gain[2] = (PI)/20720.0;
 }
 
 void ITG3200::calibrateStationary(const uint16_t numberOfSamples) {
@@ -586,13 +586,13 @@ uint8_t ITG3200::update() {
 	if(updateRaw() == 1) {
 		return 1;
 	}
-	axis_f[0] = axis[0] + offset[0];
-	axis_f[1] = axis[1] + offset[1];
-	axis_f[2] = axis[2] + offset[2];
+	axisInRadPerS[0] = axis[0] + offset[0];
+	axisInRadPerS[1] = axis[1] + offset[1];
+	axisInRadPerS[2] = axis[2] + offset[2];
 
-	axis_f[0] = axis_f[0] * gain[0];
-	axis_f[1] = axis_f[1] * gain[1];
-	axis_f[2] = axis_f[2] * gain[2];
+	axisInRadPerS[0] = axisInRadPerS[0] * gain[0];
+	axisInRadPerS[1] = axisInRadPerS[1] * gain[1];
+	axisInRadPerS[2] = axisInRadPerS[2] * gain[2];
 	return 0;
 }
 

@@ -53,6 +53,7 @@ const uint8_t frameType_StartIMUTimerUpdate = 's';
 const uint8_t frameType_StopIMUTimerUpdate = 'e';
 
 const uint8_t frameType_DataRequest = 'R';
+const uint8_t frameType_AllDataRequest = 'D';
 const uint8_t frameType_DataGatherRequest = 'G';
 const uint8_t frameType_MahonyOrientationRequest = 'M';
 

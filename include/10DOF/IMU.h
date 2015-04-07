@@ -19,35 +19,38 @@ class IMU {
 public:
 
 private:
-/* Sensors */
+	/* Sensors and measurment parameters */
 	ITG3200 gyro;
 	ADXL345 accelerometer;
+	float32_t accelerationInGlobalFrame[3];	//in m/s*s
+	float32_t velocityInGlobalFrame[3];		//	in m/s
 	HMC5883L magnetometer;
 	BMP085 pressure;
-	uint16_t samplingFrequency;
-	const uint8_t I2C_ID_BMP085 = 0x77 << 1;		//Barometr?
+	struct gpsData_t gps;
+	uint16_t samplingFrequencyInHz;
+	float32_t samplingPeriodInS;
+	const uint8_t I2C_ID_BMP085 = 0x77 << 1;		//Barometer? Id Address
 
-/* Status */
+	/* Status */
 	volatile uint8_t newRawDataAvailable;
 	uint8_t connected;
 	uint8_t request;
 	uint8_t error;
-	volatile uint8_t computationInProgress;
+	volatile uint8_t semahpore_computationInProgress;
 
-/*	Position */
+	/*	Position */
 	float32_t height_GPS;
 	float32_t longtitude_GPS;
 	float32_t lattitude_GPS;
-	float32_t x_IMU, y_IMU, z_IMU;
+	float32_t positionInGlobalFrame_IMU[3];
 
-
-/*	Filter */
+	/*	Filter */
 	Kalman kalmanX;
 	Kalman kalmanY;
-	float32_t XRollAngle;	//Range -180,180
-	float32_t YPitchAngle;	//Range -90,90
-	float32_t TiltAngle;		//Range 0,180	//odchylenie od pionu (grawitacji)
-	float32_t ZYawAngle;	//Range -180,180
+	float32_t XRollAngleInRad;	//Range -180,180
+	float32_t YPitchAngleInRad;	//Range -90,90
+	float32_t TiltAngleInRad;		//Range 0,180	//odchylenie od pionu (grawitacji)
+	float32_t ZYawAngleInRad;	//Range -180,180
 	float32_t eulerAnglesInRadMahony[3];
 
 	/* All the angles start at 180 degrees */
@@ -62,99 +65,53 @@ private:
 	uint16_t numberOfSamplesToGather;
 	uint8_t buf[50];
 
-	inline void __attribute__((always_inline)) initializeTimerForUpdate() {
-		/* TIMx Peripheral clock enable */
-		__TIM3_CLK_ENABLE();
+	void __attribute__((always_inline)) initializeTimerForUpdate(void);
 
-		const uint32_t CounterClk = 10000;	//Hz
-		const uint16_t OutputClk = 400;	//Hz
-		samplingFrequency = OutputClk;
-		//Prescaler = ((SystemCoreClock/2) / TIM3 counter clock) - 1
-		const uint16_t Prescaler = (((SystemCoreClock / 2) / CounterClk) - 1);
-		//ARR(TIM_Period) = (TIM3 counter clock / TIM3 output clock) - 1
-		const uint32_t Period = ((CounterClk / OutputClk) - 1);
+	/*  */
+	void doAllComputation(void);
+	/* Only from accelerometer without any filtering. */
+	void computePitchRollTilt(void);
+	/* Only from magnetometer with use of computed raw euler angles from accelerometer. */
+	void computeYaw(void);
 
-		/* Set TIMx instance */
-		TimHandle.Instance = TIM3;
-		TimHandle.Init.Period = Period;
-		TimHandle.Init.Prescaler = Prescaler;
-		TimHandle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-		TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
-		TimHandle.Init.RepetitionCounter = 0;
-		if (HAL_TIM_Base_Init(&TimHandle) != HAL_OK) {
-			/* Initialization Error */
-			while (1) {
-			};
-		}
-
-		/* Enable the TIMx global Interrupt */
-		HAL_NVIC_EnableIRQ((IRQn_Type) TIM3_IRQn);
-		/* Set Interrupt Group Priority */
-		HAL_NVIC_SetPriority((IRQn_Type) TIM3_IRQn, 1, 2);
-		/* Start Channel1 */
-		if (HAL_TIM_Base_Start_IT(&TimHandle) != HAL_OK) {
-			/* Starting Error */
-			while (1) {
-			};
-		}
-
-		__HAL_TIM_DISABLE(&TimHandle);
-	}
-
+	void removeCentrifugalForceEffect(void);
+	void transformAccelerationToGlobalFrame(void);
+	void computeMovementAndAddToPossition(void);
 public:
 	IMU();
 	~IMU() {
 	}
 	TIM_HandleTypeDef TimHandle;
-	void initialize();
-	void showMeasurment(NokiaLCD& nokiaLCD);
+	void initialize(void);
 
-	inline void __attribute__((always_inline)) selfTests(NokiaLCD &nokiaLCD) {
-		magnetometer.selfTest(nokiaLCD);
-	}
-	void calibrateGyroAndAccStationary();
+	/* Diagnostic function */
+	void __attribute__((always_inline)) selfTests(NokiaLCD &nokiaLCD);
+	void calibrateGyroAndAccStationary(void);
 
-	void timerAction();
+	/* main actions - computation */
+	void timerAction(void);
+	void mahonyStepAction(void);
+	void kalmanStepAction(void);
+	void updateGPSData(const struct gpsData_t *_gpsdata);
+	void updatePositionFromIMU(void);
+	void setPossitionFromGPSToIMU(void);
 
-	void computePitchRollTilt();
-	void computeYaw();
-	void doAllComputation();
-
-	void startTimerUpdate() {
-		__HAL_TIM_ENABLE(&TimHandle);
-	}
-	void stopTimerUpdate() {
-		__HAL_TIM_DISABLE(&TimHandle);
-	}
-	uint8_t sendRawDataViaVirtualCom();
-	void sendAngleViaVirtualCom();
-	void sendMahonyViaVirtualCom();
-
-	void setConnected() {
-		connected = 1;
-		request = 0;
-	}
-	void setDisconnected() {
-		connected = 0;
-		request = 0;
-	}
-	void setRequestOfData() {
-		request = 1;
-	}
-
-	void startDataGathering() {
-		numberOfGatheredSamples = 0;
-	}
-	void sendGatheredDataViaVCOM();
-		void requestDataGathering(uint16_t numberOfSamples);
-	uint8_t isDataGatheringComplete() {
-		return (numberOfGatheredSamples >= numberOfSamplesToGather);
-	}
-
-	void mahonyStepAction();
-	void kalmanStepAction();
+	/* Logging, debugging and sending functions */
+	void logDataOnSD(void);
+	void sendGatheredDataViaVCOM(void);
 	void showAnglesKalman(NokiaLCD& nokiaLCD);
-	void updateGPSData(struct gpsData_t *_gpsdata);
+	void showMeasurment(NokiaLCD& nokiaLCD);
+	void prepareDataFrame(uint8_t * const pBuff, int16_t buffSize);
+
+	/* State changing functions */
+	void startTimerUpdate(void);
+	void stopTimerUpdate(void);
+	void setConnected(void);
+	void setDisconnected(void);
+	void setRequestOfData(void);
+	void startDataGathering(void);
+	void requestDataGathering(uint16_t numberOfSamples);
+	uint8_t isDataGatheringComplete(void);
 };
 
 extern IMU imu10DOF;

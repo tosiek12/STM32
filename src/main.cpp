@@ -80,7 +80,7 @@ static void doFrameAction(void) {
 	switch (s_RxFrameBuffer.Type) {
 	case frameType_ConnectedWithGUI:
 		flagsComunicationInterface[f_interface_USB] = f_connectedWithClient;
-		IO_module.turnLedOn(GPIO::LED3_PIN, 1);
+		io_module.turnLedOn(GPIO::LED3_PIN, 1);
 		strncpy((char *) buf,"IMU.txt",100);
 		sdCardLogger.openFileForIMU(buf);
 		imu10DOF.setConnected();
@@ -89,23 +89,27 @@ static void doFrameAction(void) {
 		imu10DOF.stopTimerUpdate();
 		imu10DOF.setDisconnected();
 		flagsComunicationInterface[f_interface_USB] = f_connectedWithPC;
-		IO_module.turnLedOn(GPIO::LED3_PIN, 0);
+		io_module.turnLedOn(GPIO::LED3_PIN, 0);
 		sdCardLogger.closeFileForIMU();
 
 		break;
 	case frameType_StartIMUTimerUpdate:
 		imu10DOF.startTimerUpdate();
-		IO_module.turnLedOn(GPIO::LED4_PIN, 1);
+		io_module.turnLedOn(GPIO::LED4_PIN, 1);
 
 		break;
 	case frameType_StopIMUTimerUpdate:
 		imu10DOF.stopTimerUpdate();
 		sdCardLogger.closeFileForIMU();
-		IO_module.turnLedOn(GPIO::LED4_PIN, 0);
+		io_module.turnLedOn(GPIO::LED4_PIN, 0);
 		break;
 	case frameType_DataRequest:
-		imu10DOF.setRequestOfData();
-		imu10DOF.sendAngleViaVirtualCom();
+		//imu10DOF.setRequestOfData();
+		//imu10DOF.sendAngleViaVirtualCom();
+		break;
+	case frameType_AllDataRequest:
+		imu10DOF.prepareDataFrame((uint8_t *) buf, 100);
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_AllDataRequest, buf);
 		break;
 	case frameType_Calibrate:
 		imu10DOF.stopTimerUpdate();
@@ -113,7 +117,7 @@ static void doFrameAction(void) {
 		imu10DOF.startTimerUpdate();
 		break;
 	case frameType_MahonyOrientationRequest:
-		imu10DOF.sendMahonyViaVirtualCom();
+		//imu10DOF.sendMahonyViaVirtualCom();
 		break;
 	case frameType_SendingTimeCheck:
 		s_RxFrameBuffer.Msg[s_RxFrameBuffer.Size] = '\0';
@@ -161,8 +165,8 @@ int main() {
 	/* Initialize Systick, */
 	Delay::initialize();
 	//NokiaLCD nokiaLCD;	//Create, and initialize
-	IO_module.InitButtons();
-	IO_module.InitLeds();
+	io_module.InitButtons();
+	io_module.InitLeds();
 	sdCardLogger.initialize();
 
 	USBD_Init(&USBD_Device, &VCP_Desc, 0);
@@ -178,9 +182,7 @@ int main() {
 	//pwm.setChannelRawValue(1, 1000);
 
 	while (1) {
-		IO_module.mainBegginingUpdate();
-		//GPS_Send();
-
+		io_module.mainBegginingUpdate();
 		if (imu10DOF.isDataGatheringComplete()) {
 			imu10DOF.sendGatheredDataViaVCOM();
 		}
@@ -188,14 +190,14 @@ int main() {
 		doFrameAction();
 
 		//Obsluga przyciskow:
-		if (IO_module.getButtonState(0) == GPIO::longPush) {
+		if (io_module.getButtonState(0) == GPIO::longPush) {
 			//nokiaLCD.WriteTextXY((char*) "longPush const", 0, 0);
 		}
-		if (IO_module.getButtonStateChange(1, GPIO::shortPush)) {
+		if (io_module.getButtonStateChange(1, GPIO::shortPush)) {
 		}
-		if (IO_module.getButtonState(0) == GPIO::longPush) {
+		if (io_module.getButtonState(0) == GPIO::longPush) {
 		}
-		IO_module.mainEndUpdate();
+		io_module.mainEndUpdate();
 	}
 }
 
