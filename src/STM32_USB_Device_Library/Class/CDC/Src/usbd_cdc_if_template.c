@@ -321,15 +321,15 @@ int VCP_write(const void *pBuffer, uint16_t size ) {
 
 	return todo;
 }
-
-static uint8_t frameBuffer[100];
+#define FRAMEBUFFERSIZE 150
+static uint8_t frameBuffer[FRAMEBUFFERSIZE];
 static uint8_t  numberOfChars;
 int VCP_writeStringFrame(const char address,const char frameType, const void *pMsg) {
-	numberOfChars = sprintf((char *) frameBuffer, "$%cC%c%s*",address, frameType, pMsg);
+	numberOfChars = snprintf((char *) frameBuffer, FRAMEBUFFERSIZE, "$%cC%c%s*",address, frameType, pMsg);
 	return VCP_write(frameBuffer, numberOfChars);
 }
 int VCP_writeBinaryFrame(const char address, const void *pFrameType, const uint8_t typeSize, const void *pMsg, uint16_t msgSize) {
-	numberOfChars = sprintf((char *) frameBuffer, "$%cC%s",address, pFrameType);
+	numberOfChars = snprintf((char *) frameBuffer, FRAMEBUFFERSIZE, "$%cC%s",address, pFrameType);
 	numberOfChars = VCP_write(frameBuffer, numberOfChars);
 	numberOfChars += VCP_write(pMsg, msgSize);
 	numberOfChars += VCP_write("*", 1);

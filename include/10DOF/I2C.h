@@ -12,7 +12,7 @@
 #include "../Delay/delay.h"
 #include "main.h"
 
-#define TIMEOUT 400
+#define TIMEOUT 4	//ms
 
 #define  I2C_SCL_PORT GPIOB
 #define I2C_SCL_PIN GPIO_PIN_6

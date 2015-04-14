@@ -77,13 +77,22 @@ THE SOFTWARE.
 
 class BMP085 {
     public:
+		float32_t altitude;
+		uint32_t pressure;
+		float32_t temperature;
+
         BMP085();
         BMP085(uint8_t address);
 
         void initialize();
         bool testConnection();
-        void test(NokiaLCD & nokia, uint8_t height);
+        void test(void);
+        static void setDelayTimer(uint16_t timeInUs);
+        static uint8_t isNewDataAvailable(void);
+        static void decrementTimeAfterMs(void);
 
+
+        void update();
         /* calibration register methods */
         int16_t     getAC1();
         int16_t     getAC2();
@@ -125,10 +134,7 @@ class BMP085 {
         uint16_t ac4, ac5, ac6;
         int32_t b5;
         uint8_t measureMode;
-
-        float32_t altitude;
-        float32_t pressure;
-        float32_t temperature;
+        static volatile uint16_t timeToNextMeasurementInUs;
 };
 
 #endif /* _BMP085_H_ */

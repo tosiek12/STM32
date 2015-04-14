@@ -66,7 +66,7 @@ void ITG3200::test(NokiaLCD & nokia) {
 }
 
 void ITG3200::getOversampledValueAndSendViaCOM(const uint8_t numberOfSamples) {
-	int16_t temp[3];
+	int16_t temp[3] = {0};
 	uint8_t numberOfChars = 0;
 	uint8_t buf[30];
 	for (uint8_t i = 0; i <= numberOfSamples; ++i) {

@@ -9,10 +9,10 @@
 
 class SdCardLogger {
 private:
-
 	/* IMU data file for logging */
 	FATFS FatFs_SDCard;
-	FIL IMU_dataFile;	//File object
+	FIL IMU_dataFile;	//For measurement logging.
+	FIL debug_dataFile;	//For debug logging.
 	uint8_t IMU_state;
 
 	/* Statistics */
@@ -22,47 +22,51 @@ private:
 	FATFS FatFs;
 	FIL fil;	//File object
 	FRESULT state;
-	uint32_t total, free;	//Free and total space
+	uint32_t total, // total size of card
+	free;	//free space on card
 	int8_t numberOfChars;
 	uint8_t buff[50];
+	char headerOfIMUFile[50];
 public:
 	SdCardLogger() {
 		isUsed = 0;
+		strncpy(headerOfIMUFile,"x,y,z,x_c,y_c,z_c,altG,lonG,latG,dop,hdop,altP\n",50);
 		numberOfChars = -1;
 		state = FR_INT_ERR;
 		IMU_state = f_nonInit;
 		flagsComunicationInterface[f_interface_sdCard] = f_nonInit;
+		total = 0;
+		free = 0;
 
 	}
-	/**
-	 * Get SD card drive size
-	 *
-	 * Parameters:
-	 * 	- uint32_t* total: pointer to variable to store total size of card
-	 * 	- uint32_t* free: pointer to variable to store free space on card
-	 *
-	 * Returns FRESULT struct members. If data are valid, FR_OK is returned.
-	 */
-	FRESULT TM_FATFS_DriveSize(uint32_t* total, uint32_t* free);
+
+	enum e_File {
+		measurement, debug
+	};
 
 	/**
 	 * Get SD card drive size
 	 *
-	 * Parameters:
-	 * 	- uint32_t* total: pointer to variable to store total size of card
-	 * 	- uint32_t* free: pointer to variable to store free space on card
+	 * Returns FRESULT struct members. If data are valid, FR_OK is returned.
+	 */
+	FRESULT TM_FATFS_DriveSize(void);
+
+	/**
+	 * Get SD card drive size
 	 *
 	 * Returns FRESULT struct members. If data are valid, FR_OK is returned.
 	 */
-	FRESULT TM_FATFS_USBDriveSize(uint32_t* total, uint32_t* free);
+	FRESULT TM_FATFS_USBDriveSize(void);
 
 	void initialize(void);
 	void testCreatingFiles(const uint8_t *pfilename);
 	void testCreatingFiles2(void);
 	void test(void);
-	void openFileForIMU(const char *pFilename);
-	void closeFileForIMU(void);
+	void openFile(e_File theFile, const char *pFilename);
+	void closeFile(e_File theFile);
 	int16_t writeStringForIMU(const char *pString);
+	int16_t writeStringForDebug(const char *pString);
+
 };
 
 extern SdCardLogger sdCardLogger;

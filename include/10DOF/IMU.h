@@ -39,9 +39,9 @@ private:
 	volatile uint8_t semahpore_computationInProgress;
 
 	/*	Position */
-	float32_t height_GPS;
-	float32_t longtitude_GPS;
-	float32_t lattitude_GPS;
+	uint16_t height_GPS;
+	int32_t longtitude_GPS;
+	int32_t lattitude_GPS;
 	float32_t positionInGlobalFrame_IMU[3];
 
 	/*	Filter */
@@ -63,9 +63,9 @@ private:
 	//volatile int16_t measurements[6][9];	//nie używane - do usuniecia!
 	volatile uint16_t numberOfGatheredSamples;
 	uint16_t numberOfSamplesToGather;
-	uint8_t buf[50];
+	uint8_t buf[200];
 
-	void __attribute__((always_inline)) initializeTimerForUpdate(void);
+	inline void __attribute__((always_inline)) initializeTimerForUpdate(void);
 
 	/*  */
 	void doAllComputation(void);

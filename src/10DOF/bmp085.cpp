@@ -32,6 +32,10 @@
 
 #include "10DOF/BMP085.h"
 #include "10DOF/IMU.h"
+
+
+volatile uint16_t BMP085::timeToNextMeasurementInUs;
+
 /**
  * Default constructor, uses default I2C device address.
  * @see BMP085_DEFAULT_ADDRESS
@@ -71,18 +75,18 @@ BMP085::BMP085(uint8_t address) :
 	devAddr = address;
 }
 
-void BMP085::test(NokiaLCD & nokia, uint8_t height) {
+void BMP085::test(void) {
 	// request temperature
 	setControl(BMP085_MODE_TEMPERATURE);
 
 	// wait appropriate time for conversion (4.5ms delay)
-	Delay::delay_ms(getMeasureDelayMicroseconds());
+	Delay::delay_ms(getMeasureDelayMilliseconds());
 
 	// read calibrated temperature value in degrees Celsius
 	temperature = getTemperatureC();
 	setControl(BMP085_MODE_PRESSURE_3);
 	// request pressure (3x oversampling mode, high detail, 23.5ms delay)
-	Delay::delay_ms(getMeasureDelayMicroseconds());
+	Delay::delay_ms(getMeasureDelayMilliseconds());
 
 	// read calibrated pressure value in Pascals (Pa)
 	float32_t k = 1;	//Low-Pass filter coefficient.
@@ -93,19 +97,6 @@ void BMP085::test(NokiaLCD & nokia, uint8_t height) {
 	// otherwise uses the standard value of 101325 Pa)
 	altitude = getAltitude(pressure, 101325);	//101175 - kiedys lepiej dzialalo
 	uint8_t buf[10];
-
-	nokia.ClearLine(height * 3);	//* HMC5883L_COEF_GAIN_1090
-	sprintf((char*) buf, "P=%3ld", (int32_t) (pressure));
-	nokia.WriteTextXY((char*) buf, 0, height * 3);
-
-	nokia.ClearLine(height * 3 + 1);	//* HMC5883L_COEF_GAIN_1090
-	sprintf((char*) buf, "T=%3d", (int16_t) (temperature * 10));
-	nokia.WriteTextXY((char*) buf, 0, height * 3 + 1);
-
-	nokia.ClearLine(height * 3 + 2);	//* HMC5883L_COEF_GAIN_1090
-	sprintf((char*) buf, "Alt=%3d (2217)", (int16_t) (altitude * 10));
-	nokia.WriteTextXY((char*) buf, 0, height * 3 + 2);
-
 }
 
 /**
@@ -114,6 +105,7 @@ void BMP085::test(NokiaLCD & nokia, uint8_t height) {
 void BMP085::initialize() {
 	// load sensor's calibration constants
 	loadCalibration();
+	setControl(BMP085_MODE_PRESSURE_3); // request pressure (3x oversampling mode, high detail, 23.5ms delay)
 }
 
 /**
@@ -124,8 +116,22 @@ bool BMP085::testConnection() {
 	return I2C::i2c_ReadByte(devAddr, BMP085_RA_AC1_H, buffer) == 1;
 }
 
+void BMP085::update() {
+	if(isNewDataAvailable()) {
+		// read calibrated pressure value in Pascals (Pa)
+		float32_t k = 1;	//Low-Pass filter coefficient.
+		pressure = (1 - k) * pressure + k * getPressure();
+		// calculate absolute altitude in meters based on known pressure
+		// (may pass a second "sea level pressure" parameter here,
+		// otherwise uses the standard value of 101325 Pa)
+		altitude = getAltitude(pressure, 101325);	//101175 - kiedys lepiej dzialalo
+		setControl(BMP085_MODE_PRESSURE_0); // request pressure (3x oversampling mode, high detail, 23.5ms delay)
+		setDelayTimer(getMeasureDelayMilliseconds());
+	} else {
+		asm volatile("nop");
+	}
+}
 /* calibration register methods */
-
 void BMP085::loadCalibration() {
 	uint8_t buf2[22];
 	I2C::i2c_ReadBuf(devAddr, BMP085_RA_AC1_H, 22, buf2);
@@ -261,6 +267,20 @@ uint16_t BMP085::getMeasureDelayMicroseconds(uint8_t mode) {
 	else if (measureMode == 0xF4)
 		return 25500;
 	return 0; // invalid mode
+}
+
+void BMP085::setDelayTimer(uint16_t timeInUs) {
+	timeToNextMeasurementInUs = timeInUs;
+}
+
+uint8_t BMP085::isNewDataAvailable(void) {
+	return (timeToNextMeasurementInUs==0);
+}
+
+void BMP085::decrementTimeAfterMs(void) {
+	if(timeToNextMeasurementInUs) {
+		--timeToNextMeasurementInUs;
+	}
 }
 
 uint16_t BMP085::getRawTemperature() {

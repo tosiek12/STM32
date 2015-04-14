@@ -31,17 +31,16 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../system/include/cmsis/arm_math.h ../include/Delay/Delay.h \
  ../system/include/cmsis/cmsis_device.h \
  ../system/include/cmsis/stm32f4xx.h ../include/NokiaLCD/nokiaLCD.h \
- ../include/NokiaLCD/../Delay/delay.h \
- ../include/NokiaLCD/english_6x8_pixel.h ../include/NokiaLCD/bmp_pixel.h \
- ../include/GPIO/gpio.h ../include/10DOF/IMU.h \
- ../include/10DOF/../NokiaLCD/nokiaLCD.h \
+ ../include/Delay/delay.h ../include/NokiaLCD/english_6x8_pixel.h \
+ ../include/NokiaLCD/bmp_pixel.h ../include/GPIO/gpio.h \
+ ../include/10DOF/IMU.h ../include/10DOF/../NokiaLCD/nokiaLCD.h \
  ../include/10DOF/../Delay/delay.h ../include/10DOF/I2C.h \
  ../include/10DOF/itg3200.h ../include/10DOF/adxl345.h \
- ../include/Delay/delay.h ../include/10DOF/hmc5883l.h \
- ../include/10DOF/bmp085.h ../include/10DOF/Filters/Kalman.h \
- ../include/GPS/gps.h ../include/SpeedTester/speedTester.h \
- ../include/PWM/pwm.h ../include/SD/sdCardLogger.h ../include/SD/ff.h \
- ../include/SD/integer.h ../include/SD/ffconf.h \
+ ../include/10DOF/hmc5883l.h ../include/10DOF/bmp085.h \
+ ../include/10DOF/Filters/Kalman.h ../include/GPS/gps.h \
+ ../include/SpeedTester/speedTester.h ../include/PWM/pwm.h \
+ ../include/SD/sdCardLogger.h ../include/SD/ff.h ../include/SD/integer.h \
+ ../include/SD/ffconf.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../include/usbd_conf.h \
  ../include/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
@@ -129,7 +128,7 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../include/NokiaLCD/nokiaLCD.h:
 
-../include/NokiaLCD/../Delay/delay.h:
+../include/Delay/delay.h:
 
 ../include/NokiaLCD/english_6x8_pixel.h:
 
@@ -148,8 +147,6 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 ../include/10DOF/itg3200.h:
 
 ../include/10DOF/adxl345.h:
-
-../include/Delay/delay.h:
 
 ../include/10DOF/hmc5883l.h:
 
