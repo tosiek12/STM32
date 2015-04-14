@@ -20,6 +20,10 @@ uint8_t charToSkip = 0;
 volatile uint8_t isNewFrame = 0;
 struct gpsData_t gpsdata;
 
+/* private functions: */
+void GPS_PushCharToFrame(volatile uint8_t recievedChar);
+void GPS_UnitTests();
+
 /*
  * Decode frame received from GPS, and update data in IMU class.
  */
@@ -101,7 +105,7 @@ static uint32_t GPS_atoi(const char *p)
 void GPS_Parse(struct gpsData_t *_gpsdata, uint8_t *buf, uint8_t len)
 {
 	char *p;
-	volatile uint32_t tmp;
+	uint32_t tmp, tmp2;
 	p = (char *)buf;
 
 	if (!strncmp(p, "$GPGGA", 6))
@@ -119,7 +123,8 @@ void GPS_Parse(struct gpsData_t *_gpsdata, uint8_t *buf, uint8_t len)
 		p = strchr(p, ',') + 1;
 		if (p[0] == 'S')
 			tmp = -tmp;
-		_gpsdata->lat = tmp;
+		tmp2 = tmp%10000;	//in current used GPS there is one more point at the end. not 3 as stated above.
+		_gpsdata->lon = tmp - tmp2*0.4f;//change decimal values to degree (mod 60) - convention on google maps.
 
 		//01131.000, E – długość geograficzna(longitude) - 11 deg 31.000' E,
 		p = strchr(p, ',') + 1;
@@ -127,7 +132,8 @@ void GPS_Parse(struct gpsData_t *_gpsdata, uint8_t *buf, uint8_t len)
 		p = strchr(p, ',') + 1;
 		if (p[0] == 'W')
 			tmp = -tmp;
-		_gpsdata->lon = tmp;
+		tmp2 = tmp%10000;	//in current used GPS there is one more point at the end. not 3 as stated above.
+		_gpsdata->lon = tmp - tmp2*0.4f;//change decimal values to degree (mod 60) - convention on google maps.
 
 		//1 – jakość pomiaru
 		p = strchr(p, ',') + 1;
@@ -171,13 +177,14 @@ void GPS_Parse(struct gpsData_t *_gpsdata, uint8_t *buf, uint8_t len)
 		p = strchr(p, ',') + 1;
 		_gpsdata->valid = (p[0] == 'A') ? 1 : 0;
 
-		//4807.038,N – szerokość geograficzna (latitude) - 48 deg 07.038' N,
+		//4807.038, N – szerokość geograficzna(latitude) - 48 deg 07.038' N,
 		p = strchr(p, ',') + 1;
 		tmp = GPS_atoi(p);
 		p = strchr(p, ',') + 1;
 		if (p[0] == 'S')
 			tmp = -tmp;
-		_gpsdata->lat = tmp;
+		tmp2 = tmp%10000;	//in current used GPS there is one more point at the end. not 3 as stated above.
+		_gpsdata->lon = tmp - tmp2*0.4f;//change decimal values to degree (mod 60) - convention on google maps.
 
 		//01131.000, E – długość geograficzna(longitude) - 11 deg 31.000' E,
 		p = strchr(p, ',') + 1;
@@ -185,7 +192,8 @@ void GPS_Parse(struct gpsData_t *_gpsdata, uint8_t *buf, uint8_t len)
 		p = strchr(p, ',') + 1;
 		if (p[0] == 'W')
 			tmp = -tmp;
-		_gpsdata->lon = tmp;
+		tmp2 = tmp%10000;	//in current used GPS there is one more point at the end. not 3 as stated above.
+		_gpsdata->lon = tmp - tmp2*0.4f;//change decimal values to degree (mod 60) - convention on google maps.
 
 		//022.4 – prędkość obiektu(liczona w węzłach),
 		p = strchr(p, ',') + 1;

@@ -66,7 +66,7 @@ volatile uint8_t semaphore_timerInterrupt;
 extern "C" {
 static void doFrameAction(void) {
 	//Zmienne do ramki
-	char buf[100] = { 0 };
+	static char buf[200] = { 0 };
 	//inne
 	uint32_t cnt[5] = { 0 };
 	uint16_t value;
@@ -81,8 +81,7 @@ static void doFrameAction(void) {
 	case frameType_ConnectedWithGUI:
 		flagsComunicationInterface[f_interface_USB] = f_connectedWithClient;
 		io_module.turnLedOn(GPIO::LED3_PIN, 1);
-		strncpy((char *) buf,"IMU.txt",100);
-		sdCardLogger.openFileForIMU(buf);
+		sdCardLogger.openFile(SdCardLogger::debug, "debug.txt");
 		imu10DOF.setConnected();
 		break;
 	case frameType_DisconnectedFromGUI:
@@ -90,17 +89,18 @@ static void doFrameAction(void) {
 		imu10DOF.setDisconnected();
 		flagsComunicationInterface[f_interface_USB] = f_connectedWithPC;
 		io_module.turnLedOn(GPIO::LED3_PIN, 0);
-		sdCardLogger.closeFileForIMU();
-
+		sdCardLogger.closeFile(SdCardLogger::measurement);
+		sdCardLogger.closeFile(SdCardLogger::debug);
 		break;
 	case frameType_StartIMUTimerUpdate:
+		strncpy((char *) buf,"imu.csv",100);
+		sdCardLogger.openFile(SdCardLogger::measurement, buf);
 		imu10DOF.startTimerUpdate();
 		io_module.turnLedOn(GPIO::LED4_PIN, 1);
-
 		break;
 	case frameType_StopIMUTimerUpdate:
 		imu10DOF.stopTimerUpdate();
-		sdCardLogger.closeFileForIMU();
+		sdCardLogger.closeFile(SdCardLogger::measurement);
 		io_module.turnLedOn(GPIO::LED4_PIN, 0);
 		break;
 	case frameType_DataRequest:
@@ -108,16 +108,13 @@ static void doFrameAction(void) {
 		//imu10DOF.sendAngleViaVirtualCom();
 		break;
 	case frameType_AllDataRequest:
-		imu10DOF.prepareDataFrame((uint8_t *) buf, 100);
+		imu10DOF.prepareDataFrame((uint8_t *) buf,200);
 		VCP_writeStringFrame(frameAddress_Pecet, frameType_AllDataRequest, buf);
 		break;
 	case frameType_Calibrate:
 		imu10DOF.stopTimerUpdate();
 		imu10DOF.calibrateGyroAndAccStationary();
 		imu10DOF.startTimerUpdate();
-		break;
-	case frameType_MahonyOrientationRequest:
-		//imu10DOF.sendMahonyViaVirtualCom();
 		break;
 	case frameType_SendingTimeCheck:
 		s_RxFrameBuffer.Msg[s_RxFrameBuffer.Size] = '\0';
@@ -145,11 +142,11 @@ static void doFrameAction(void) {
 	case frameType_FunctionTest:
 		if(s_RxFrameBuffer.Msg[0] == 'O') {
 			strncpy((char *) buf,"IMU.txt",100);
-			sdCardLogger.openFileForIMU(buf);
+			sdCardLogger.openFile(SdCardLogger::measurement,buf);
 		}else if(s_RxFrameBuffer.Msg[0] == 'S') {
 			sdCardLogger.writeStringForIMU((char *) s_RxFrameBuffer.Msg);
 		}else if(s_RxFrameBuffer.Msg[0] == 'C') {
-			sdCardLogger.closeFileForIMU();
+			sdCardLogger.closeFile(SdCardLogger::measurement);
 		}
 		break;
 	default:
@@ -183,9 +180,6 @@ int main() {
 
 	while (1) {
 		io_module.mainBegginingUpdate();
-		if (imu10DOF.isDataGatheringComplete()) {
-			imu10DOF.sendGatheredDataViaVCOM();
-		}
 
 		doFrameAction();
 

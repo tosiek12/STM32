@@ -2,13 +2,11 @@
 #define DELAY_H_
 
 #include "cmsis_device.h"
-//#include "SDCard/fatfs/drivers_fatfs_sd.h"
 
 class Delay {
 private:
 	static constexpr uint32_t FREQUENCY_HZ = 1000u;	//1khz
 	static volatile uint32_t delayCount;
-
 public:
 	static void initialize() {
 		// Use SysTick as reference for the delay loops.
@@ -22,8 +20,7 @@ public:
 		NVIC_SetPriority((IRQn_Type)SysTick_IRQn, 0);
 
 	}
-
-	inline static void delay_SysTickAction(void) {
+	inline static void delay_SysTickAction(void){
 		// Decrement to zero the counter used by the delay routine.
 		if (delayCount != 0u) {
 			--delayCount;
@@ -32,17 +29,11 @@ public:
 //			--TimeSPI;
 //		}
 	}
-
-	void static delay_ms(uint32_t timeInMs) {
+	void static delay_ms(uint32_t timeInMs){
 		delayCount = timeInMs;
 		while (delayCount) {
 		}
 	}
-//	void static delay_us(uint32_t timeInUs) {
-//		delayCount = timeInUs;
-//		while (delayCount) {
-//		}
-//	}
 };
 
 #endif

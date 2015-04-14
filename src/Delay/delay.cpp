@@ -3,6 +3,7 @@
 #include "stm32f4xx_hal.h"
 
 #include "SD/spi_sd.h"
+#include "10DOF/bmp085.h"
 
 volatile uint32_t Delay::delayCount;	//Create static value (default value is 0)
 
@@ -15,9 +16,8 @@ extern "C" void SysTick_Handler(void) {
 		cnter = 1;
 	}
 	Delay::delay_SysTickAction();
+	BMP085::decrementTimeAfterMs();
 	HAL_IncTick();
-
-
 }
 
 // ----------------------------------------------------------------------------

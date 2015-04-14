@@ -1,6 +1,6 @@
 #ifndef NOKIALCD_H_
 #define NOKIALCD_H_
-#include "../Delay/delay.h"
+#include "Delay/delay.h"
 #include "stdio.h"
 #include "english_6x8_pixel.h"
 #include "bmp_pixel.h"
