@@ -456,7 +456,8 @@ void IMU::transformAccelerationToGlobalFrame(void) {
 
 void IMU::computeMovementAndAddToPossition(void) {
 	volatile float32_t possitionChange[3] = { .0 };
-	//remove gravitation
+	const float32_t maxVelocityInMPerS = 20;
+	//remove gravitation (get only linear acceleration).
 	accelerationInGlobalFrame[2] -= 9.8;
 
 	//compute movement
@@ -473,9 +474,19 @@ void IMU::computeMovementAndAddToPossition(void) {
 	positionInGlobalFrame_IMU[2] += possitionChange[2];
 
 	//update velocity
-	velocityInGlobalFrame[0] += accelerationInGlobalFrame[0] * samplingPeriodInS;
-	velocityInGlobalFrame[1] += accelerationInGlobalFrame[1] * samplingPeriodInS;
-	velocityInGlobalFrame[2] += accelerationInGlobalFrame[2] * samplingPeriodInS;
+	if(velocityInGlobalFrame[0]<maxVelocityInMPerS) {
+		velocityInGlobalFrame[0] += accelerationInGlobalFrame[0] * samplingPeriodInS;
+	}
+	if(velocityInGlobalFrame[1]<maxVelocityInMPerS) {
+		velocityInGlobalFrame[1] += accelerationInGlobalFrame[1] * samplingPeriodInS;
+	}
+	if(velocityInGlobalFrame[2]<maxVelocityInMPerS) {
+		velocityInGlobalFrame[2] += accelerationInGlobalFrame[2] * samplingPeriodInS;
+	}
+
+
+
+
 }
 
 void IMU::setPossitionFromGPSToIMU(void) {
