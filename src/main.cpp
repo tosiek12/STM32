@@ -165,7 +165,7 @@ int main() {
 	io_module.InitButtons();
 	io_module.InitLeds();
 	sdCardLogger.initialize();
-
+	//dupa in main branch
 	USBD_Init(&USBD_Device, &VCP_Desc, 0);
 	USBD_RegisterClass(&USBD_Device, &USBD_CDC);
 	USBD_CDC_RegisterInterface(&USBD_Device, &USBD_CDC_Template_fops);
