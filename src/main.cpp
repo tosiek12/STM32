@@ -180,7 +180,7 @@ int main() {
 
 	while (1) {
 		io_module.mainBegginingUpdate();
-
+		//dupa dupa - zmiana tesotwa na branchu
 		doFrameAction();
 
 		//Obsluga przyciskow:
