@@ -169,8 +169,10 @@ void SdCardLogger::test(void) {
 }
 
 int16_t SdCardLogger::writeStringForIMU(const char *pString){
-	if(isUsed == 1 || IMU_state != f_deviceWorking) {
-		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "File in use, or not opened");
+	if(IMU_state != f_deviceWorking) {
+		return  -1;
+	} else if(isUsed == 1) {
+		VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "File on SD is in use.");
 		return  -1;
 	} else {
 		numberOfChars = -1;

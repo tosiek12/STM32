@@ -41,6 +41,8 @@ IMU::IMU(void) :
 	ZYawAngleInRad = 0;
 	XRollAngleInRad = 0;
 	YPitchAngleInRad = 0;
+
+	memset(gps.hhmmss,'0',6);
 }
 
 void IMU::initializeTimerForUpdate(void) {
@@ -65,8 +67,7 @@ void IMU::initializeTimerForUpdate(void) {
 	TimHandle.Init.RepetitionCounter = 0;
 	if (HAL_TIM_Base_Init(&TimHandle) != HAL_OK) {
 		/* Initialization Error */
-		while (1) {
-		};
+		Error_Handler();
 	}
 
 	/* Enable the TIMx global Interrupt */
@@ -76,8 +77,7 @@ void IMU::initializeTimerForUpdate(void) {
 	/* Start Channel1 */
 	if (HAL_TIM_Base_Start_IT(&TimHandle) != HAL_OK) {
 		/* Starting Error */
-		while (1) {
-		};
+		Error_Handler();
 	}
 
 	__HAL_TIM_DISABLE(&TimHandle);
@@ -339,36 +339,47 @@ void IMU::prepareDataFrame(uint8_t * const pBuff, int16_t buffFreeSpace) {
 	uint8_t numberOfcharsToAppend = 0;
 
 	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "x:%d,y:%d,z:%d,",
-			(int16_t) (XRollAngleInRad * 1000), (int16_t) (YPitchAngleInRad * 1000),
-			(int16_t) (ZYawAngleInRad * 1000));
-	buffFreeSpace -= numberOfcharsToAppend;
+			(int16_t) (XRollAngleInRad * 100), (int16_t) (YPitchAngleInRad * 100),
+			(int16_t) (ZYawAngleInRad * 100));
 	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	buffFreeSpace -= numberOfcharsToAppend;
+
 
 	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "x_c:%d,y_c:%d,z_c:%d,",
-			(int16_t) (eulerAnglesInRadMahony[0] * 1000),
-			(int16_t) (eulerAnglesInRadMahony[1] * 1000),
-			(int16_t) (eulerAnglesInRadMahony[2] * 1000));
-	buffFreeSpace -= numberOfcharsToAppend;
+			(int16_t) (eulerAnglesInRadMahony[0] * 100),
+			(int16_t) (eulerAnglesInRadMahony[1] * 100),
+			(int16_t) (eulerAnglesInRadMahony[2] * 100));
 	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	buffFreeSpace -= numberOfcharsToAppend;
+
 
 	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "altG:%u,lonG:%ld,latG:%ld,",
 			height_GPS, longtitude_GPS,
 			lattitude_GPS);
-	buffFreeSpace -= numberOfcharsToAppend;
 	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	buffFreeSpace -= numberOfcharsToAppend;
+
 
 	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "dop:%lu,hdop:%lu,sats:%hu,", gps.dop,
 			gps.hdop, gps.sats);
-	buffFreeSpace -= numberOfcharsToAppend;
 	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	buffFreeSpace -= numberOfcharsToAppend;
 
 	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "hhmmss:%c%ch%c%cm%c%cs,", gps.hhmmss[0],gps.hhmmss[1],gps.hhmmss[2],gps.hhmmss[3],gps.hhmmss[4],gps.hhmmss[5]);
-	buffFreeSpace -= numberOfcharsToAppend;
 	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	buffFreeSpace -= numberOfcharsToAppend;
 
 	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "altP:%lu,presP:%lu,",(uint32_t) (pressure.altitude * 10) , (uint32_t) (pressure.pressure) );
-	buffFreeSpace -= numberOfcharsToAppend;
 	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	buffFreeSpace -= numberOfcharsToAppend;
+
+	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "px:%ld,py:%ld,pz:%ld,",(int32_t) (positionInGlobalFrame_IMU[0] * 100) , (int32_t) (positionInGlobalFrame_IMU[1] * 100), (int32_t) (positionInGlobalFrame_IMU[2] * 100));
+	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	buffFreeSpace -= numberOfcharsToAppend;
+
+	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "vx:%ld,vy:%ld,vz:%ld,",(int32_t) (velocityInGlobalFrame[0] * 100) , (int32_t) (velocityInGlobalFrame[1] * 100), (int32_t) (velocityInGlobalFrame[2] * 100));
+	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	buffFreeSpace -= numberOfcharsToAppend;
 
 	if (buffFreeSpace < 0) {
 		Error_Handler();
@@ -376,7 +387,7 @@ void IMU::prepareDataFrame(uint8_t * const pBuff, int16_t buffFreeSpace) {
 }
 
 void IMU::updatePositionFromIMU(void) {
-	removeCentrifugalForceEffect();
+	//removeCentrifugalForceEffect();
 	transformAccelerationToGlobalFrame();
 	computeMovementAndAddToPossition();
 }

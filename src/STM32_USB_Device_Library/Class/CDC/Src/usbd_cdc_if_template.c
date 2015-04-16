@@ -296,9 +296,7 @@ static int8_t TEMPLATE_Receive(uint8_t* Buf, uint32_t *Len) {
 
 //Add data to send buffer. If size is bigger than output buffer send max size.
 int VCP_write(const void *pBuffer, uint16_t size ) {
-	if(semaphore_timerInterrupt) {
-		return 0;
-	}
+
 	if(flagsComunicationInterface[f_interface_USB] != f_connectedWithClient) {
 		return 0;
 	}
@@ -308,8 +306,10 @@ int VCP_write(const void *pBuffer, uint16_t size ) {
 	if (pCDC == NULL) {	//device not connected
 		return 0;
 	}
-	while (pCDC->TxState) {
-	} //Wait for previous transfer
+	if(!semaphore_timerInterrupt) {	//If not in interrupt block and wait till end.
+		while (pCDC->TxState) {
+		} //Wait for previous transfer
+	}
 
 	todo = MIN((CDC_DATA_HS_OUT_PACKET_SIZE - pCDC->TxLength - 1), size);
 	memcpy((s_TxBuffer.Buffer + pCDC->TxLength), pBuffer, todo);
@@ -321,7 +321,7 @@ int VCP_write(const void *pBuffer, uint16_t size ) {
 
 	return todo;
 }
-#define FRAMEBUFFERSIZE 150
+#define FRAMEBUFFERSIZE 400
 static uint8_t frameBuffer[FRAMEBUFFERSIZE];
 static uint8_t  numberOfChars;
 int VCP_writeStringFrame(const char address,const char frameType, const void *pMsg) {

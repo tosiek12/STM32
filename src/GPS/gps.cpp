@@ -124,7 +124,7 @@ void GPS_Parse(struct gpsData_t *_gpsdata, uint8_t *buf, uint8_t len)
 		if (p[0] == 'S')
 			tmp = -tmp;
 		tmp2 = tmp%10000;	//in current used GPS there is one more point at the end. not 3 as stated above.
-		_gpsdata->lon = tmp - tmp2*0.4f;//change decimal values to degree (mod 60) - convention on google maps.
+		_gpsdata->lat = tmp - tmp2*0.4f;//change decimal values to degree (mod 60) - convention on google maps.
 
 		//01131.000, E – długość geograficzna(longitude) - 11 deg 31.000' E,
 		p = strchr(p, ',') + 1;
@@ -184,7 +184,7 @@ void GPS_Parse(struct gpsData_t *_gpsdata, uint8_t *buf, uint8_t len)
 		if (p[0] == 'S')
 			tmp = -tmp;
 		tmp2 = tmp%10000;	//in current used GPS there is one more point at the end. not 3 as stated above.
-		_gpsdata->lon = tmp - tmp2*0.4f;//change decimal values to degree (mod 60) - convention on google maps.
+		_gpsdata->lat = tmp - tmp2*0.4f;//change decimal values to degree (mod 60) - convention on google maps.
 
 		//01131.000, E – długość geograficzna(longitude) - 11 deg 31.000' E,
 		p = strchr(p, ',') + 1;
