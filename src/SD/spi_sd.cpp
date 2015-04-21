@@ -54,6 +54,7 @@ static void DESELECT(void) {
 }
 
 void SPI_SD_Init(void) {
+	//enable clk for SPI2 and GPIOB.
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
 	RCC->APB1ENR |= RCC_APB1ENR_SPI2EN;
 
@@ -67,13 +68,19 @@ void SPI_SD_Init(void) {
 	GPIOB->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR1;
 
 	// init spi2
+	//reset peripheral
 	RCC->APB1RSTR |= RCC_APB1RSTR_SPI2RST;
 	Delay::delay_ms(10);
 	RCC->APB1RSTR &= ~RCC_APB1RSTR_SPI2RST;
 
-	SPI2->CR1 |= SPI_CR1_MSTR | SPI_CR1_SSM | SPI_CR1_SSI | SPI_CR1_CPHA | SPI_CR1_CPOL
-			| SPI_CR1_BR_0;
-	SPI2->CR1 |= SPI_CR1_SPE;
+	//config SPI2
+	SPI2->CR1 |= SPI_CR1_MSTR	// master configuration
+			| SPI_CR1_SSM 	// software slave managment enabled
+			| SPI_CR1_SSI	//value of this bit is forced to NSS pin.
+			| SPI_CR1_CPHA	//the second clk transistion is the first data capture edge
+			| SPI_CR1_CPOL	//CK to 1 when idle
+			;	//001 fpclk/2
+	SPI2->CR1 |= SPI_CR1_SPE;	//peripheral enabled
 
 	DESELECT();
 }

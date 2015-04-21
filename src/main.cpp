@@ -67,6 +67,7 @@ extern "C" {
 static void doFrameAction(void) {
 	//Zmienne do ramki
 	static char buf[200] = { 0 };
+
 	//inne
 	uint32_t cnt[5] = { 0 };
 	uint16_t value;
@@ -126,7 +127,7 @@ static void doFrameAction(void) {
 		break;
 	case frameType_FunctionExecutionTimeCheck:
 		speedTester.tic();
-		imu10DOF.timerAction();
+		imu10DOF.logDataOnSD();
 		cnt[0] = speedTester.toc();
 		sprintf((char *) buf, "Time: %lu\n", cnt[0]);
 		VCP_writeStringFrame(frameAddress_Pecet, frameType_FunctionExecutionTimeCheck, buf);
@@ -194,9 +195,17 @@ int main() {
 		io_module.mainEndUpdate();
 	}
 }
-
 void Error_Handler(void) {
-	VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, "Error Handler! Infinite loop.");
+	while (1) {
+		io_module.turnLedOn(GPIO::LED3_PIN,1);
+		Delay::delay_ms(10);
+		io_module.turnLedOn(GPIO::LED3_PIN,0);
+		Delay::delay_ms(10);
+	}
+}
+
+void Error_Handler(const char *pbuf) {
+	VCP_writeStringFrame(frameAddress_Pecet, frameType_Error, pbuf);
 	while (1) {
 	}
 }

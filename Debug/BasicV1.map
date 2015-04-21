@@ -5509,8 +5509,8 @@ Discarded input sections
  .text          0x00000000        0x0 ./src/10DOF/IMU.o
  .data          0x00000000        0x0 ./src/10DOF/IMU.o
  .bss           0x00000000        0x0 ./src/10DOF/IMU.o
- .text._ZN3IMU11logDataOnSDEv
-                0x00000000       0xc0 ./src/10DOF/IMU.o
+ .text._ZN3IMU22zerosAllComputedValuesEv
+                0x00000000       0x54 ./src/10DOF/IMU.o
  .text._ZN3IMU16setRequestOfDataEv
                 0x00000000        0x8 ./src/10DOF/IMU.o
  .text._ZN3IMU18startDataGatheringEv
@@ -5521,10 +5521,12 @@ Discarded input sections
                 0x00000000       0x38 ./src/10DOF/IMU.o
  .text._ZN3IMU16kalmanStepActionEv
                 0x00000000      0x138 ./src/10DOF/IMU.o
- .text._ZN3IMU28removeCentrifugalForceEffectEv
-                0x00000000       0xe8 ./src/10DOF/IMU.o
  .text._ZN3IMU21updatePositionFromIMUEv
-                0x00000000      0x188 ./src/10DOF/IMU.o
+                0x00000000      0x2d0 ./src/10DOF/IMU.o
+ .text._ZN3IMU11timerActionEv
+                0x00000000       0xc8 ./src/10DOF/IMU.o
+ .text._ZN3IMU32computeMovementAndAddToPossitionEv
+                0x00000000      0x1f0 ./src/10DOF/IMU.o
  .text._ZN3IMU24setPossitionFromGPSToIMUEv
                 0x00000000        0x4 ./src/10DOF/IMU.o
  .debug_macro   0x00000000      0x89e ./src/10DOF/IMU.o
@@ -6536,6 +6538,8 @@ Discarded input sections
  .text          0x00000000        0x0 ./src/main.o
  .data          0x00000000        0x0 ./src/main.o
  .bss           0x00000000        0x0 ./src/main.o
+ .text._Z13Error_Handlerv
+                0x00000000       0x38 ./src/main.o
  .debug_macro   0x00000000      0x89e ./src/main.o
  .debug_macro   0x00000000       0x58 ./src/main.o
  .debug_macro   0x00000000       0x16 ./src/main.o
@@ -7466,7 +7470,7 @@ END GROUP
                 0x2001fc00                __Main_Stack_Limit = (__stack - __Main_Stack_Size)
                 0x2001fc00                PROVIDE (_Main_Stack_Limit, __Main_Stack_Limit)
                 0x00000100                _Minimum_Stack_Size = 0x100
-                0x200020b4                PROVIDE (_Heap_Begin, _end_noinit)
+                0x20002154                PROVIDE (_Heap_Begin, _end_noinit)
                 0x2001fc00                PROVIDE (_Heap_Limit, (__stack - __Main_Stack_Size))
 
 .isr_vector     0x08000000      0x2dc
@@ -7603,7 +7607,7 @@ END GROUP
  *(.flashtext .flashtext.*)
                 0x080002ec                . = ALIGN (0x4)
 
-.text           0x080002f0     0xf390
+.text           0x080002f0     0xf400
                 0x080002f0                . = ALIGN (0x4)
  *(.text .text.*)
  .text.HAL_MspInit
@@ -8063,273 +8067,271 @@ END GROUP
                 0x08007984      0x100 ./src/GPS/gps.o
                 0x08007984                GPS_PushCharToFrame(unsigned char)
  .text._Z8GPS_Initv
-                0x08007a84       0xac ./src/GPS/gps.o
+                0x08007a84       0xb4 ./src/GPS/gps.o
                 0x08007a84                GPS_Init()
  .text.HAL_UART_MspInit
-                0x08007b30       0x58 ./src/GPS/gps.o
-                0x08007b30                HAL_UART_MspInit
+                0x08007b38       0x58 ./src/GPS/gps.o
+                0x08007b38                HAL_UART_MspInit
  .text.USART1_IRQHandler
-                0x08007b88      0x140 ./src/GPS/gps.o
-                0x08007b88                USART1_IRQHandler
+                0x08007b90      0x140 ./src/GPS/gps.o
+                0x08007b90                USART1_IRQHandler
  .text._ZN4GPIO9InitTimerEv
-                0x08007cc8       0x64 ./src/GPIO/gpio.o
-                0x08007cc8                GPIO::InitTimer()
+                0x08007cd0       0x64 ./src/GPIO/gpio.o
+                0x08007cd0                GPIO::InitTimer()
  .text.EXTI9_5_IRQHandler
-                0x08007d2c       0x98 ./src/GPIO/gpio.o
-                0x08007d2c                EXTI9_5_IRQHandler
+                0x08007d34       0x98 ./src/GPIO/gpio.o
+                0x08007d34                EXTI9_5_IRQHandler
  .text.TIM4_IRQHandler
-                0x08007dc4       0x94 ./src/GPIO/gpio.o
-                0x08007dc4                TIM4_IRQHandler
+                0x08007dcc       0x94 ./src/GPIO/gpio.o
+                0x08007dcc                TIM4_IRQHandler
  .text.SysTick_Handler
-                0x08007e58       0x3c ./src/Delay/delay.o
-                0x08007e58                SysTick_Handler
+                0x08007e60       0x3c ./src/Delay/delay.o
+                0x08007e60                SysTick_Handler
  .text._ZN6KalmanC2Ev
-                0x08007e94       0x30 ./src/10DOF/Filters/Kalman.o
-                0x08007e94                Kalman::Kalman()
-                0x08007e94                Kalman::Kalman()
+                0x08007e9c       0x30 ./src/10DOF/Filters/Kalman.o
+                0x08007e9c                Kalman::Kalman()
+                0x08007e9c                Kalman::Kalman()
  .text._ZN6Kalman14stepOldVersionEfff
-                0x08007ec4       0xa8 ./src/10DOF/Filters/Kalman.o
-                0x08007ec4                Kalman::stepOldVersion(float, float, float)
+                0x08007ecc       0xa8 ./src/10DOF/Filters/Kalman.o
+                0x08007ecc                Kalman::stepOldVersion(float, float, float)
  .text._Z19MahonyAHRSupdateIMUffffff
-                0x08007f6c      0x2cc ./src/10DOF/Filters/MahonyAHRS.o
-                0x08007f6c                MahonyAHRSupdateIMU(float, float, float, float, float, float)
+                0x08007f74      0x2cc ./src/10DOF/Filters/MahonyAHRS.o
+                0x08007f74                MahonyAHRSupdateIMU(float, float, float, float, float, float)
  .text._Z16MahonyAHRSupdatefffffffff
-                0x08008238      0x4d8 ./src/10DOF/Filters/MahonyAHRS.o
-                0x08008238                MahonyAHRSupdate(float, float, float, float, float, float, float, float, float)
+                0x08008240      0x4d8 ./src/10DOF/Filters/MahonyAHRS.o
+                0x08008240                MahonyAHRSupdate(float, float, float, float, float, float, float, float, float)
  .text._Z13MahonyToEulerPf
-                0x08008710       0xe0 ./src/10DOF/Filters/MahonyAHRS.o
-                0x08008710                MahonyToEuler(float*)
+                0x08008718       0xe0 ./src/10DOF/Filters/MahonyAHRS.o
+                0x08008718                MahonyToEuler(float*)
  .text.I2C1_EV_IRQHandler
-                0x080087f0       0x18 ./src/10DOF/I2C.o
-                0x080087f0                I2C1_EV_IRQHandler
+                0x080087f8       0x18 ./src/10DOF/I2C.o
+                0x080087f8                I2C1_EV_IRQHandler
  .text.HAL_I2C_MasterTxCpltCallback
-                0x08008808        0x4 ./src/10DOF/I2C.o
-                0x08008808                HAL_I2C_MasterTxCpltCallback
+                0x08008810        0x4 ./src/10DOF/I2C.o
+                0x08008810                HAL_I2C_MasterTxCpltCallback
  .text.HAL_I2C_MasterRxCpltCallback
-                0x0800880c        0x4 ./src/10DOF/I2C.o
-                0x0800880c                HAL_I2C_MasterRxCpltCallback
+                0x08008814        0x4 ./src/10DOF/I2C.o
+                0x08008814                HAL_I2C_MasterRxCpltCallback
  .text._ZN3IMUC2Ev
-                0x08008810       0xb0 ./src/10DOF/IMU.o
-                0x08008810                IMU::IMU()
-                0x08008810                IMU::IMU()
+                0x08008818       0xa4 ./src/10DOF/IMU.o
+                0x08008818                IMU::IMU()
+                0x08008818                IMU::IMU()
  .text._ZN3IMU10initializeEv
-                0x080088c0      0x268 ./src/10DOF/IMU.o
-                0x080088c0                IMU::initialize()
+                0x080088bc      0x27c ./src/10DOF/IMU.o
+                0x080088bc                IMU::initialize()
+ .text._ZN3IMU11logDataOnSDEv
+                0x08008b38       0xf0 ./src/10DOF/IMU.o
+                0x08008b38                IMU::logDataOnSD()
  .text._ZN3IMU16startTimerUpdateEv
-                0x08008b28       0x10 ./src/10DOF/IMU.o
-                0x08008b28                IMU::startTimerUpdate()
+                0x08008c28       0x10 ./src/10DOF/IMU.o
+                0x08008c28                IMU::startTimerUpdate()
  .text._ZN3IMU15stopTimerUpdateEv
-                0x08008b38       0x24 ./src/10DOF/IMU.o
-                0x08008b38                IMU::stopTimerUpdate()
+                0x08008c38       0x24 ./src/10DOF/IMU.o
+                0x08008c38                IMU::stopTimerUpdate()
  .text._ZN3IMU12setConnectedEv
-                0x08008b5c       0x14 ./src/10DOF/IMU.o
-                0x08008b5c                IMU::setConnected()
+                0x08008c5c       0x14 ./src/10DOF/IMU.o
+                0x08008c5c                IMU::setConnected()
  .text._ZN3IMU15setDisconnectedEv
-                0x08008b70        0xc ./src/10DOF/IMU.o
-                0x08008b70                IMU::setDisconnected()
+                0x08008c70        0xc ./src/10DOF/IMU.o
+                0x08008c70                IMU::setDisconnected()
  .text._ZN3IMU20requestDataGatheringEt
-                0x08008b7c       0x20 ./src/10DOF/IMU.o
-                0x08008b7c                IMU::requestDataGathering(unsigned short)
+                0x08008c7c       0x20 ./src/10DOF/IMU.o
+                0x08008c7c                IMU::requestDataGathering(unsigned short)
  .text._ZN3IMU29calibrateGyroAndAccStationaryEv
-                0x08008b9c       0x44 ./src/10DOF/IMU.o
-                0x08008b9c                IMU::calibrateGyroAndAccStationary()
+                0x08008c9c       0x44 ./src/10DOF/IMU.o
+                0x08008c9c                IMU::calibrateGyroAndAccStationary()
  .text._ZN3IMU10computeYawEv
-                0x08008be0       0xd8 ./src/10DOF/IMU.o
-                0x08008be0                IMU::computeYaw()
+                0x08008ce0       0xd8 ./src/10DOF/IMU.o
+                0x08008ce0                IMU::computeYaw()
  .text._ZN3IMU20computePitchRollTiltEv
-                0x08008cb8      0x1b0 ./src/10DOF/IMU.o
-                0x08008cb8                IMU::computePitchRollTilt()
+                0x08008db8      0x1b0 ./src/10DOF/IMU.o
+                0x08008db8                IMU::computePitchRollTilt()
  .text._ZN3IMU13updateGPSDataEPK9gpsData_t
-                0x08008e68       0x3c ./src/10DOF/IMU.o
-                0x08008e68                IMU::updateGPSData(gpsData_t const*)
+                0x08008f68       0x28 ./src/10DOF/IMU.o
+                0x08008f68                IMU::updateGPSData(gpsData_t const*)
  .text._ZN3IMU16prepareDataFrameEPhs
-                0x08008ea4      0x288 ./src/10DOF/IMU.o
-                0x08008ea4                IMU::prepareDataFrame(unsigned char*, short)
- *fill*         0x0800912c        0x4 
+                0x08008f90      0x2a4 ./src/10DOF/IMU.o
+                0x08008f90                IMU::prepareDataFrame(unsigned char*, short)
+ .text._ZN3IMU28removeCentrifugalForceEffectEv
+                0x08009234       0xe8 ./src/10DOF/IMU.o
+                0x08009234                IMU::removeCentrifugalForceEffect()
+ *fill*         0x0800931c        0x4 
  .text._ZN3IMU34transformAccelerationToGlobalFrameEv
-                0x08009130      0x258 ./src/10DOF/IMU.o
-                0x08009130                IMU::transformAccelerationToGlobalFrame()
- .text._ZN3IMU32computeMovementAndAddToPossitionEv
-                0x08009388      0x188 ./src/10DOF/IMU.o
-                0x08009388                IMU::computeMovementAndAddToPossition()
+                0x08009320      0x258 ./src/10DOF/IMU.o
+                0x08009320                IMU::transformAccelerationToGlobalFrame()
  .text._ZN3IMU16doAllComputationEv
-                0x08009510      0x198 ./src/10DOF/IMU.o
-                0x08009510                IMU::doAllComputation()
- .text._ZN3IMU11timerActionEv
-                0x080096a8      0x17c ./src/10DOF/IMU.o
-                0x080096a8                IMU::timerAction()
+                0x08009578      0x370 ./src/10DOF/IMU.o
+                0x08009578                IMU::doAllComputation()
  .text.TIM3_IRQHandler
-                0x08009824      0x1c0 ./src/10DOF/IMU.o
-                0x08009824                TIM3_IRQHandler
+                0x080098e8      0x108 ./src/10DOF/IMU.o
+                0x080098e8                TIM3_IRQHandler
  .text.startup._GLOBAL__sub_I_imu10DOF
-                0x080099e4        0xc ./src/10DOF/IMU.o
+                0x080099f0        0xc ./src/10DOF/IMU.o
  .text._ZN7ADXL34510initializeEv
-                0x080099f0       0xac ./src/10DOF/adxl345.o
-                0x080099f0                ADXL345::initialize()
- *fill*         0x08009a9c        0x4 
+                0x080099fc       0xac ./src/10DOF/adxl345.o
+                0x080099fc                ADXL345::initialize()
  .text._ZN7ADXL34519calibrateStationaryEt
-                0x08009aa0      0x190 ./src/10DOF/adxl345.o
-                0x08009aa0                ADXL345::calibrateStationary(unsigned short)
+                0x08009aa8      0x190 ./src/10DOF/adxl345.o
+                0x08009aa8                ADXL345::calibrateStationary(unsigned short)
  .text._ZN7ADXL3456updateEv
-                0x08009c30       0xa8 ./src/10DOF/adxl345.o
-                0x08009c30                ADXL345::update()
+                0x08009c38       0xa8 ./src/10DOF/adxl345.o
+                0x08009c38                ADXL345::update()
  .text._ZN6BMP085C2Ev
-                0x08009cd8       0x2c ./src/10DOF/bmp085.o
-                0x08009cd8                BMP085::BMP085()
-                0x08009cd8                BMP085::BMP085()
+                0x08009ce0       0x2c ./src/10DOF/bmp085.o
+                0x08009ce0                BMP085::BMP085()
+                0x08009ce0                BMP085::BMP085()
  .text._ZN6BMP08510initializeEv
-                0x08009d04      0x10c ./src/10DOF/bmp085.o
-                0x08009d04                BMP085::initialize()
+                0x08009d0c      0x10c ./src/10DOF/bmp085.o
+                0x08009d0c                BMP085::initialize()
  .text._ZN6BMP08520decrementTimeAfterMsEv
-                0x08009e10       0x18 ./src/10DOF/bmp085.o
-                0x08009e10                BMP085::decrementTimeAfterMs()
+                0x08009e18       0x18 ./src/10DOF/bmp085.o
+                0x08009e18                BMP085::decrementTimeAfterMs()
  .text._ZN6BMP08511getPressureEv
-                0x08009e28      0x104 ./src/10DOF/bmp085.o
-                0x08009e28                BMP085::getPressure()
- *fill*         0x08009f2c        0x4 
+                0x08009e30      0x104 ./src/10DOF/bmp085.o
+                0x08009e30                BMP085::getPressure()
+ *fill*         0x08009f34        0x4 
  .text._ZN6BMP0854testEv
-                0x08009f30      0x170 ./src/10DOF/bmp085.o
-                0x08009f30                BMP085::test()
+                0x08009f38      0x170 ./src/10DOF/bmp085.o
+                0x08009f38                BMP085::test()
  .text._ZN6BMP0856updateEv
-                0x0800a0a0       0xe0 ./src/10DOF/bmp085.o
-                0x0800a0a0                BMP085::update()
+                0x0800a0a8       0xe0 ./src/10DOF/bmp085.o
+                0x0800a0a8                BMP085::update()
  .text._ZN8HMC5883L6updateEv
-                0x0800a180      0x118 ./src/10DOF/hmc5883l.o
-                0x0800a180                HMC5883L::update()
+                0x0800a188      0x118 ./src/10DOF/hmc5883l.o
+                0x0800a188                HMC5883L::update()
  .text._ZN8HMC5883LC2Ev
-                0x0800a298       0x24 ./src/10DOF/hmc5883l.o
-                0x0800a298                HMC5883L::HMC5883L()
-                0x0800a298                HMC5883L::HMC5883L()
+                0x0800a2a0       0x24 ./src/10DOF/hmc5883l.o
+                0x0800a2a0                HMC5883L::HMC5883L()
+                0x0800a2a0                HMC5883L::HMC5883L()
  .text._ZN8HMC5883L10initializeEv
-                0x0800a2bc       0xe0 ./src/10DOF/hmc5883l.o
-                0x0800a2bc                HMC5883L::initialize()
+                0x0800a2c4       0xe0 ./src/10DOF/hmc5883l.o
+                0x0800a2c4                HMC5883L::initialize()
  .text._ZN7ITG320010initializeEv
-                0x0800a39c      0x158 ./src/10DOF/itg3200.o
-                0x0800a39c                ITG3200::initialize()
+                0x0800a3a4      0x158 ./src/10DOF/itg3200.o
+                0x0800a3a4                ITG3200::initialize()
  .text._ZN7ITG320019calibrateStationaryEt
-                0x0800a4f4       0xf0 ./src/10DOF/itg3200.o
-                0x0800a4f4                ITG3200::calibrateStationary(unsigned short)
+                0x0800a4fc       0xf0 ./src/10DOF/itg3200.o
+                0x0800a4fc                ITG3200::calibrateStationary(unsigned short)
  .text._ZN7ITG32006updateEv
-                0x0800a5e4       0xc0 ./src/10DOF/itg3200.o
-                0x0800a5e4                ITG3200::update()
+                0x0800a5ec       0xc0 ./src/10DOF/itg3200.o
+                0x0800a5ec                ITG3200::update()
  .text.__initialize_hardware
-                0x0800a6a4       0x84 ./src/_initialize_hardware.o
-                0x0800a6a4                __initialize_hardware
+                0x0800a6ac       0x84 ./src/_initialize_hardware.o
+                0x0800a6ac                __initialize_hardware
  .text.startup.main
-                0x0800a728      0x3e4 ./src/main.o
-                0x0800a728                main
- .text._Z13Error_Handlerv
-                0x0800ab0c       0x14 ./src/main.o
-                0x0800ab0c                Error_Handler()
+                0x0800a730      0x3e4 ./src/main.o
+                0x0800a730                main
+ .text._Z13Error_HandlerPKc
+                0x0800ab14       0x10 ./src/main.o
+                0x0800ab14                Error_Handler(char const*)
  .text.HAL_PCD_MspInit
-                0x0800ab20      0x17c ./src/usbd_conf.o
-                0x0800ab20                HAL_PCD_MspInit
+                0x0800ab24      0x17c ./src/usbd_conf.o
+                0x0800ab24                HAL_PCD_MspInit
  .text.HAL_PCD_SetupStageCallback
-                0x0800ac9c        0xc ./src/usbd_conf.o
-                0x0800ac9c                HAL_PCD_SetupStageCallback
+                0x0800aca0        0xc ./src/usbd_conf.o
+                0x0800aca0                HAL_PCD_SetupStageCallback
  .text.HAL_PCD_DataOutStageCallback
-                0x0800aca8       0x14 ./src/usbd_conf.o
-                0x0800aca8                HAL_PCD_DataOutStageCallback
+                0x0800acac       0x14 ./src/usbd_conf.o
+                0x0800acac                HAL_PCD_DataOutStageCallback
  .text.HAL_PCD_DataInStageCallback
-                0x0800acbc       0x14 ./src/usbd_conf.o
-                0x0800acbc                HAL_PCD_DataInStageCallback
+                0x0800acc0       0x14 ./src/usbd_conf.o
+                0x0800acc0                HAL_PCD_DataInStageCallback
  .text.HAL_PCD_SOFCallback
-                0x0800acd0        0x8 ./src/usbd_conf.o
-                0x0800acd0                HAL_PCD_SOFCallback
+                0x0800acd4        0x8 ./src/usbd_conf.o
+                0x0800acd4                HAL_PCD_SOFCallback
  .text.HAL_PCD_ResetCallback
-                0x0800acd8       0x20 ./src/usbd_conf.o
-                0x0800acd8                HAL_PCD_ResetCallback
+                0x0800acdc       0x20 ./src/usbd_conf.o
+                0x0800acdc                HAL_PCD_ResetCallback
  .text.HAL_PCD_SuspendCallback
-                0x0800acf8        0x8 ./src/usbd_conf.o
-                0x0800acf8                HAL_PCD_SuspendCallback
+                0x0800acfc        0x8 ./src/usbd_conf.o
+                0x0800acfc                HAL_PCD_SuspendCallback
  .text.HAL_PCD_ResumeCallback
-                0x0800ad00        0x8 ./src/usbd_conf.o
-                0x0800ad00                HAL_PCD_ResumeCallback
+                0x0800ad04        0x8 ./src/usbd_conf.o
+                0x0800ad04                HAL_PCD_ResumeCallback
  .text.HAL_PCD_ISOOUTIncompleteCallback
-                0x0800ad08        0x8 ./src/usbd_conf.o
-                0x0800ad08                HAL_PCD_ISOOUTIncompleteCallback
+                0x0800ad0c        0x8 ./src/usbd_conf.o
+                0x0800ad0c                HAL_PCD_ISOOUTIncompleteCallback
  .text.HAL_PCD_ISOINIncompleteCallback
-                0x0800ad10        0x8 ./src/usbd_conf.o
-                0x0800ad10                HAL_PCD_ISOINIncompleteCallback
+                0x0800ad14        0x8 ./src/usbd_conf.o
+                0x0800ad14                HAL_PCD_ISOINIncompleteCallback
  .text.HAL_PCD_ConnectCallback
-                0x0800ad18        0x8 ./src/usbd_conf.o
-                0x0800ad18                HAL_PCD_ConnectCallback
+                0x0800ad1c        0x8 ./src/usbd_conf.o
+                0x0800ad1c                HAL_PCD_ConnectCallback
  .text.HAL_PCD_DisconnectCallback
-                0x0800ad20        0x8 ./src/usbd_conf.o
-                0x0800ad20                HAL_PCD_DisconnectCallback
+                0x0800ad24        0x8 ./src/usbd_conf.o
+                0x0800ad24                HAL_PCD_DisconnectCallback
  .text.USBD_LL_Init
-                0x0800ad28       0x60 ./src/usbd_conf.o
-                0x0800ad28                USBD_LL_Init
+                0x0800ad2c       0x60 ./src/usbd_conf.o
+                0x0800ad2c                USBD_LL_Init
  .text.USBD_LL_Start
-                0x0800ad88       0x10 ./src/usbd_conf.o
-                0x0800ad88                USBD_LL_Start
+                0x0800ad8c       0x10 ./src/usbd_conf.o
+                0x0800ad8c                USBD_LL_Start
  .text.USBD_LL_OpenEP
-                0x0800ad98       0x14 ./src/usbd_conf.o
-                0x0800ad98                USBD_LL_OpenEP
+                0x0800ad9c       0x14 ./src/usbd_conf.o
+                0x0800ad9c                USBD_LL_OpenEP
  .text.USBD_LL_CloseEP
-                0x0800adac       0x10 ./src/usbd_conf.o
-                0x0800adac                USBD_LL_CloseEP
+                0x0800adb0       0x10 ./src/usbd_conf.o
+                0x0800adb0                USBD_LL_CloseEP
  .text.USBD_LL_StallEP
-                0x0800adbc       0x10 ./src/usbd_conf.o
-                0x0800adbc                USBD_LL_StallEP
+                0x0800adc0       0x10 ./src/usbd_conf.o
+                0x0800adc0                USBD_LL_StallEP
  .text.USBD_LL_ClearStallEP
-                0x0800adcc       0x10 ./src/usbd_conf.o
-                0x0800adcc                USBD_LL_ClearStallEP
+                0x0800add0       0x10 ./src/usbd_conf.o
+                0x0800add0                USBD_LL_ClearStallEP
  .text.USBD_LL_IsStallEP
-                0x0800addc       0x28 ./src/usbd_conf.o
-                0x0800addc                USBD_LL_IsStallEP
+                0x0800ade0       0x28 ./src/usbd_conf.o
+                0x0800ade0                USBD_LL_IsStallEP
  .text.USBD_LL_SetUSBAddress
-                0x0800ae04       0x10 ./src/usbd_conf.o
-                0x0800ae04                USBD_LL_SetUSBAddress
+                0x0800ae08       0x10 ./src/usbd_conf.o
+                0x0800ae08                USBD_LL_SetUSBAddress
  .text.USBD_LL_Transmit
-                0x0800ae14       0x10 ./src/usbd_conf.o
-                0x0800ae14                USBD_LL_Transmit
+                0x0800ae18       0x10 ./src/usbd_conf.o
+                0x0800ae18                USBD_LL_Transmit
  .text.USBD_LL_PrepareReceive
-                0x0800ae24       0x10 ./src/usbd_conf.o
-                0x0800ae24                USBD_LL_PrepareReceive
+                0x0800ae28       0x10 ./src/usbd_conf.o
+                0x0800ae28                USBD_LL_PrepareReceive
  .text.USBD_LL_GetRxDataSize
-                0x0800ae34        0xc ./src/usbd_conf.o
-                0x0800ae34                USBD_LL_GetRxDataSize
+                0x0800ae38        0xc ./src/usbd_conf.o
+                0x0800ae38                USBD_LL_GetRxDataSize
  .text.USBD_VCP_DeviceDescriptor
-                0x0800ae40        0xc ./src/usbd_desc.o
-                0x0800ae40                USBD_VCP_DeviceDescriptor
+                0x0800ae44        0xc ./src/usbd_desc.o
+                0x0800ae44                USBD_VCP_DeviceDescriptor
  .text.USBD_VCP_LangIDStrDescriptor
-                0x0800ae4c        0xc ./src/usbd_desc.o
-                0x0800ae4c                USBD_VCP_LangIDStrDescriptor
+                0x0800ae50        0xc ./src/usbd_desc.o
+                0x0800ae50                USBD_VCP_LangIDStrDescriptor
  .text.USBD_VCP_ManufacturerStrDescriptor
-                0x0800ae58       0x1c ./src/usbd_desc.o
-                0x0800ae58                USBD_VCP_ManufacturerStrDescriptor
+                0x0800ae5c       0x1c ./src/usbd_desc.o
+                0x0800ae5c                USBD_VCP_ManufacturerStrDescriptor
  .text.USBD_VCP_ProductStrDescriptor
-                0x0800ae74       0x2c ./src/usbd_desc.o
-                0x0800ae74                USBD_VCP_ProductStrDescriptor
+                0x0800ae78       0x2c ./src/usbd_desc.o
+                0x0800ae78                USBD_VCP_ProductStrDescriptor
  .text.USBD_VCP_ConfigStrDescriptor
-                0x0800aea0       0x1c ./src/usbd_desc.o
-                0x0800aea0                USBD_VCP_ConfigStrDescriptor
+                0x0800aea4       0x1c ./src/usbd_desc.o
+                0x0800aea4                USBD_VCP_ConfigStrDescriptor
  .text.USBD_VCP_InterfaceStrDescriptor
-                0x0800aebc       0x1c ./src/usbd_desc.o
-                0x0800aebc                USBD_VCP_InterfaceStrDescriptor
+                0x0800aec0       0x1c ./src/usbd_desc.o
+                0x0800aec0                USBD_VCP_InterfaceStrDescriptor
  .text.USBD_VCP_SerialStrDescriptor
-                0x0800aed8      0x11c ./src/usbd_desc.o
-                0x0800aed8                USBD_VCP_SerialStrDescriptor
+                0x0800aedc      0x11c ./src/usbd_desc.o
+                0x0800aedc                USBD_VCP_SerialStrDescriptor
  .text.arm_sin_f32
-                0x0800aff4       0xdc ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
-                0x0800aff4                arm_sin_f32
+                0x0800aff8       0xdc ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
+                0x0800aff8                arm_sin_f32
  .text.arm_cos_f32
-                0x0800b0d0       0xdc ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
-                0x0800b0d0                arm_cos_f32
- .text.atan2    0x0800b1ac        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_atan2.o)
-                0x0800b1ac                atan2
- .text.pow      0x0800b1b0      0x340 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_pow.o)
-                0x0800b1b0                pow
- .text.sqrt     0x0800b4f0       0xbc c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_sqrt.o)
-                0x0800b4f0                sqrt
- .text.asinf    0x0800b5ac       0xbc c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_asin.o)
-                0x0800b5ac                asinf
- .text.atan2f   0x0800b668        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_atan2.o)
-                0x0800b668                atan2f
- .text.sqrtf    0x0800b66c       0xb8 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_sqrt.o)
-                0x0800b66c                sqrtf
- *fill*         0x0800b724        0x4 
+                0x0800b0d4       0xdc ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
+                0x0800b0d4                arm_cos_f32
+ .text.atan2    0x0800b1b0        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_atan2.o)
+                0x0800b1b0                atan2
+ .text.pow      0x0800b1b4      0x340 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_pow.o)
+                0x0800b1b4                pow
+ .text.sqrt     0x0800b4f4       0xbc c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_sqrt.o)
+                0x0800b4f4                sqrt
+ .text.asinf    0x0800b5b0       0xbc c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_asin.o)
+                0x0800b5b0                asinf
+ .text.atan2f   0x0800b66c        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_atan2.o)
+                0x0800b66c                atan2f
+ .text.sqrtf    0x0800b670       0xb8 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_sqrt.o)
+                0x0800b670                sqrtf
  .text.__ieee754_atan2
                 0x0800b728      0x1e8 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_atan2.o)
                 0x0800b728                __ieee754_atan2
@@ -8500,79 +8502,80 @@ END GROUP
                                  0x10 (size before relaxing)
  *fill*         0x0800e5f7        0x1 
  .rodata.str1.4
-                0x0800e5f8      0x264 ./src/SD/sdCardLogger.o
-                                0x268 (size before relaxing)
+                0x0800e5f8      0x26e ./src/SD/sdCardLogger.o
+                                0x274 (size before relaxing)
+ *fill*         0x0800e866        0x2 
  .rodata.str1.4
-                0x0800e85c      0x10a ./src/GPS/gps.o
-                                0x10c (size before relaxing)
- *fill*         0x0800e966        0x2 
- .rodata.str1.4
-                0x0800e968      0x122 ./src/10DOF/IMU.o
+                0x0800e868      0x123 ./src/GPS/gps.o
                                 0x124 (size before relaxing)
- *fill*         0x0800ea8a        0x2 
+ *fill*         0x0800e98b        0x1 
  .rodata.str1.4
-                0x0800ea8c       0x43 ./src/10DOF/adxl345.o
+                0x0800e98c      0x18e ./src/10DOF/IMU.o
+                                0x190 (size before relaxing)
+ *fill*         0x0800eb1a        0x2 
+ .rodata.str1.4
+                0x0800eb1c       0x43 ./src/10DOF/adxl345.o
                                  0x44 (size before relaxing)
- *fill*         0x0800eacf        0x1 
+ *fill*         0x0800eb5f        0x1 
  .rodata.str1.4
-                0x0800ead0       0x52 ./src/10DOF/itg3200.o
+                0x0800eb60       0x52 ./src/10DOF/itg3200.o
                                  0x54 (size before relaxing)
- *fill*         0x0800eb22        0x2 
+ *fill*         0x0800ebb2        0x2 
  .rodata.str1.4
-                0x0800eb24       0x7a ./src/main.o
-                                 0x7c (size before relaxing)
- *fill*         0x0800eb9e        0x2 
- .rodata.str1.4
-                0x0800eba0       0x6e ./src/usbd_desc.o
-                                 0x70 (size before relaxing)
+                0x0800ebb4       0x5a ./src/main.o
+                                 0x5c (size before relaxing)
  *fill*         0x0800ec0e        0x2 
- .rodata        0x0800ec10      0x40c ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
- .rodata        0x0800f01c      0x410 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
  .rodata.str1.4
-                0x0800f42c        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_pow.o)
+                0x0800ec10       0x6e ./src/usbd_desc.o
+                                 0x70 (size before relaxing)
+ *fill*         0x0800ec7e        0x2 
+ .rodata        0x0800ec80      0x40c ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
+ .rodata        0x0800f08c      0x410 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
  .rodata.str1.4
-                0x0800f430        0x5 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_sqrt.o)
+                0x0800f49c        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_pow.o)
+ .rodata.str1.4
+                0x0800f4a0        0x5 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_sqrt.o)
                                   0x8 (size before relaxing)
- *fill*         0x0800f435        0x3 
+ *fill*         0x0800f4a5        0x3 
  .rodata.str1.4
-                0x0800f438        0x6 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_asin.o)
+                0x0800f4a8        0x6 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_asin.o)
                                   0xc (size before relaxing)
- *fill*         0x0800f43e        0x2 
+ *fill*         0x0800f4ae        0x2 
  .rodata.str1.4
-                0x0800f440        0x8 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_sqrt.o)
- .rodata.dp_h   0x0800f448       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_pow.o)
- .rodata.dp_l   0x0800f458       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_pow.o)
- .rodata.bp     0x0800f468       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_pow.o)
+                0x0800f4b0        0x8 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_sqrt.o)
+ .rodata.dp_h   0x0800f4b8       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_pow.o)
+ .rodata.dp_l   0x0800f4c8       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_pow.o)
+ .rodata.bp     0x0800f4d8       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_pow.o)
  .rodata.str1.4
                 0x00000000        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_pow.o)
  .rodata.atanlo
-                0x0800f478       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_atan.o)
+                0x0800f4e8       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_atan.o)
  .rodata.atanhi
-                0x0800f498       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_atan.o)
- .rodata.TWO52  0x0800f4b8       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_rint.o)
+                0x0800f508       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_atan.o)
+ .rodata.TWO52  0x0800f528       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_rint.o)
  .rodata.atanlo
-                0x0800f4c8       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-sf_atan.o)
+                0x0800f538       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-sf_atan.o)
  .rodata.atanhi
-                0x0800f4d8       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-sf_atan.o)
+                0x0800f548       0x10 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-sf_atan.o)
  .rodata.str1.1
-                0x0800f4e8        0x2 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-impure.o)
+                0x0800f558        0x2 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-impure.o)
  .rodata.str1.1
-                0x0800f4ea       0x11 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
+                0x0800f55a       0x11 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
  .rodata.str1.1
-                0x0800f4fb       0x22 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
+                0x0800f56b       0x22 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
  .rodata._ctype_
-                0x0800f51d      0x101 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-ctype_.o)
-                0x0800f51d                _ctype_
- *fill*         0x0800f61e        0x2 
+                0x0800f58d      0x101 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-ctype_.o)
+                0x0800f58d                _ctype_
+ *fill*         0x0800f68e        0x2 
  .rodata.__sf_fake_stdin
-                0x0800f620       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-findfp.o)
-                0x0800f620                __sf_fake_stdin
+                0x0800f690       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-findfp.o)
+                0x0800f690                __sf_fake_stdin
  .rodata.__sf_fake_stdout
-                0x0800f640       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-findfp.o)
-                0x0800f640                __sf_fake_stdout
+                0x0800f6b0       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-findfp.o)
+                0x0800f6b0                __sf_fake_stdout
  .rodata.__sf_fake_stderr
-                0x0800f660       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-findfp.o)
-                0x0800f660                __sf_fake_stderr
+                0x0800f6d0       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-findfp.o)
+                0x0800f6d0                __sf_fake_stderr
  *(vtable)
  *(.eh_frame*)
  *(.glue_7)
@@ -8580,31 +8583,31 @@ END GROUP
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
 
-.vfp11_veneer   0x0800f680        0x0
+.vfp11_veneer   0x0800f6f0        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x0800f680        0x0
+.v4_bx          0x0800f6f0        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
-.iplt           0x0800f680        0x0
+.iplt           0x0800f6f0        0x0
  .iplt          0x00000000        0x0 ./system/src/stm32f4-hal/stm32f4xx_hal.o
 
-.rel.dyn        0x0800f680        0x0
+.rel.dyn        0x0800f6f0        0x0
  .rel.iplt      0x00000000        0x0 ./system/src/stm32f4-hal/stm32f4xx_hal.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x0800f680                __exidx_start = .
+                0x0800f6f0                __exidx_start = .
 
 .ARM.exidx
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x0800f680                __exidx_end = .
-                0x0800f680                . = ALIGN (0x4)
-                0x0800f680                _etext = .
-                0x0800f680                __etext = .
-                0x0800f680                _sidata = _etext
+                0x0800f6f0                __exidx_end = .
+                0x0800f6f0                . = ALIGN (0x4)
+                0x0800f6f0                _etext = .
+                0x0800f6f0                __etext = .
+                0x0800f6f0                _sidata = _etext
 
-.data           0x20000000      0x210 load address 0x0800f680
+.data           0x20000000      0x210 load address 0x0800f6f0
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                __data_start__ = .
@@ -8680,10 +8683,10 @@ END GROUP
                 0x20000210                _edata = .
                 0x20000210                __data_end__ = .
 
-.igot.plt       0x20000210        0x0 load address 0x0800f890
+.igot.plt       0x20000210        0x0 load address 0x0800f900
  .igot.plt      0x00000000        0x0 ./system/src/stm32f4-hal/stm32f4xx_hal.o
 
-.bss            0x20000210     0x1ea4 load address 0x0800f890
+.bss            0x20000210     0x1f44 load address 0x0800f900
                 0x20000210                . = ALIGN (0x4)
                 0x20000210                __bss_start__ = .
                 0x20000210                _sbss = .
@@ -8713,143 +8716,143 @@ END GROUP
  *fill*         0x2000080a        0x2 
  .bss.FatFs     0x2000080c        0x4 ./src/SD/ff.o
  .bss.sdCardLogger
-                0x20000810      0xb44 ./src/SD/sdCardLogger.o
+                0x20000810      0xb74 ./src/SD/sdCardLogger.o
                 0x20000810                sdCardLogger
  .bss._ZL6Timer1
-                0x20001354        0x1 ./src/SD/spi_sd.o
+                0x20001384        0x1 ./src/SD/spi_sd.o
  .bss._ZL6Timer2
-                0x20001355        0x1 ./src/SD/spi_sd.o
+                0x20001385        0x1 ./src/SD/spi_sd.o
  .bss._ZL8CardType
-                0x20001356        0x1 ./src/SD/spi_sd.o
+                0x20001386        0x1 ./src/SD/spi_sd.o
  .bss._ZL9PowerFlag
-                0x20001357        0x1 ./src/SD/spi_sd.o
- .bss.pwm       0x20001358       0x4c ./src/PWM/pwm.o
-                0x20001358                pwm
+                0x20001387        0x1 ./src/SD/spi_sd.o
+ .bss.pwm       0x20001388       0x4c ./src/PWM/pwm.o
+                0x20001388                pwm
  .bss.isNewFrame
-                0x200013a4        0x1 ./src/GPS/gps.o
-                0x200013a4                isNewFrame
+                0x200013d4        0x1 ./src/GPS/gps.o
+                0x200013d4                isNewFrame
  .bss.charsInFrame
-                0x200013a5        0x1 ./src/GPS/gps.o
-                0x200013a5                charsInFrame
+                0x200013d5        0x1 ./src/GPS/gps.o
+                0x200013d5                charsInFrame
  .bss.charToSkip
-                0x200013a6        0x1 ./src/GPS/gps.o
-                0x200013a6                charToSkip
- *fill*         0x200013a7        0x1 
+                0x200013d6        0x1 ./src/GPS/gps.o
+                0x200013d6                charToSkip
+ *fill*         0x200013d7        0x1 
  .bss.UartHandle
-                0x200013a8       0x3c ./src/GPS/gps.o
-                0x200013a8                UartHandle
+                0x200013d8       0x3c ./src/GPS/gps.o
+                0x200013d8                UartHandle
  .bss.frameSize
-                0x200013e4        0x2 ./src/GPS/gps.o
-                0x200013e4                frameSize
- *fill*         0x200013e6        0x2 
- .bss.buf1      0x200013e8       0x50 ./src/GPS/gps.o
-                0x200013e8                buf1
- .bss.buf2      0x20001438       0x50 ./src/GPS/gps.o
-                0x20001438                buf2
- .bss.gpsdata   0x20001488       0x40 ./src/GPS/gps.o
-                0x20001488                gpsdata
+                0x20001414        0x2 ./src/GPS/gps.o
+                0x20001414                frameSize
+ *fill*         0x20001416        0x2 
+ .bss.buf1      0x20001418       0x50 ./src/GPS/gps.o
+                0x20001418                buf1
+ .bss.buf2      0x20001468       0x50 ./src/GPS/gps.o
+                0x20001468                buf2
+ .bss.gpsdata   0x200014b8       0x40 ./src/GPS/gps.o
+                0x200014b8                gpsdata
  .bss._ZN4GPIO21TIM_TimeBaseStructureE
-                0x200014c8       0x3c ./src/GPIO/gpio.o
-                0x200014c8                GPIO::TIM_TimeBaseStructure
+                0x200014f8       0x3c ./src/GPIO/gpio.o
+                0x200014f8                GPIO::TIM_TimeBaseStructure
  .bss.io_module
-                0x20001504        0x8 ./src/GPIO/gpio.o
-                0x20001504                io_module
+                0x20001534        0x8 ./src/GPIO/gpio.o
+                0x20001534                io_module
  .bss._ZN4GPIO11buttonsTimeE
-                0x2000150c        0xc ./src/GPIO/gpio.o
-                0x2000150c                GPIO::buttonsTime
+                0x2000153c        0xc ./src/GPIO/gpio.o
+                0x2000153c                GPIO::buttonsTime
  .bss._ZN4GPIO7buttonsE
-                0x20001518        0x4 ./src/GPIO/gpio.o
-                0x20001518                GPIO::buttons
+                0x20001548        0x4 ./src/GPIO/gpio.o
+                0x20001548                GPIO::buttons
  .bss._ZN5Delay10delayCountE
-                0x2000151c        0x4 ./src/Delay/delay.o
-                0x2000151c                Delay::delayCount
+                0x2000154c        0x4 ./src/Delay/delay.o
+                0x2000154c                Delay::delayCount
  .bss._ZZ15SysTick_HandlerE5cnter
-                0x20001520        0x1 ./src/Delay/delay.o
- *fill*         0x20001521        0x3 
+                0x20001550        0x1 ./src/Delay/delay.o
+ *fill*         0x20001551        0x3 
  .bss.integralFBz
-                0x20001524        0x4 ./src/10DOF/Filters/MahonyAHRS.o
-                0x20001524                integralFBz
- .bss.q1        0x20001528        0x4 ./src/10DOF/Filters/MahonyAHRS.o
-                0x20001528                q1
- .bss.q2        0x2000152c        0x4 ./src/10DOF/Filters/MahonyAHRS.o
-                0x2000152c                q2
- .bss.q3        0x20001530        0x4 ./src/10DOF/Filters/MahonyAHRS.o
-                0x20001530                q3
+                0x20001554        0x4 ./src/10DOF/Filters/MahonyAHRS.o
+                0x20001554                integralFBz
+ .bss.q1        0x20001558        0x4 ./src/10DOF/Filters/MahonyAHRS.o
+                0x20001558                q1
+ .bss.q2        0x2000155c        0x4 ./src/10DOF/Filters/MahonyAHRS.o
+                0x2000155c                q2
+ .bss.q3        0x20001560        0x4 ./src/10DOF/Filters/MahonyAHRS.o
+                0x20001560                q3
  .bss.integralFBx
-                0x20001534        0x4 ./src/10DOF/Filters/MahonyAHRS.o
-                0x20001534                integralFBx
+                0x20001564        0x4 ./src/10DOF/Filters/MahonyAHRS.o
+                0x20001564                integralFBx
  .bss.integralFBy
-                0x20001538        0x4 ./src/10DOF/Filters/MahonyAHRS.o
-                0x20001538                integralFBy
+                0x20001568        0x4 ./src/10DOF/Filters/MahonyAHRS.o
+                0x20001568                integralFBy
  .bss._ZN3I2C4hi2cE
-                0x2000153c       0x38 ./src/10DOF/I2C.o
-                0x2000153c                I2C::hi2c
+                0x2000156c       0x38 ./src/10DOF/I2C.o
+                0x2000156c                I2C::hi2c
  .bss._ZN3I2C11initializedE
-                0x20001574        0x1 ./src/10DOF/I2C.o
-                0x20001574                I2C::initialized
- *fill*         0x20001575        0x3 
- .bss.imu10DOF  0x20001578      0x318 ./src/10DOF/IMU.o
-                0x20001578                imu10DOF
+                0x200015a4        0x1 ./src/10DOF/I2C.o
+                0x200015a4                I2C::initialized
+ *fill*         0x200015a5        0x3 
+ .bss.imu10DOF  0x200015a8      0x388 ./src/10DOF/IMU.o
+                0x200015a8                imu10DOF
  .bss._ZZN3IMU11timerActionEvE21counterForloggingData
-                0x20001890        0x1 ./src/10DOF/IMU.o
+                0x20001930        0x1 ./src/10DOF/IMU.o
  .bss._ZZN3IMU11timerActionEvE11errorSensor
-                0x20001891        0x1 ./src/10DOF/IMU.o
+                0x20001931        0x1 ./src/10DOF/IMU.o
  .bss._ZN6BMP08525timeToNextMeasurementInUsE
-                0x20001892        0x2 ./src/10DOF/bmp085.o
-                0x20001892                BMP085::timeToNextMeasurementInUs
+                0x20001932        0x2 ./src/10DOF/bmp085.o
+                0x20001932                BMP085::timeToNextMeasurementInUs
  .bss.USBD_Device
-                0x20001894      0x224 ./src/main.o
-                0x20001894                USBD_Device
+                0x20001934      0x224 ./src/main.o
+                0x20001934                USBD_Device
  .bss.flagsComunicationInterface
-                0x20001ab8        0xc ./src/main.o
-                0x20001ab8                flagsComunicationInterface
+                0x20001b58        0xc ./src/main.o
+                0x20001b58                flagsComunicationInterface
  .bss._ZZ13doFrameActionE3buf
-                0x20001ac4       0xc8 ./src/main.o
+                0x20001b64       0xc8 ./src/main.o
  .bss.semaphore_timerInterrupt
-                0x20001b8c        0x1 ./src/main.o
-                0x20001b8c                semaphore_timerInterrupt
- *fill*         0x20001b8d        0x3 
+                0x20001c2c        0x1 ./src/main.o
+                0x20001c2c                semaphore_timerInterrupt
+ *fill*         0x20001c2d        0x3 
  .bss.flagsHardware
-                0x20001b90        0xc ./src/main.o
-                0x20001b90                flagsHardware
+                0x20001c30        0xc ./src/main.o
+                0x20001c30                flagsHardware
  .bss.__malloc_sbrk_start
-                0x20001b9c        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
-                0x20001b9c                __malloc_sbrk_start
+                0x20001c3c        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
+                0x20001c3c                __malloc_sbrk_start
  .bss.__malloc_free_list
-                0x20001ba0        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
-                0x20001ba0                __malloc_free_list
+                0x20001c40        0x4 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
+                0x20001c40                __malloc_free_list
  *(COMMON)
- COMMON         0x20001ba4        0x4 ./system/src/newlib/_syscalls.o
-                0x20001ba4                errno
- COMMON         0x20001ba8       0x55 ./src/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc_if_template.o
-                0x20001ba8                s_RxFrameBuffer
- *fill*         0x20001bfd        0x3 
- COMMON         0x20001c00      0x3b0 ./src/usbd_conf.o
-                0x20001c00                hpcd
- COMMON         0x20001fb0      0x100 ./src/usbd_desc.o
-                0x20001fb0                USBD_StrDesc
+ COMMON         0x20001c44        0x4 ./system/src/newlib/_syscalls.o
+                0x20001c44                errno
+ COMMON         0x20001c48       0x55 ./src/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc_if_template.o
+                0x20001c48                s_RxFrameBuffer
+ *fill*         0x20001c9d        0x3 
+ COMMON         0x20001ca0      0x3b0 ./src/usbd_conf.o
+                0x20001ca0                hpcd
+ COMMON         0x20002050      0x100 ./src/usbd_desc.o
+                0x20002050                USBD_StrDesc
  *(.bss_end .bss_end.*)
- .bss_end       0x200020b0        0x4 ./system/src/newlib/_startup.o
-                0x200020b4                . = ALIGN (0x4)
-                0x200020b4                __bss_end__ = .
-                0x200020b4                _ebss = .
+ .bss_end       0x20002150        0x4 ./system/src/newlib/_startup.o
+                0x20002154                . = ALIGN (0x4)
+                0x20002154                __bss_end__ = .
+                0x20002154                _ebss = .
 
-.noinit         0x200020b4        0x0
-                0x200020b4                . = ALIGN (0x4)
-                0x200020b4                _noinit = .
+.noinit         0x20002154        0x0
+                0x20002154                . = ALIGN (0x4)
+                0x20002154                _noinit = .
  *(.noinit .noinit.*)
-                0x200020b4                . = ALIGN (0x4)
-                0x200020b4                _end_noinit = .
-                0x200020b4                PROVIDE (end, _end_noinit)
-                0x200020b4                PROVIDE (_end, _end_noinit)
-                0x200020b4                PROVIDE (__end, _end_noinit)
-                0x200020b4                PROVIDE (__end__, _end_noinit)
+                0x20002154                . = ALIGN (0x4)
+                0x20002154                _end_noinit = .
+                0x20002154                PROVIDE (end, _end_noinit)
+                0x20002154                PROVIDE (_end, _end_noinit)
+                0x20002154                PROVIDE (__end, _end_noinit)
+                0x20002154                PROVIDE (__end__, _end_noinit)
 
-._check_stack   0x200020b4      0x100 load address 0x08011734
-                0x200020b4                . = ALIGN (0x4)
-                0x200021b4                . = (. + _Minimum_Stack_Size)
- *fill*         0x200020b4      0x100 
-                0x200021b4                . = ALIGN (0x4)
+._check_stack   0x20002154      0x100 load address 0x08011844
+                0x20002154                . = ALIGN (0x4)
+                0x20002254                . = (. + _Minimum_Stack_Size)
+ *fill*         0x20002154      0x100 
+                0x20002254                . = ALIGN (0x4)
 
 .bss_CCMRAM
  *(.bss.CCMRAM .bss.CCMRAM.*)
@@ -9157,7 +9160,7 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000     0x1ba8
+.debug_aranges  0x00000000     0x1bb8
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0xa8 ./system/src/stm32f4-hal/stm32f4xx_hal.o
@@ -9226,32 +9229,32 @@ END GROUP
  .debug_aranges
                 0x000013b0       0x30 ./src/10DOF/I2C.o
  .debug_aranges
-                0x000013e0       0xf0 ./src/10DOF/IMU.o
+                0x000013e0       0xf8 ./src/10DOF/IMU.o
  .debug_aranges
-                0x000014d0      0x1b8 ./src/10DOF/adxl345.o
+                0x000014d8      0x1b8 ./src/10DOF/adxl345.o
  .debug_aranges
-                0x00001688       0xc8 ./src/10DOF/bmp085.o
+                0x00001690       0xc8 ./src/10DOF/bmp085.o
  .debug_aranges
-                0x00001750       0xf8 ./src/10DOF/hmc5883l.o
+                0x00001758       0xf8 ./src/10DOF/hmc5883l.o
  .debug_aranges
-                0x00001848      0x188 ./src/10DOF/itg3200.o
+                0x00001850      0x188 ./src/10DOF/itg3200.o
  .debug_aranges
-                0x000019d0       0x28 ./src/_initialize_hardware.o
+                0x000019d8       0x28 ./src/_initialize_hardware.o
  .debug_aranges
-                0x000019f8       0x28 ./src/main.o
+                0x00001a00       0x30 ./src/main.o
  .debug_aranges
-                0x00001a20       0xf8 ./src/usbd_conf.o
+                0x00001a30       0xf8 ./src/usbd_conf.o
  .debug_aranges
-                0x00001b18       0x50 ./src/usbd_desc.o
+                0x00001b28       0x50 ./src/usbd_desc.o
  .debug_aranges
-                0x00001b68       0x20 ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
+                0x00001b78       0x20 ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
  .debug_aranges
-                0x00001b88       0x20 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
+                0x00001b98       0x20 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000    0x41f69
+.debug_info     0x00000000    0x42143
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x589 ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_info    0x00000589      0xcd7 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
@@ -9278,27 +9281,27 @@ END GROUP
  .debug_info    0x00014b11     0x13ee ./src/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc_if_template.o
  .debug_info    0x00015eff     0x7c04 ./src/SD/ff.o
  .debug_info    0x0001db03     0x1d20 ./src/SD/sdCardLogger.o
- .debug_info    0x0001f823     0x1612 ./src/SD/spi_sd.o
- .debug_info    0x00020e35      0x827 ./src/PWM/pwm.o
- .debug_info    0x0002165c     0x410e ./src/GPS/gps.o
- .debug_info    0x0002576a      0xf00 ./src/GPIO/gpio.o
- .debug_info    0x0002666a      0x719 ./src/Delay/delay.o
- .debug_info    0x00026d83      0xef3 ./src/10DOF/Filters/Kalman.o
- .debug_info    0x00027c76      0x79d ./src/10DOF/Filters/MahonyAHRS.o
- .debug_info    0x00028413      0xb80 ./src/10DOF/I2C.o
- .debug_info    0x00028f93     0x523a ./src/10DOF/IMU.o
- .debug_info    0x0002e1cd     0x37ee ./src/10DOF/adxl345.o
- .debug_info    0x000319bb     0x1f01 ./src/10DOF/bmp085.o
- .debug_info    0x000338bc     0x2e01 ./src/10DOF/hmc5883l.o
- .debug_info    0x000366bd     0x422f ./src/10DOF/itg3200.o
- .debug_info    0x0003a8ec      0x6aa ./src/_initialize_hardware.o
- .debug_info    0x0003af96     0x48ed ./src/main.o
- .debug_info    0x0003f883     0x1c42 ./src/usbd_conf.o
- .debug_info    0x000414c5      0x5fa ./src/usbd_desc.o
- .debug_info    0x00041abf      0x255 ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
- .debug_info    0x00041d14      0x255 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
+ .debug_info    0x0001f823     0x1615 ./src/SD/spi_sd.o
+ .debug_info    0x00020e38      0x827 ./src/PWM/pwm.o
+ .debug_info    0x0002165f     0x4121 ./src/GPS/gps.o
+ .debug_info    0x00025780      0xf00 ./src/GPIO/gpio.o
+ .debug_info    0x00026680      0x719 ./src/Delay/delay.o
+ .debug_info    0x00026d99      0xef3 ./src/10DOF/Filters/Kalman.o
+ .debug_info    0x00027c8c      0x7a2 ./src/10DOF/Filters/MahonyAHRS.o
+ .debug_info    0x0002842e      0xb80 ./src/10DOF/I2C.o
+ .debug_info    0x00028fae     0x5345 ./src/10DOF/IMU.o
+ .debug_info    0x0002e2f3     0x37ee ./src/10DOF/adxl345.o
+ .debug_info    0x00031ae1     0x1f01 ./src/10DOF/bmp085.o
+ .debug_info    0x000339e2     0x2e01 ./src/10DOF/hmc5883l.o
+ .debug_info    0x000367e3     0x422f ./src/10DOF/itg3200.o
+ .debug_info    0x0003aa12      0x6aa ./src/_initialize_hardware.o
+ .debug_info    0x0003b0bc     0x49a1 ./src/main.o
+ .debug_info    0x0003fa5d     0x1c42 ./src/usbd_conf.o
+ .debug_info    0x0004169f      0x5fa ./src/usbd_desc.o
+ .debug_info    0x00041c99      0x255 ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
+ .debug_info    0x00041eee      0x255 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
 
-.debug_abbrev   0x00000000     0x7f19
+.debug_abbrev   0x00000000     0x7f51
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x1f1 ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_abbrev  0x000001f1      0x2a8 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
@@ -9327,25 +9330,25 @@ END GROUP
  .debug_abbrev  0x000036da      0x4e6 ./src/SD/sdCardLogger.o
  .debug_abbrev  0x00003bc0      0x3bf ./src/SD/spi_sd.o
  .debug_abbrev  0x00003f7f      0x22b ./src/PWM/pwm.o
- .debug_abbrev  0x000041aa      0x5f6 ./src/GPS/gps.o
- .debug_abbrev  0x000047a0      0x349 ./src/GPIO/gpio.o
- .debug_abbrev  0x00004ae9      0x24c ./src/Delay/delay.o
- .debug_abbrev  0x00004d35      0x300 ./src/10DOF/Filters/Kalman.o
- .debug_abbrev  0x00005035      0x22b ./src/10DOF/Filters/MahonyAHRS.o
- .debug_abbrev  0x00005260      0x21b ./src/10DOF/I2C.o
- .debug_abbrev  0x0000547b      0x7ea ./src/10DOF/IMU.o
- .debug_abbrev  0x00005c65      0x511 ./src/10DOF/adxl345.o
- .debug_abbrev  0x00006176      0x524 ./src/10DOF/bmp085.o
- .debug_abbrev  0x0000669a      0x480 ./src/10DOF/hmc5883l.o
- .debug_abbrev  0x00006b1a      0x526 ./src/10DOF/itg3200.o
- .debug_abbrev  0x00007040      0x1cb ./src/_initialize_hardware.o
- .debug_abbrev  0x0000720b      0x67e ./src/main.o
- .debug_abbrev  0x00007889      0x307 ./src/usbd_conf.o
- .debug_abbrev  0x00007b90      0x1eb ./src/usbd_desc.o
- .debug_abbrev  0x00007d7b       0xcf ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
- .debug_abbrev  0x00007e4a       0xcf ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
+ .debug_abbrev  0x000041aa      0x60d ./src/GPS/gps.o
+ .debug_abbrev  0x000047b7      0x349 ./src/GPIO/gpio.o
+ .debug_abbrev  0x00004b00      0x24c ./src/Delay/delay.o
+ .debug_abbrev  0x00004d4c      0x300 ./src/10DOF/Filters/Kalman.o
+ .debug_abbrev  0x0000504c      0x232 ./src/10DOF/Filters/MahonyAHRS.o
+ .debug_abbrev  0x0000527e      0x21b ./src/10DOF/I2C.o
+ .debug_abbrev  0x00005499      0x7c3 ./src/10DOF/IMU.o
+ .debug_abbrev  0x00005c5c      0x511 ./src/10DOF/adxl345.o
+ .debug_abbrev  0x0000616d      0x524 ./src/10DOF/bmp085.o
+ .debug_abbrev  0x00006691      0x480 ./src/10DOF/hmc5883l.o
+ .debug_abbrev  0x00006b11      0x526 ./src/10DOF/itg3200.o
+ .debug_abbrev  0x00007037      0x1cb ./src/_initialize_hardware.o
+ .debug_abbrev  0x00007202      0x6bf ./src/main.o
+ .debug_abbrev  0x000078c1      0x307 ./src/usbd_conf.o
+ .debug_abbrev  0x00007bc8      0x1eb ./src/usbd_desc.o
+ .debug_abbrev  0x00007db3       0xcf ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
+ .debug_abbrev  0x00007e82       0xcf ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
 
-.debug_line     0x00000000    0x1a9b6
+.debug_line     0x00000000    0x1aa7a
  *(.debug_line)
  .debug_line    0x00000000      0x625 ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_line    0x00000625      0x6b8 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
@@ -9372,27 +9375,27 @@ END GROUP
  .debug_line    0x0000c1b0      0x959 ./src/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc_if_template.o
  .debug_line    0x0000cb09     0x2168 ./src/SD/ff.o
  .debug_line    0x0000ec71      0xa3c ./src/SD/sdCardLogger.o
- .debug_line    0x0000f6ad      0x7d2 ./src/SD/spi_sd.o
- .debug_line    0x0000fe7f      0x630 ./src/PWM/pwm.o
- .debug_line    0x000104af      0xba1 ./src/GPS/gps.o
- .debug_line    0x00011050      0x5de ./src/GPIO/gpio.o
- .debug_line    0x0001162e      0x71d ./src/Delay/delay.o
- .debug_line    0x00011d4b      0x8bc ./src/10DOF/Filters/Kalman.o
- .debug_line    0x00012607      0x86b ./src/10DOF/Filters/MahonyAHRS.o
- .debug_line    0x00012e72      0x644 ./src/10DOF/I2C.o
- .debug_line    0x000134b6      0xecd ./src/10DOF/IMU.o
- .debug_line    0x00014383     0x1169 ./src/10DOF/adxl345.o
- .debug_line    0x000154ec      0xcfa ./src/10DOF/bmp085.o
- .debug_line    0x000161e6      0xfff ./src/10DOF/hmc5883l.o
- .debug_line    0x000171e5     0x14b6 ./src/10DOF/itg3200.o
- .debug_line    0x0001869b      0x535 ./src/_initialize_hardware.o
- .debug_line    0x00018bd0      0xa91 ./src/main.o
- .debug_line    0x00019661      0x937 ./src/usbd_conf.o
- .debug_line    0x00019f98      0x79a ./src/usbd_desc.o
- .debug_line    0x0001a732      0x142 ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
- .debug_line    0x0001a874      0x142 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
+ .debug_line    0x0000f6ad      0x7d4 ./src/SD/spi_sd.o
+ .debug_line    0x0000fe81      0x630 ./src/PWM/pwm.o
+ .debug_line    0x000104b1      0xba1 ./src/GPS/gps.o
+ .debug_line    0x00011052      0x5de ./src/GPIO/gpio.o
+ .debug_line    0x00011630      0x71d ./src/Delay/delay.o
+ .debug_line    0x00011d4d      0x8bc ./src/10DOF/Filters/Kalman.o
+ .debug_line    0x00012609      0x86b ./src/10DOF/Filters/MahonyAHRS.o
+ .debug_line    0x00012e74      0x644 ./src/10DOF/I2C.o
+ .debug_line    0x000134b8      0xf52 ./src/10DOF/IMU.o
+ .debug_line    0x0001440a     0x1169 ./src/10DOF/adxl345.o
+ .debug_line    0x00015573      0xcfa ./src/10DOF/bmp085.o
+ .debug_line    0x0001626d      0xfff ./src/10DOF/hmc5883l.o
+ .debug_line    0x0001726c     0x14b6 ./src/10DOF/itg3200.o
+ .debug_line    0x00018722      0x535 ./src/_initialize_hardware.o
+ .debug_line    0x00018c57      0xace ./src/main.o
+ .debug_line    0x00019725      0x937 ./src/usbd_conf.o
+ .debug_line    0x0001a05c      0x79a ./src/usbd_desc.o
+ .debug_line    0x0001a7f6      0x142 ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
+ .debug_line    0x0001a938      0x142 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
 
-.debug_frame    0x00000000     0x55e4
+.debug_frame    0x00000000     0x5610
  *(.debug_frame)
  .debug_frame   0x00000000      0x144 ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_frame   0x00000144      0x124 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
@@ -9427,66 +9430,66 @@ END GROUP
  .debug_frame   0x0000328c       0xb0 ./src/10DOF/Filters/Kalman.o
  .debug_frame   0x0000333c       0xb0 ./src/10DOF/Filters/MahonyAHRS.o
  .debug_frame   0x000033ec       0x48 ./src/10DOF/I2C.o
- .debug_frame   0x00003434      0x334 ./src/10DOF/IMU.o
- .debug_frame   0x00003768      0x558 ./src/10DOF/adxl345.o
- .debug_frame   0x00003cc0      0x264 ./src/10DOF/bmp085.o
- .debug_frame   0x00003f24      0x360 ./src/10DOF/hmc5883l.o
- .debug_frame   0x00004284      0x594 ./src/10DOF/itg3200.o
- .debug_frame   0x00004818       0x50 ./src/_initialize_hardware.o
- .debug_frame   0x00004868       0x50 ./src/main.o
- .debug_frame   0x000048b8      0x258 ./src/usbd_conf.o
- .debug_frame   0x00004b10       0xa8 ./src/usbd_desc.o
- .debug_frame   0x00004bb8       0x20 ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
- .debug_frame   0x00004bd8       0x20 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
- .debug_frame   0x00004bf8       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_atan2.o)
- .debug_frame   0x00004c18       0x40 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_pow.o)
- .debug_frame   0x00004c58       0x38 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_sqrt.o)
- .debug_frame   0x00004c90       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_asin.o)
- .debug_frame   0x00004cc0       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_atan2.o)
- .debug_frame   0x00004ce0       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_sqrt.o)
- .debug_frame   0x00004d10       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_atan2.o)
- .debug_frame   0x00004d40       0x44 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_pow.o)
- .debug_frame   0x00004d84       0x3c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_sqrt.o)
- .debug_frame   0x00004dc0       0x34 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-ef_asin.o)
- .debug_frame   0x00004df4       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-ef_atan2.o)
- .debug_frame   0x00004e20       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-ef_sqrt.o)
- .debug_frame   0x00004e4c       0x38 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_atan.o)
- .debug_frame   0x00004e84       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_fabs.o)
- .debug_frame   0x00004ea4       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_finite.o)
- .debug_frame   0x00004ec4       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_fpclassify.o)
- .debug_frame   0x00004eec       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_matherr.o)
- .debug_frame   0x00004f0c       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_nan.o)
- .debug_frame   0x00004f2c       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_rint.o)
- .debug_frame   0x00004f5c       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_scalbn.o)
- .debug_frame   0x00004f88       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-sf_atan.o)
- .debug_frame   0x00004fb4       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-sf_fabs.o)
- .debug_frame   0x00004fd4       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-sf_fpclassify.o)
- .debug_frame   0x00004ff4       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_copysign.o)
- .debug_frame   0x0000501c       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-atol.o)
- .debug_frame   0x0000504c       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-errno.o)
- .debug_frame   0x0000506c       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-malloc.o)
- .debug_frame   0x0000509c       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memcpy-stub.o)
- .debug_frame   0x000050c4       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memset.o)
- .debug_frame   0x000050e4       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-freer.o)
- .debug_frame   0x00005110       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
- .debug_frame   0x0000513c       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sbrkr.o)
- .debug_frame   0x00005168       0x58 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-snprintf.o)
- .debug_frame   0x000051c0       0x58 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sprintf.o)
- .debug_frame   0x00005218       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strchr.o)
- .debug_frame   0x00005238       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strlen.o)
- .debug_frame   0x00005258       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strncat.o)
- .debug_frame   0x00005284       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strncmp.o)
- .debug_frame   0x000052b0       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strncpy.o)
- .debug_frame   0x000052d8       0x54 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strtol.o)
- .debug_frame   0x0000532c       0x88 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
- .debug_frame   0x000053b4       0x60 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
- .debug_frame   0x00005414      0x12c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-findfp.o)
- .debug_frame   0x00005540       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memchr-stub.o)
- .debug_frame   0x00005568       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memmove.o)
- .debug_frame   0x00005594       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-reallocr.o)
- .debug_frame   0x000055c4       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-msizer.o)
+ .debug_frame   0x00003434      0x350 ./src/10DOF/IMU.o
+ .debug_frame   0x00003784      0x558 ./src/10DOF/adxl345.o
+ .debug_frame   0x00003cdc      0x264 ./src/10DOF/bmp085.o
+ .debug_frame   0x00003f40      0x360 ./src/10DOF/hmc5883l.o
+ .debug_frame   0x000042a0      0x594 ./src/10DOF/itg3200.o
+ .debug_frame   0x00004834       0x50 ./src/_initialize_hardware.o
+ .debug_frame   0x00004884       0x60 ./src/main.o
+ .debug_frame   0x000048e4      0x258 ./src/usbd_conf.o
+ .debug_frame   0x00004b3c       0xa8 ./src/usbd_desc.o
+ .debug_frame   0x00004be4       0x20 ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
+ .debug_frame   0x00004c04       0x20 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
+ .debug_frame   0x00004c24       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_atan2.o)
+ .debug_frame   0x00004c44       0x40 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_pow.o)
+ .debug_frame   0x00004c84       0x38 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-w_sqrt.o)
+ .debug_frame   0x00004cbc       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_asin.o)
+ .debug_frame   0x00004cec       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_atan2.o)
+ .debug_frame   0x00004d0c       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-wf_sqrt.o)
+ .debug_frame   0x00004d3c       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_atan2.o)
+ .debug_frame   0x00004d6c       0x44 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_pow.o)
+ .debug_frame   0x00004db0       0x3c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-e_sqrt.o)
+ .debug_frame   0x00004dec       0x34 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-ef_asin.o)
+ .debug_frame   0x00004e20       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-ef_atan2.o)
+ .debug_frame   0x00004e4c       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-ef_sqrt.o)
+ .debug_frame   0x00004e78       0x38 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_atan.o)
+ .debug_frame   0x00004eb0       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_fabs.o)
+ .debug_frame   0x00004ed0       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_finite.o)
+ .debug_frame   0x00004ef0       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_fpclassify.o)
+ .debug_frame   0x00004f18       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_matherr.o)
+ .debug_frame   0x00004f38       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_nan.o)
+ .debug_frame   0x00004f58       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_rint.o)
+ .debug_frame   0x00004f88       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_scalbn.o)
+ .debug_frame   0x00004fb4       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-sf_atan.o)
+ .debug_frame   0x00004fe0       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-sf_fabs.o)
+ .debug_frame   0x00005000       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-sf_fpclassify.o)
+ .debug_frame   0x00005020       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libm.a(lib_a-s_copysign.o)
+ .debug_frame   0x00005048       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-atol.o)
+ .debug_frame   0x00005078       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-errno.o)
+ .debug_frame   0x00005098       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-malloc.o)
+ .debug_frame   0x000050c8       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memcpy-stub.o)
+ .debug_frame   0x000050f0       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memset.o)
+ .debug_frame   0x00005110       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-freer.o)
+ .debug_frame   0x0000513c       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-mallocr.o)
+ .debug_frame   0x00005168       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sbrkr.o)
+ .debug_frame   0x00005194       0x58 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-snprintf.o)
+ .debug_frame   0x000051ec       0x58 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-sprintf.o)
+ .debug_frame   0x00005244       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strchr.o)
+ .debug_frame   0x00005264       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strlen.o)
+ .debug_frame   0x00005284       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strncat.o)
+ .debug_frame   0x000052b0       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strncmp.o)
+ .debug_frame   0x000052dc       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strncpy.o)
+ .debug_frame   0x00005304       0x54 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-strtol.o)
+ .debug_frame   0x00005358       0x88 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-svfprintf.o)
+ .debug_frame   0x000053e0       0x60 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-vfprintf_i.o)
+ .debug_frame   0x00005440      0x12c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-findfp.o)
+ .debug_frame   0x0000556c       0x28 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memchr-stub.o)
+ .debug_frame   0x00005594       0x2c c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-memmove.o)
+ .debug_frame   0x000055c0       0x30 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-reallocr.o)
+ .debug_frame   0x000055f0       0x20 c:/program files (x86)/gnu tools arm embedded/4.8 2014q2/bin/../lib/gcc/arm-none-eabi/4.8.4/../../../../arm-none-eabi/lib/armv7e-m/fpu\libg_s.a(lib_a-nano-msizer.o)
 
-.debug_str      0x00000000    0x6d40b
+.debug_str      0x00000000    0x6d465
  *(.debug_str)
  .debug_str     0x00000000    0x592e7 ./system/src/stm32f4-hal/stm32f4xx_hal.o
                               0x594d8 (size before relaxing)
@@ -9542,42 +9545,42 @@ END GROUP
                               0x3cce4 (size before relaxing)
  .debug_str     0x000671f2      0x113 ./src/PWM/pwm.o
                               0x5cb59 (size before relaxing)
- .debug_str     0x00067305     0x4ce5 ./src/GPS/gps.o
-                              0x63a99 (size before relaxing)
- .debug_str     0x0006bfea      0x40a ./src/GPIO/gpio.o
+ .debug_str     0x00067305     0x4d28 ./src/GPS/gps.o
+                              0x63adc (size before relaxing)
+ .debug_str     0x0006c02d      0x40a ./src/GPIO/gpio.o
                               0x5a086 (size before relaxing)
- .debug_str     0x0006c3f4       0x34 ./src/Delay/delay.o
+ .debug_str     0x0006c437       0x34 ./src/Delay/delay.o
                               0x5da02 (size before relaxing)
- .debug_str     0x0006c428      0x19c ./src/10DOF/Filters/Kalman.o
+ .debug_str     0x0006c46b      0x19c ./src/10DOF/Filters/Kalman.o
                               0x5e1db (size before relaxing)
- .debug_str     0x0006c5c4      0x1fd ./src/10DOF/Filters/MahonyAHRS.o
+ .debug_str     0x0006c607      0x1fd ./src/10DOF/Filters/MahonyAHRS.o
                               0x5c59c (size before relaxing)
- .debug_str     0x0006c7c1      0x248 ./src/10DOF/I2C.o
+ .debug_str     0x0006c804      0x248 ./src/10DOF/I2C.o
                               0x5d2a0 (size before relaxing)
- .debug_str     0x0006ca09      0x1d9 ./src/10DOF/IMU.o
-                              0x64a1c (size before relaxing)
- .debug_str     0x0006cbe2      0x136 ./src/10DOF/adxl345.o
+ .debug_str     0x0006ca4c      0x1dd ./src/10DOF/IMU.o
+                              0x64a5d (size before relaxing)
+ .debug_str     0x0006cc29      0x136 ./src/10DOF/adxl345.o
                               0x6035b (size before relaxing)
- .debug_str     0x0006cd18       0x85 ./src/10DOF/bmp085.o
-                              0x60258 (size before relaxing)
- .debug_str     0x0006cd9d       0xa0 ./src/10DOF/hmc5883l.o
-                              0x6047a (size before relaxing)
- .debug_str     0x0006ce3d       0x61 ./src/10DOF/itg3200.o
+ .debug_str     0x0006cd5f       0x85 ./src/10DOF/bmp085.o
+                              0x60269 (size before relaxing)
+ .debug_str     0x0006cde4       0xa0 ./src/10DOF/hmc5883l.o
+                              0x6048b (size before relaxing)
+ .debug_str     0x0006ce84       0x61 ./src/10DOF/itg3200.o
                               0x5fcd6 (size before relaxing)
- .debug_str     0x0006ce9e       0x35 ./src/_initialize_hardware.o
+ .debug_str     0x0006cee5       0x35 ./src/_initialize_hardware.o
                               0x5920f (size before relaxing)
- .debug_str     0x0006ced3       0xe2 ./src/main.o
-                              0x65a6d (size before relaxing)
- .debug_str     0x0006cfb5       0x31 ./src/usbd_conf.o
+ .debug_str     0x0006cf1a       0xf5 ./src/main.o
+                              0x65ad1 (size before relaxing)
+ .debug_str     0x0006d00f       0x31 ./src/usbd_conf.o
                               0x5da59 (size before relaxing)
- .debug_str     0x0006cfe6      0x2e3 ./src/usbd_desc.o
+ .debug_str     0x0006d040      0x2e3 ./src/usbd_desc.o
                               0x5cc97 (size before relaxing)
- .debug_str     0x0006d2c9      0x10f ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
+ .debug_str     0x0006d323      0x10f ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
                                 0x1f0 (size before relaxing)
- .debug_str     0x0006d3d8       0x33 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
+ .debug_str     0x0006d432       0x33 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
                                 0x1f0 (size before relaxing)
 
-.debug_loc      0x00000000    0x313a7
+.debug_loc      0x00000000    0x3144d
  *(.debug_loc)
  .debug_loc     0x00000000      0x582 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
  .debug_loc     0x00000582      0x42f ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
@@ -9605,16 +9608,16 @@ END GROUP
  .debug_loc     0x00025231       0x34 ./src/GPIO/gpio.o
  .debug_loc     0x00025265      0x4cd ./src/10DOF/Filters/Kalman.o
  .debug_loc     0x00025732      0xb34 ./src/10DOF/Filters/MahonyAHRS.o
- .debug_loc     0x00026266      0xfeb ./src/10DOF/IMU.o
- .debug_loc     0x00027251     0x2710 ./src/10DOF/adxl345.o
- .debug_loc     0x00029961     0x1362 ./src/10DOF/bmp085.o
- .debug_loc     0x0002acc3     0x210b ./src/10DOF/hmc5883l.o
- .debug_loc     0x0002cdce     0x3336 ./src/10DOF/itg3200.o
- .debug_loc     0x00030104      0x164 ./src/main.o
- .debug_loc     0x00030268      0x736 ./src/usbd_conf.o
- .debug_loc     0x0003099e      0x393 ./src/usbd_desc.o
- .debug_loc     0x00030d31      0x33b ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
- .debug_loc     0x0003106c      0x33b ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
+ .debug_loc     0x00026266     0x1065 ./src/10DOF/IMU.o
+ .debug_loc     0x000272cb     0x2710 ./src/10DOF/adxl345.o
+ .debug_loc     0x000299db     0x1362 ./src/10DOF/bmp085.o
+ .debug_loc     0x0002ad3d     0x210b ./src/10DOF/hmc5883l.o
+ .debug_loc     0x0002ce48     0x3336 ./src/10DOF/itg3200.o
+ .debug_loc     0x0003017e      0x190 ./src/main.o
+ .debug_loc     0x0003030e      0x736 ./src/usbd_conf.o
+ .debug_loc     0x00030a44      0x393 ./src/usbd_desc.o
+ .debug_loc     0x00030dd7      0x33b ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
+ .debug_loc     0x00031112      0x33b ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -9632,7 +9635,7 @@ END GROUP
  *(.debug_varnames)
 OUTPUT(BasicV1.elf elf32-littlearm)
 
-.debug_ranges   0x00000000     0x7898
+.debug_ranges   0x00000000     0x7940
  .debug_ranges  0x00000000       0xb0 ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_ranges  0x000000b0      0x148 ./system/src/stm32f4-hal/stm32f4xx_hal_cortex.o
  .debug_ranges  0x000001f8       0x40 ./system/src/stm32f4-hal/stm32f4xx_hal_gpio.o
@@ -9666,19 +9669,19 @@ OUTPUT(BasicV1.elf elf32-littlearm)
  .debug_ranges  0x00004d18       0xa8 ./src/10DOF/Filters/Kalman.o
  .debug_ranges  0x00004dc0      0x1a0 ./src/10DOF/Filters/MahonyAHRS.o
  .debug_ranges  0x00004f60       0x20 ./src/10DOF/I2C.o
- .debug_ranges  0x00004f80      0x3c8 ./src/10DOF/IMU.o
- .debug_ranges  0x00005348      0x870 ./src/10DOF/adxl345.o
- .debug_ranges  0x00005bb8      0x5e0 ./src/10DOF/bmp085.o
- .debug_ranges  0x00006198      0x868 ./src/10DOF/hmc5883l.o
- .debug_ranges  0x00006a00      0xb78 ./src/10DOF/itg3200.o
- .debug_ranges  0x00007578       0x18 ./src/_initialize_hardware.o
- .debug_ranges  0x00007590      0x108 ./src/main.o
- .debug_ranges  0x00007698      0x108 ./src/usbd_conf.o
- .debug_ranges  0x000077a0       0xd8 ./src/usbd_desc.o
- .debug_ranges  0x00007878       0x10 ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
- .debug_ranges  0x00007888       0x10 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
+ .debug_ranges  0x00004f80      0x438 ./src/10DOF/IMU.o
+ .debug_ranges  0x000053b8      0x870 ./src/10DOF/adxl345.o
+ .debug_ranges  0x00005c28      0x5e0 ./src/10DOF/bmp085.o
+ .debug_ranges  0x00006208      0x868 ./src/10DOF/hmc5883l.o
+ .debug_ranges  0x00006a70      0xb78 ./src/10DOF/itg3200.o
+ .debug_ranges  0x000075e8       0x18 ./src/_initialize_hardware.o
+ .debug_ranges  0x00007600      0x140 ./src/main.o
+ .debug_ranges  0x00007740      0x108 ./src/usbd_conf.o
+ .debug_ranges  0x00007848       0xd8 ./src/usbd_desc.o
+ .debug_ranges  0x00007920       0x10 ../ldscripts\libarm_cortexM4lf_math.a(arm_sin_f32.o)
+ .debug_ranges  0x00007930       0x10 ../ldscripts\libarm_cortexM4lf_math.a(arm_cos_f32.o)
 
-.debug_macro    0x00000000    0x17880
+.debug_macro    0x00000000    0x1789e
  .debug_macro   0x00000000      0x1ea ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_macro   0x000001ea      0x88c ./system/src/stm32f4-hal/stm32f4xx_hal.o
  .debug_macro   0x00000a76      0x1a5 ./system/src/stm32f4-hal/stm32f4xx_hal.o
@@ -9779,35 +9782,35 @@ OUTPUT(BasicV1.elf elf32-littlearm)
  .debug_macro   0x00013306       0x16 ./src/SD/spi_sd.o
  .debug_macro   0x0001331c       0x7c ./src/SD/spi_sd.o
  .debug_macro   0x00013398      0x2a3 ./src/PWM/pwm.o
- .debug_macro   0x0001363b      0x3fb ./src/GPS/gps.o
- .debug_macro   0x00013a36       0x64 ./src/GPS/gps.o
- .debug_macro   0x00013a9a       0x22 ./src/GPS/gps.o
- .debug_macro   0x00013abc      0x17e ./src/GPS/gps.o
- .debug_macro   0x00013c3a      0x380 ./src/GPS/gps.o
- .debug_macro   0x00013fba      0x172 ./src/GPS/gps.o
- .debug_macro   0x0001412c       0xd0 ./src/GPS/gps.o
- .debug_macro   0x000141fc      0x1c8 ./src/GPIO/gpio.o
- .debug_macro   0x000143c4       0x40 ./src/GPIO/gpio.o
- .debug_macro   0x00014404      0x31d ./src/Delay/delay.o
- .debug_macro   0x00014721       0xca ./src/Delay/delay.o
- .debug_macro   0x000147eb      0x368 ./src/10DOF/Filters/Kalman.o
- .debug_macro   0x00014b53      0x293 ./src/10DOF/Filters/MahonyAHRS.o
- .debug_macro   0x00014de6      0x2a8 ./src/10DOF/I2C.o
- .debug_macro   0x0001508e      0x42b ./src/10DOF/IMU.o
- .debug_macro   0x000154b9       0x6a ./src/10DOF/IMU.o
- .debug_macro   0x00015523       0xee ./src/10DOF/IMU.o
- .debug_macro   0x00015611      0x3af ./src/10DOF/adxl345.o
- .debug_macro   0x000159c0      0x362 ./src/10DOF/bmp085.o
- .debug_macro   0x00015d22       0xca ./src/10DOF/bmp085.o
- .debug_macro   0x00015dec      0x362 ./src/10DOF/hmc5883l.o
- .debug_macro   0x0001614e      0x16c ./src/10DOF/hmc5883l.o
- .debug_macro   0x000162ba      0x3af ./src/10DOF/itg3200.o
- .debug_macro   0x00016669      0x178 ./src/10DOF/itg3200.o
- .debug_macro   0x000167e1      0x196 ./src/_initialize_hardware.o
- .debug_macro   0x00016977      0x466 ./src/main.o
- .debug_macro   0x00016ddd       0x46 ./src/main.o
- .debug_macro   0x00016e23       0x46 ./src/main.o
- .debug_macro   0x00016e69       0x28 ./src/main.o
- .debug_macro   0x00016e91      0x386 ./src/main.o
- .debug_macro   0x00017217      0x30d ./src/usbd_conf.o
- .debug_macro   0x00017524      0x35c ./src/usbd_desc.o
+ .debug_macro   0x0001363b      0x401 ./src/GPS/gps.o
+ .debug_macro   0x00013a3c       0x64 ./src/GPS/gps.o
+ .debug_macro   0x00013aa0       0x22 ./src/GPS/gps.o
+ .debug_macro   0x00013ac2      0x17e ./src/GPS/gps.o
+ .debug_macro   0x00013c40      0x380 ./src/GPS/gps.o
+ .debug_macro   0x00013fc0      0x172 ./src/GPS/gps.o
+ .debug_macro   0x00014132       0xd0 ./src/GPS/gps.o
+ .debug_macro   0x00014202      0x1c8 ./src/GPIO/gpio.o
+ .debug_macro   0x000143ca       0x40 ./src/GPIO/gpio.o
+ .debug_macro   0x0001440a      0x31d ./src/Delay/delay.o
+ .debug_macro   0x00014727       0xca ./src/Delay/delay.o
+ .debug_macro   0x000147f1      0x368 ./src/10DOF/Filters/Kalman.o
+ .debug_macro   0x00014b59      0x293 ./src/10DOF/Filters/MahonyAHRS.o
+ .debug_macro   0x00014dec      0x2a8 ./src/10DOF/I2C.o
+ .debug_macro   0x00015094      0x431 ./src/10DOF/IMU.o
+ .debug_macro   0x000154c5       0x6a ./src/10DOF/IMU.o
+ .debug_macro   0x0001552f       0xee ./src/10DOF/IMU.o
+ .debug_macro   0x0001561d      0x3af ./src/10DOF/adxl345.o
+ .debug_macro   0x000159cc      0x368 ./src/10DOF/bmp085.o
+ .debug_macro   0x00015d34       0xca ./src/10DOF/bmp085.o
+ .debug_macro   0x00015dfe      0x368 ./src/10DOF/hmc5883l.o
+ .debug_macro   0x00016166      0x16c ./src/10DOF/hmc5883l.o
+ .debug_macro   0x000162d2      0x3af ./src/10DOF/itg3200.o
+ .debug_macro   0x00016681      0x178 ./src/10DOF/itg3200.o
+ .debug_macro   0x000167f9      0x196 ./src/_initialize_hardware.o
+ .debug_macro   0x0001698f      0x46c ./src/main.o
+ .debug_macro   0x00016dfb       0x46 ./src/main.o
+ .debug_macro   0x00016e41       0x46 ./src/main.o
+ .debug_macro   0x00016e87       0x28 ./src/main.o
+ .debug_macro   0x00016eaf      0x386 ./src/main.o
+ .debug_macro   0x00017235      0x30d ./src/usbd_conf.o
+ .debug_macro   0x00017542      0x35c ./src/usbd_desc.o

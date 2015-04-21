@@ -115,7 +115,7 @@ public:
 //	    HAL_NVIC_EnableIRQ((IRQn_Type)I2C1_ER_IRQn);
 
 		if(HAL_I2C_Init(&hi2c)!= HAL_OK) {
-			Error_Handler();
+			Error_Handler("I2C init error.");
 		}
 		Delay::delay_ms(2);
 

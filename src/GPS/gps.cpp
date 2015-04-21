@@ -366,7 +366,7 @@ void GPS_Init() {
 	UartHandle.Init.Mode = UART_MODE_TX_RX;
 
 	if (HAL_UART_Init(&UartHandle) != HAL_OK) {
-		Error_Handler();
+		Error_Handler("Uart initialize error.");
 	}
 
 	/* Enable the UART Parity Error Interrupt */

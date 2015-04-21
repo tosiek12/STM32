@@ -29,13 +29,9 @@ IMU::IMU(void) :
 	numberOfGatheredSamples = 0;
 	numberOfSamplesToGather = 0;
 
-	positionInGlobalFrame_IMU[0] = 0;
-	positionInGlobalFrame_IMU[1] = 0;
-	positionInGlobalFrame_IMU[2] = 0;
-
-	height_GPS = 0;
-	lattitude_GPS = 0;
-	longtitude_GPS = 0;
+	positionInGlobalFrame_IMU[0] = .0;
+	positionInGlobalFrame_IMU[1] = .0;
+	positionInGlobalFrame_IMU[2] = .0;
 
 	TiltAngleInRad = 0;
 	ZYawAngleInRad = 0;
@@ -66,8 +62,7 @@ void IMU::initializeTimerForUpdate(void) {
 	TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	TimHandle.Init.RepetitionCounter = 0;
 	if (HAL_TIM_Base_Init(&TimHandle) != HAL_OK) {
-		/* Initialization Error */
-		Error_Handler();
+		Error_Handler("TIM initialize error.");
 	}
 
 	/* Enable the TIMx global Interrupt */
@@ -76,8 +71,7 @@ void IMU::initializeTimerForUpdate(void) {
 	HAL_NVIC_SetPriority((IRQn_Type) TIM3_IRQn, 1, 2);
 	/* Start Channel1 */
 	if (HAL_TIM_Base_Start_IT(&TimHandle) != HAL_OK) {
-		/* Starting Error */
-		Error_Handler();
+		Error_Handler("TIM start error.");
 	}
 
 	__HAL_TIM_DISABLE(&TimHandle);
@@ -105,6 +99,36 @@ void IMU::initialize(void) {
 	initializeTimerForUpdate();
 }
 
+void IMU::zerosAllComputedValues(void) {
+
+
+	XRollAngleInRad = 0;
+	YPitchAngleInRad = 0;
+	ZYawAngleInRad = 0;
+	TiltAngleInRad = 0;
+
+
+	memset(gps.hhmmss,'0',6);
+
+	/*	Position */
+	positionInGlobalFrame_IMU[0] = .0;
+	positionInGlobalFrame_IMU[1] = .0;
+	positionInGlobalFrame_IMU[2] = .0;
+	positionDeltaInGlobalFrame_IMU[0] = .0;
+	positionDeltaInGlobalFrame_IMU[1] = .0;
+	positionDeltaInGlobalFrame_IMU[2] = .0;
+	velocityInGlobalFrame[0] = .0;
+	velocityInGlobalFrame[1] = .0;
+	velocityInGlobalFrame[2] = .0;
+	accelerationInGlobalFrame[0] = .0;
+	accelerationInGlobalFrame[1] = .0;
+	accelerationInGlobalFrame[2] = .0;
+
+	/*	Filter */
+	eulerAnglesInRadMahony[3];
+
+}
+
 void IMU::timerAction(void) {
 	static uint8_t counterForloggingData = 0;
 	if (semahpore_computationInProgress == 1) {
@@ -122,6 +146,9 @@ void IMU::timerAction(void) {
 	if((++counterForloggingData) == 40) {
 		counterForloggingData = 0;
 		logDataOnSD();
+		positionDeltaInGlobalFrame_IMU[0] = .0;
+		positionDeltaInGlobalFrame_IMU[1] = .0;
+		positionDeltaInGlobalFrame_IMU[2] = .0;
 	}
 	if (res[0] || res[1] || res[2]) {
 		if (errorSensor == 0) {
@@ -151,14 +178,19 @@ void IMU::logDataOnSD(void) {
 	 * altP,	//height from pressure
 	 * \n
 	 */
-	snprintf((char*) buf, 200, "%ld,%ld,%ld,"
+//	imu10DOF.prepareDataFrame((uint8_t *) buf,300);
+	const uint16_t decMul = 1000;
+	snprintf((char*) buf, IMU_BUF_SIZE,
+			"%ld,%ld,%ld,"
 			"%ld,%ld,%ld,"
 			"%u,%ld,%ld,%lu,%lu,"
-			"%lu,\n",
-			(int32_t) (XRollAngleInRad * 1000), (int32_t) (YPitchAngleInRad * 1000), (int32_t) (ZYawAngleInRad * 1000),
-			(int32_t) (eulerAnglesInRadMahony[0] * 1000), (int32_t) (eulerAnglesInRadMahony[1] * 1000), (int32_t) (eulerAnglesInRadMahony[2] * 1000),
+			"%lu,"
+			"%ld,%ld,%ld,\n",
+			(int32_t) (XRollAngleInRad * decMul), (int32_t) (YPitchAngleInRad * decMul), (int32_t) (ZYawAngleInRad * decMul),
+			(int32_t) (eulerAnglesInRadMahony[0] * decMul), (int32_t) (eulerAnglesInRadMahony[1] * decMul), (int32_t) (eulerAnglesInRadMahony[2] * decMul),
 			gps.alt, gps.lon, gps.lat, gps.dop, gps.hdop,
-			(uint32_t) (pressure.altitude * 1000)
+			(uint32_t) (pressure.altitude * decMul),
+			(int32_t) (positionDeltaInGlobalFrame_IMU[0]* decMul),(int32_t) (positionDeltaInGlobalFrame_IMU[1]* decMul),(int32_t) (positionDeltaInGlobalFrame_IMU[3]* decMul)
 			);
 	sdCardLogger.writeStringForIMU((char *) buf);
 }
@@ -328,66 +360,58 @@ void IMU::doAllComputation(void) {
 }
 
 void IMU::updateGPSData(const struct gpsData_t *_gpsdata) {
-	this->lattitude_GPS = _gpsdata->lat;
-	this->longtitude_GPS = _gpsdata->lon;
-	this->height_GPS = _gpsdata->alt;
 	memcpy(&gps, _gpsdata, sizeof(struct gpsData_t));
 }
 
 void IMU::prepareDataFrame(uint8_t * const pBuff, int16_t buffFreeSpace) {
-	uint8_t tempBuff[50] = { '\0' };
 	uint8_t numberOfcharsToAppend = 0;
 
-	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "x:%d,y:%d,z:%d,",
-			(int16_t) (XRollAngleInRad * 100), (int16_t) (YPitchAngleInRad * 100),
+	numberOfcharsToAppend = snprintf((char *) buf, IMU_BUF_SIZE, "x:%d,y:%d,z:%d,",
+			(int16_t) (XRollAngleInRad * 100),
+			(int16_t) (YPitchAngleInRad * 100),
 			(int16_t) (ZYawAngleInRad * 100));
-	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	strncat((char *) pBuff, (const char *) buf, buffFreeSpace);
 	buffFreeSpace -= numberOfcharsToAppend;
 
-
-	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "x_c:%d,y_c:%d,z_c:%d,",
+	numberOfcharsToAppend = snprintf((char *) buf, IMU_BUF_SIZE, "x_c:%d,y_c:%d,z_c:%d,",
 			(int16_t) (eulerAnglesInRadMahony[0] * 100),
 			(int16_t) (eulerAnglesInRadMahony[1] * 100),
 			(int16_t) (eulerAnglesInRadMahony[2] * 100));
-	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	strncat((char *) pBuff, (const char *) buf, buffFreeSpace);
+	buffFreeSpace -= numberOfcharsToAppend;
+
+	numberOfcharsToAppend = snprintf((char *) buf, IMU_BUF_SIZE, "altG:%u,lonG:%ld,latG:%ld,", gps.alt, gps.lon, gps.lat);
+	strncat((char *) pBuff, (const char *) buf, buffFreeSpace);
 	buffFreeSpace -= numberOfcharsToAppend;
 
 
-	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "altG:%u,lonG:%ld,latG:%ld,",
-			height_GPS, longtitude_GPS,
-			lattitude_GPS);
-	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	numberOfcharsToAppend = snprintf((char *) buf, IMU_BUF_SIZE, "dop:%lu,hdop:%lu,sats:%hu,", gps.dop, gps.hdop, gps.sats);
+	strncat((char *) pBuff, (const char *) buf, buffFreeSpace);
 	buffFreeSpace -= numberOfcharsToAppend;
 
-
-	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "dop:%lu,hdop:%lu,sats:%hu,", gps.dop,
-			gps.hdop, gps.sats);
-	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	numberOfcharsToAppend = snprintf((char *) buf, IMU_BUF_SIZE, "hhmmss:%c%ch%c%cm%c%cs,", gps.hhmmss[0],gps.hhmmss[1],gps.hhmmss[2],gps.hhmmss[3],gps.hhmmss[4],gps.hhmmss[5]);
+	strncat((char *) pBuff, (const char *) buf, buffFreeSpace);
 	buffFreeSpace -= numberOfcharsToAppend;
 
-	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "hhmmss:%c%ch%c%cm%c%cs,", gps.hhmmss[0],gps.hhmmss[1],gps.hhmmss[2],gps.hhmmss[3],gps.hhmmss[4],gps.hhmmss[5]);
-	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	numberOfcharsToAppend = snprintf((char *) buf, IMU_BUF_SIZE, "altP:%lu,presP:%lu,",(uint32_t) (pressure.altitude * 10) , (uint32_t) (pressure.pressure) );
+	strncat((char *) pBuff, (const char *) buf, buffFreeSpace);
 	buffFreeSpace -= numberOfcharsToAppend;
 
-	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "altP:%lu,presP:%lu,",(uint32_t) (pressure.altitude * 10) , (uint32_t) (pressure.pressure) );
-	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	numberOfcharsToAppend = snprintf((char *) buf, IMU_BUF_SIZE, "px:%ld,py:%ld,pz:%ld,",(int32_t) (positionInGlobalFrame_IMU[0] * 100) , (int32_t) (positionInGlobalFrame_IMU[1] * 100), (int32_t) (positionInGlobalFrame_IMU[2] * 100));
+	strncat((char *) pBuff, (const char *) buf, buffFreeSpace);
 	buffFreeSpace -= numberOfcharsToAppend;
 
-	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "px:%ld,py:%ld,pz:%ld,",(int32_t) (positionInGlobalFrame_IMU[0] * 100) , (int32_t) (positionInGlobalFrame_IMU[1] * 100), (int32_t) (positionInGlobalFrame_IMU[2] * 100));
-	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
-	buffFreeSpace -= numberOfcharsToAppend;
-
-	numberOfcharsToAppend = snprintf((char *) tempBuff, 50, "vx:%ld,vy:%ld,vz:%ld,",(int32_t) (velocityInGlobalFrame[0] * 100) , (int32_t) (velocityInGlobalFrame[1] * 100), (int32_t) (velocityInGlobalFrame[2] * 100));
-	strncat((char *) pBuff, (const char *) tempBuff, buffFreeSpace);
+	numberOfcharsToAppend = snprintf((char *) buf, IMU_BUF_SIZE, "vx:%ld,vy:%ld,vz:%ld,",(int32_t) (velocityInGlobalFrame[0] * 100) , (int32_t) (velocityInGlobalFrame[1] * 100), (int32_t) (velocityInGlobalFrame[2] * 100));
+	strncat((char *) pBuff, (const char *) buf, buffFreeSpace);
 	buffFreeSpace -= numberOfcharsToAppend;
 
 	if (buffFreeSpace < 0) {
-		Error_Handler();
+		Error_Handler("PrepareDataFrame too little size.");
 	}
 }
 
 void IMU::updatePositionFromIMU(void) {
-	//removeCentrifugalForceEffect();
+	removeCentrifugalForceEffect();
 	transformAccelerationToGlobalFrame();
 	computeMovementAndAddToPossition();
 }
@@ -478,6 +502,10 @@ void IMU::computeMovementAndAddToPossition(void) {
 			+ accelerationInGlobalFrame[1] * samplingPeriodInS * samplingPeriodInS * 0.5;
 	possitionChange[2] = velocityInGlobalFrame[2] * samplingPeriodInS
 			+ accelerationInGlobalFrame[2] * samplingPeriodInS * samplingPeriodInS * 0.5;
+	//update delta
+	positionDeltaInGlobalFrame_IMU[0] += possitionChange[0];
+	positionDeltaInGlobalFrame_IMU[1] += possitionChange[1];
+	positionDeltaInGlobalFrame_IMU[2] += possitionChange[2];
 
 	//update position
 	positionInGlobalFrame_IMU[0] += possitionChange[0];
@@ -485,14 +513,23 @@ void IMU::computeMovementAndAddToPossition(void) {
 	positionInGlobalFrame_IMU[2] += possitionChange[2];
 
 	//update velocity
-	if(velocityInGlobalFrame[0]<maxVelocityInMPerS) {
-		velocityInGlobalFrame[0] += accelerationInGlobalFrame[0] * samplingPeriodInS;
+	velocityInGlobalFrame[0] += accelerationInGlobalFrame[0] * samplingPeriodInS;
+	velocityInGlobalFrame[1] += accelerationInGlobalFrame[1] * samplingPeriodInS;
+	velocityInGlobalFrame[2] += accelerationInGlobalFrame[2] * samplingPeriodInS;
+	if(velocityInGlobalFrame[0]>maxVelocityInMPerS) {
+		velocityInGlobalFrame[0]=maxVelocityInMPerS;
+	} else if (velocityInGlobalFrame[0]<(-maxVelocityInMPerS)) {
+		velocityInGlobalFrame[0]=-maxVelocityInMPerS;
 	}
-	if(velocityInGlobalFrame[1]<maxVelocityInMPerS) {
-		velocityInGlobalFrame[1] += accelerationInGlobalFrame[1] * samplingPeriodInS;
+	if(velocityInGlobalFrame[1]>maxVelocityInMPerS) {
+		velocityInGlobalFrame[1]=maxVelocityInMPerS;
+	} else if (velocityInGlobalFrame[1]<(-maxVelocityInMPerS)) {
+		velocityInGlobalFrame[1]=-maxVelocityInMPerS;
 	}
-	if(velocityInGlobalFrame[2]<maxVelocityInMPerS) {
-		velocityInGlobalFrame[2] += accelerationInGlobalFrame[2] * samplingPeriodInS;
+	if(velocityInGlobalFrame[2]>maxVelocityInMPerS) {
+		velocityInGlobalFrame[2]=maxVelocityInMPerS;
+	} else if (velocityInGlobalFrame[2]<(-maxVelocityInMPerS)) {
+		velocityInGlobalFrame[2]=-maxVelocityInMPerS;
 	}
 
 

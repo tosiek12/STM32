@@ -11,7 +11,7 @@
 #include "stm32f4xx_hal.h"
 #include "arm_math.h"
 
-void Error_Handler(void);
+void Error_Handler(const char * pbuf);
 /* Global variables */
 /* Flags vectors */
 extern volatile uint8_t flagsComunicationInterface[10];

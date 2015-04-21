@@ -231,7 +231,7 @@ float invSqrt(float x) {
 	return y;
 }
 
-void MahonyToEuler(float32_t *angles) {
+void MahonyToEuler(float32_t * const angles) {
 	float32_t  arg1, arg2;
 
 	arg1 = 2*(q0*q1+q2*q3);

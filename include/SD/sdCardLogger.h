@@ -26,11 +26,11 @@ private:
 	free;	//free space on card
 	int8_t numberOfChars;
 	uint8_t buff[50];
-	char headerOfIMUFile[50];
+	char headerOfIMUFile[100];
 public:
 	SdCardLogger() {
 		isUsed = 0;
-		strncpy(headerOfIMUFile,"x,y,z,x_c,y_c,z_c,altG,lonG,latG,dop,hdop,altP\n",50);
+		strncpy(headerOfIMUFile,"x,y,z,x_c,y_c,z_c,altG,lonG,latG,dop,hdop,altP,dx,dy,dz,\n",100);
 		numberOfChars = -1;
 		state = FR_INT_ERR;
 		IMU_state = f_nonInit;

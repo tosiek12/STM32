@@ -70,7 +70,7 @@ public:
 		TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
 		TimHandle.Init.RepetitionCounter = 0;
 		if (HAL_TIM_PWM_Init(&TimHandle) != HAL_OK) {
-			Error_Handler();
+			Error_Handler("TIM init error.");
 		}
 
 		sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
@@ -94,38 +94,38 @@ public:
 		sConfig.OCPolarity = TIM_OCPOLARITY_HIGH;
 		sConfig.OCFastMode = TIM_OCFAST_DISABLE;
 		if (HAL_TIM_PWM_ConfigChannel(&TimHandle, &sConfig, TIM_CHANNEL_1) != HAL_OK) {
-			Error_Handler();
+			Error_Handler("TIM channel config error.");
 		}
 
 		sConfig.Pulse = 0;
 		if (HAL_TIM_PWM_ConfigChannel(&TimHandle, &sConfig, TIM_CHANNEL_2) != HAL_OK) {
-			Error_Handler();
+			Error_Handler("TIM channel config error.");
 		}
 		if (HAL_TIM_PWM_ConfigChannel(&TimHandle, &sConfig, TIM_CHANNEL_3) != HAL_OK) {
-			Error_Handler();
+			Error_Handler("TIM channel config error.");
 		}
 		if (HAL_TIM_PWM_ConfigChannel(&TimHandle, &sConfig, TIM_CHANNEL_4) != HAL_OK) {
-			Error_Handler();
+			Error_Handler("TIM channel config error.");
 		}
 	}
 
 	void startPwmChannel(uint32_t channel) {
 		if (HAL_TIM_PWM_Start(&TimHandle, channel) != HAL_OK) {
-				Error_Handler();
+				Error_Handler("Start PWM error");
 			}
 	}
 	void startAllPwmChannels() {
 		if (HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_1) != HAL_OK) {
-			Error_Handler();
+			Error_Handler("Start all PWM error");
 		}
 		if (HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_2) != HAL_OK) {
-			Error_Handler();
+			Error_Handler("Start all PWM error");
 		}
 		if (HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_3) != HAL_OK) {
-			Error_Handler();
+			Error_Handler("Start all PWM error");
 		}
 		if (HAL_TIM_PWM_Start(&TimHandle, TIM_CHANNEL_4) != HAL_OK) {
-			Error_Handler();
+			Error_Handler("Start all PWM error");
 		}
 	}
 

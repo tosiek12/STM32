@@ -22,11 +22,9 @@ private:
 	/* Sensors and measurment parameters */
 	ITG3200 gyro;
 	ADXL345 accelerometer;
-	float32_t accelerationInGlobalFrame[3];	//in m/s*s
-	float32_t velocityInGlobalFrame[3];		//	in m/s
+
 	HMC5883L magnetometer;
 	BMP085 pressure;
-	struct gpsData_t gps;
 	uint16_t samplingFrequencyInHz;
 	float32_t samplingPeriodInS;
 	const uint8_t I2C_ID_BMP085 = 0x77 << 1;		//Barometer? Id Address
@@ -39,10 +37,11 @@ private:
 	volatile uint8_t semahpore_computationInProgress;
 
 	/*	Position */
-	uint16_t height_GPS;
-	int32_t longtitude_GPS;
-	int32_t lattitude_GPS;
+	struct gpsData_t gps;
 	float32_t positionInGlobalFrame_IMU[3];
+	float32_t positionDeltaInGlobalFrame_IMU[3];
+	float32_t velocityInGlobalFrame[3];		//	in m/s
+	float32_t accelerationInGlobalFrame[3];	//in m/s*s
 
 	/*	Filter */
 	Kalman kalmanX;
@@ -63,7 +62,8 @@ private:
 	//volatile int16_t measurements[6][9];	//nie używane - do usuniecia!
 	volatile uint16_t numberOfGatheredSamples;
 	uint16_t numberOfSamplesToGather;
-	uint8_t buf[200];
+#define IMU_BUF_SIZE 300
+	uint8_t buf[IMU_BUF_SIZE];
 
 	inline void __attribute__((always_inline)) initializeTimerForUpdate(void);
 
@@ -112,6 +112,7 @@ public:
 	void startDataGathering(void);
 	void requestDataGathering(uint16_t numberOfSamples);
 	uint8_t isDataGatheringComplete(void);
+	void zerosAllComputedValues(void);
 };
 
 extern IMU imu10DOF;
