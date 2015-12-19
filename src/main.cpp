@@ -5,6 +5,7 @@
 
 // ----------------------------------------------------------------------------
 
+#include <stdint.h>
 #include <stdio.h>
 #include "diag/Trace.h"
 #include "main.h"
