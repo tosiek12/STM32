@@ -26,6 +26,8 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
+#include <stdio.h>
+#include <stdlib.h>
 #include "usbd_cdc_if_template.h"
 #include "main.h"
 /** @addtogroup STM32_USB_DEVICE_LIBRARY

@@ -1,6 +1,7 @@
 #ifndef GPIO_H_
 #define GPIO_H_
 
+#include <stdio.h>
 #include "cmsis_device.h"
 #include "stm32f4xx_hal.h"
 

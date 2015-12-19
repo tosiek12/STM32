@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include "diag/Trace.h"
 #include "main.h"
-#include "Delay/Delay.h"
+#include "Delay/delay.h"
 #include "NokiaLCD/nokiaLCD.h"
 #include "GPIO/gpio.h"
 #include "10DOF/IMU.h"
@@ -194,14 +194,6 @@ int main() {
 		if (io_module.getButtonState(0) == GPIO::longPush) {
 		}
 		io_module.mainEndUpdate();
-	}
-}
-void Error_Handler(void) {
-	while (1) {
-		io_module.turnLedOn(GPIO::LED3_PIN,1);
-		Delay::delay_ms(10);
-		io_module.turnLedOn(GPIO::LED3_PIN,0);
-		Delay::delay_ms(10);
 	}
 }
 

@@ -30,6 +30,7 @@
 #define __USBD_CORE_H
 
 /* Includes ------------------------------------------------------------------*/
+#include <stdio.h>
 #include "usbd_conf.h"
 #include "usbd_def.h"
 #include "usbd_ioreq.h"

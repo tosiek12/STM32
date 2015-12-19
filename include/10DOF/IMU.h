@@ -1,5 +1,9 @@
 #ifndef IMU_H_
 #define IMU_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 #include "arm_math.h"

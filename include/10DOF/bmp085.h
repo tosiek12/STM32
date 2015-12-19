@@ -32,6 +32,7 @@ THE SOFTWARE.
 
 #ifndef _BMP085_H_
 #define _BMP085_H_
+#include <stdio.h>
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 #include "arm_math.h"

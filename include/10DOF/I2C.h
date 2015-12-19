@@ -7,6 +7,8 @@
 
 #ifndef I2C_H_
 #define I2C_H_
+
+#include <stdio.h>
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 #include "../Delay/delay.h"
