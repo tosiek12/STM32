@@ -105,7 +105,17 @@ void BMP085::test(void) {
 void BMP085::initialize() {
 	// load sensor's calibration constants
 	loadCalibration();
+	// request temperature
+	setControl(BMP085_MODE_TEMPERATURE);
+
+	// wait appropriate time for conversion (4.5ms delay)
+	Delay::delay_ms(getMeasureDelayMilliseconds());
+
+	// read calibrated temperature value in degrees Celsius
+	temperature = getTemperatureC();
+
 	setControl(BMP085_MODE_PRESSURE_3); // request pressure (3x oversampling mode, high detail, 23.5ms delay)
+	setDelayTimer(getMeasureDelayMilliseconds());
 }
 
 /**
@@ -117,16 +127,36 @@ bool BMP085::testConnection() {
 }
 
 void BMP085::update() {
+	static uint8_t tempMeasurementCnt = 0;
 	if(isNewDataAvailable()) {
-		// read calibrated pressure value in Pascals (Pa)
-		float32_t k = 1;	//Low-Pass filter coefficient.
-		pressure = (1 - k) * pressure + k * getPressure();
-		// calculate absolute altitude in meters based on known pressure
-		// (may pass a second "sea level pressure" parameter here,
-		// otherwise uses the standard value of 101325 Pa)
-		altitude = getAltitude(pressure, 101325);	//101175 - kiedys lepiej dzialalo
-		setControl(BMP085_MODE_PRESSURE_0); // request pressure (3x oversampling mode, high detail, 23.5ms delay)
+		//read measurements:
+		switch( measureMode) {
+		case BMP085_MODE_TEMPERATURE:
+			temperature = getTemperatureC();			// read calibrated temperature value in degrees Celsius
+			break;
+		case BMP085_MODE_PRESSURE_3:
+		case BMP085_MODE_PRESSURE_2:
+		case BMP085_MODE_PRESSURE_1:
+			// read calibrated pressure value in Pascals (Pa)
+			float32_t k = 1;	//Low-Pass filter coefficient.
+			pressure = (1 - k) * pressure + k * getPressure();
+			// calculate absolute altitude in meters based on known pressure
+			// (may pass a second "sea level pressure" parameter here,
+			// otherwise uses the standard value of 101325 Pa)
+			altitude = getAltitude(pressure, 101325);	//101175 - kiedys lepiej dzialalo
+			break;
+		}
+
+		//request new values
+		if(tempMeasurementCnt  == 10) {
+			setControl(BMP085_MODE_TEMPERATURE);	// request temperature
+			tempMeasurementCnt = 0;
+		} else {
+			setControl(BMP085_MODE_PRESSURE_3); // request pressure (3x oversampling mode, high detail, 23.5ms delay)
+		}
 		setDelayTimer(getMeasureDelayMilliseconds());
+		++tempMeasurementCnt;
+
 	} else {
 		asm volatile("nop");
 	}
