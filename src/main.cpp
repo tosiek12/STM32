@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "diag/Trace.h"
 #include "main.h"
-#include "Delay/Delay.h"
+#include "Delay/delay.h"
 #include "NokiaLCD/nokiaLCD.h"
 #include "GPIO/gpio.h"
 #include "10DOF/IMU.h"

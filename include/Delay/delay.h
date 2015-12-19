@@ -1,6 +1,6 @@
 #ifndef DELAY_H_
 #define DELAY_H_
-
+#include <stdio.h>
 #include "cmsis_device.h"
 
 class Delay {

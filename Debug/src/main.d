@@ -28,12 +28,12 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_usart.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_pcd.h \
  ../system/include/stm32f4-hal/stm32f4xx_ll_usb.h \
- ../system/include/cmsis/arm_math.h ../include/Delay/Delay.h \
+ ../system/include/cmsis/arm_math.h ../include/Delay/delay.h \
  ../system/include/cmsis/cmsis_device.h \
  ../system/include/cmsis/stm32f4xx.h ../include/NokiaLCD/nokiaLCD.h \
- ../include/Delay/delay.h ../include/NokiaLCD/english_6x8_pixel.h \
- ../include/NokiaLCD/bmp_pixel.h ../include/GPIO/gpio.h \
- ../include/10DOF/IMU.h ../include/10DOF/../NokiaLCD/nokiaLCD.h \
+ ../include/NokiaLCD/english_6x8_pixel.h ../include/NokiaLCD/bmp_pixel.h \
+ ../include/GPIO/gpio.h ../include/10DOF/IMU.h \
+ ../include/10DOF/../NokiaLCD/nokiaLCD.h \
  ../include/10DOF/../Delay/delay.h ../include/10DOF/I2C.h \
  ../include/10DOF/itg3200.h ../include/10DOF/adxl345.h \
  ../include/10DOF/hmc5883l.h ../include/10DOF/bmp085.h \
@@ -120,15 +120,13 @@ src/main.o: ../src/main.cpp ../system/include/diag/Trace.h \
 
 ../system/include/cmsis/arm_math.h:
 
-../include/Delay/Delay.h:
+../include/Delay/delay.h:
 
 ../system/include/cmsis/cmsis_device.h:
 
 ../system/include/cmsis/stm32f4xx.h:
 
 ../include/NokiaLCD/nokiaLCD.h:
-
-../include/Delay/delay.h:
 
 ../include/NokiaLCD/english_6x8_pixel.h:
 

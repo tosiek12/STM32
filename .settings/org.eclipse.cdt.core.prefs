@@ -1,6 +1,6 @@
 eclipse.preferences.version=1
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.151395472/PATH/delimiter=;
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.151395472/PATH/operation=replace
-environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.151395472/PATH/value=C\:\\Program Files\\Cross Build Tools\\;${PATH}
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.151395472/PATH/value=/usr/local/gcc-arm-none-eabi-4_9-2015q3/bin\:/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/usr/games\:/usr/local/games
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.151395472/append=true
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.151395472/appendContributed=true

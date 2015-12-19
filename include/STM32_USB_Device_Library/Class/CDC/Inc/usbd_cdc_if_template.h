@@ -44,26 +44,26 @@ struct FrameBuffer{
 	uint8_t isNew;
 };
 
-const uint8_t frameAddress_Pecet = 'P';
-const uint8_t frameAddress_Cortex = 'C';
+const char frameAddress_Pecet = 'P';
+const char frameAddress_Cortex = 'C';
 
-const uint8_t frameType_ConnectedWithGUI = 'S';
-const uint8_t frameType_DisconnectedFromGUI = 'E';
-const uint8_t frameType_StartIMUTimerUpdate = 's';
-const uint8_t frameType_StopIMUTimerUpdate = 'e';
+const char frameType_ConnectedWithGUI = 'S';
+const char frameType_DisconnectedFromGUI = 'E';
+const char frameType_StartIMUTimerUpdate = 's';
+const char frameType_StopIMUTimerUpdate = 'e';
 
-const uint8_t frameType_DataRequest = 'R';
-const uint8_t frameType_AllDataRequest = 'D';
-const uint8_t frameType_DataGatherRequest = 'G';
+const char frameType_DataRequest = 'R';
+const char frameType_AllDataRequest = 'D';
+const char frameType_DataGatherRequest = 'G';
 
-const uint8_t frameType_Calibrate = 'C';
-const uint8_t frameType_SendingTimeCheck = 'T';
-const uint8_t frameType_FunctionExecutionTimeCheck = 'I';
-const uint8_t frameType_Ping = 'P';
-const uint8_t frameType_FunctionTest = 'F';
+const char frameType_Calibrate = 'C';
+const char frameType_SendingTimeCheck = 'T';
+const char frameType_FunctionExecutionTimeCheck = 'I';
+const char frameType_Ping = 'P';
+const char frameType_FunctionTest = 'F';
 
-const uint8_t frameType_Log = 'L';
-const uint8_t frameType_Error = 'E';
+const char frameType_Log = 'L';
+const char frameType_Error = 'E';
 
 
 extern struct FrameBuffer s_RxFrameBuffer;

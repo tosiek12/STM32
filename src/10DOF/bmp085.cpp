@@ -30,7 +30,7 @@
  ===============================================
  */
 
-#include "10DOF/BMP085.h"
+#include "10DOF/bmp085.h"
 #include "10DOF/IMU.h"
 
 

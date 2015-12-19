@@ -1,5 +1,7 @@
 #ifndef SPEEDTESTER_H_
 #define SPEEDTESTER_H_
+
+#include <stdio.h>
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 #include "arm_math.h"
